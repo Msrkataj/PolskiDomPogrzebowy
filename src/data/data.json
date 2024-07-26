@@ -1,0 +1,7 @@
+[
+    { "name": "Home", "href": "/" },
+    { "name": "Nasza misja", "href": "/mission" },
+    { "name": "Pomoc krok po kroku", "href": "/help" },
+    { "name": "Zaufali nam", "href": "/trust" },
+    { "name": "Kontakt", "href": "/contact" }
+]
