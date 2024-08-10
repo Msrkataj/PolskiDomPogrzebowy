@@ -1,0 +1,355 @@
+.login-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-form h1 {
+  margin: 10px 0;
+  font-size: 24px;
+}
+
+.login-form-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 20px 0;
+}
+
+.login-form-group label {
+  display: block;
+  font-size: 1.2em;
+  margin-bottom: 5px;
+  text-align: left;
+}
+
+.login-form-group input {
+  width: 60%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+.actions {
+  margin-top: 20px;
+}
+
+.login-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.links {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.links a {
+  font-size: 1.2em;
+  color: #000;
+  text-decoration: none;
+  margin-top: 10px;
+}
+.register-link {
+  padding: 5px;
+}
+.links .forgot-password {
+  font-size: 12px;
+}
+.funeral-home-box {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (min-width: 768px) {
+  .login-container {
+    max-width: 1000px;
+  }
+
+  .login-form h2 {
+    font-size: 28px;
+  }
+
+  .login-form-group label,
+  .login-form-group input {
+    font-size: 18px;
+  }
+
+  .login-button {
+    font-size: 18px;
+  }
+
+  .links a {
+    font-size: 16px;
+  }
+}
+.dashboard {
+  max-width: 1200px;
+  margin: 0 10px;
+  //display: flex;
+  //flex-direction: column;
+  //align-items: center;
+  @media (min-width: 768px) {
+    margin: 0 auto;
+    padding: 20px;
+  }
+  h1 {
+    margin-top: 50px;
+  }
+  .user-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .settings-icon {
+      cursor: pointer;
+    }
+  }
+  .notifications {
+
+    margin-top: 20px;
+    h2 {
+      @media (max-width: 768px) {
+        margin: 10px 0;
+      }
+    }
+    .notification {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      font-size: 1em;
+      @media (min-width: 768px) {
+        font-size: 1.3em;
+      }
+      &.warning {
+        background-color: #ffefef;
+        border-color: #ffcccc;
+        line-height: 30px;
+      }
+    }
+  }
+}
+
+.submissions {
+  padding: 20px;
+  .submission {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    .status {
+      font-weight: bold;
+    }
+  }
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+}
+.submissions-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.submissions-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.submission {
+
+}
+
+.submissions-container {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
+  background-color: #f9f9f9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 1400px;
+}
+
+.submission-item {
+  width: auto;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: max-height 0.3s ease-in-out;
+  font-size: 1.1em;
+  @media (min-width: 768px) {
+    width: 100%;
+  }
+.submission-item-first {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  @media (min-width: 768px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+  .submission-item-second {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid black;
+    margin-top: 10px;
+    .details {
+      margin-top: 20px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      h3 {
+        font-size: 1.1em;
+        @media (min-width: 768px) {
+          font-size: 1.3em;
+        }
+      }
+      .details-elements {
+        display: flex;
+        flex-direction: column;
+        @media (min-width: 768px) {
+          flex-direction: row;
+        }
+      }
+      .details-element {
+        display: flex;
+        flex-direction: column;
+        margin: 10px;
+        strong {
+          font-weight: bold;
+          margin-right: 10px;
+        }
+      }
+      .details-element-zestaw {
+        border-top: 1px solid black;
+        margin-top: 10px;
+        padding-top: 10px;
+        &-buttons {
+          display: flex;
+          justify-content: center;
+          button {
+            margin: 10px;
+          }
+          button:hover {
+            background-color: $color-gold;
+            color: white;
+          }
+        }
+        div {
+          border: 1px solid black;
+          padding: 10px;
+        }
+      }
+    }
+  }
+  .submission-item-element {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    margin: 0 10px;
+    p {
+      margin: 10px 0;
+    }
+    span {
+      margin: 0 0 10px 0;
+    }
+    @media (min-width: 768px) {
+      p {
+        margin: 0;
+      }
+      span {
+        margin: 0;
+      }
+    }
+    strong {
+      font-weight: bold;
+    }
+    a {
+      color: darkgoldenrod;
+    }
+  }
+}
+
+.status {
+  color: orange;
+  font-weight: bold;
+}
+
+
+
+.details p {
+  margin: 5px 0;
+  font-size: 1em;
+  @media (min-width: 768px) {
+    font-size: 1.2em;
+  }
+}
+
+.edit-button {
+  border: none;
+  text-align: center;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.edit-button:hover {
+  background-color: #e68900;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  margin-top: 20px;
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.actions button {
+  background-color: white;
+  border: 1px solid goldenrod;
+  color: black;
+  margin: 10px;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.actions button:hover {
+  background-color: #30d4ff;
+}

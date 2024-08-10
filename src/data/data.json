@@ -1,7 +1,80 @@
-[
-    { "name": "Home", "href": "/" },
-    { "name": "Nasza misja", "href": "/mission" },
-    { "name": "Pomoc krok po kroku", "href": "/help" },
-    { "name": "Zaufali nam", "href": "/trust" },
-    { "name": "Kontakt", "href": "/contact" }
-]
+{
+    "menuItems": [
+        { "name": "Home", "href": "/", "img": "/assets/icons/home.png" },
+        { "name": "Nasza misja", "href": "/mission", "img": "/assets/icons/mission.png" },
+        { "name": "Pomoc krok po kroku", "href": "/search", "img": "/assets/icons/help.png" },
+        { "name": "Zaufali nam", "href": "/trust", "img": "/assets/icons/trust.png" },
+        { "name": "Kontakt", "href": "/contact", "img": "/assets/icons/contact.png" }
+    ],
+    "FuneralmenuItems": [
+        { "name": "Zamówienia", "href": "/funeral/orders"},
+        { "name": "Klienci", "href": "/funeral/clients"},
+        { "name": "Produkty", "href": "/funeral/assortment"},
+        { "name": "Profil Zakładu", "href": "/funeral/my-funeral"},
+        { "name": "Opinie", "href": "/funeral/reviews"}
+    ],
+    "supportItems": [
+        { "icon": "/assets/icons/heart.png", "text": "Wsparcie na każdym etapie organizacji pogrzebu", "anchor": "#how-it-works" },
+        { "icon": "/assets/icons/phone.png", "text": "24/7 Obsługa klienta", "anchor": "#customer-support" },
+        { "icon": "/assets/icons/transport.png", "text": "Profesjonalna organizacja ceremonii", "anchor": "#professional" },
+        { "icon": "/assets/icons/trumna.png", "text": "Szeroki wybór asortymentu pogrzebowego", "anchor": "#asortyment" },
+        { "icon": "/assets/icons/supportico.png", "text": "Wsparcie emocjonalne i psychologiczne", "anchor": "#emotional-support" },
+        { "icon": "/assets/icons/map.png", "text": "Pomoc na terenie całej Polski", "anchor": "#nationwide-support" }
+    ],
+    "navigationData": [
+        {
+            "name": "Polskidompogrzebowy",
+            "links": [
+                { "name": "Pomoc, na którą możesz liczyć", "href": "/#pomoc-na-ktora-mozesz-liczyc" },
+                { "name": "Kim jesteśmy i co oferujemy?", "href": "/#kim-jestesmy" },
+                { "name": "Szeroki wybór asortymentu pogrzebowego", "href": "/#asortyment" },
+                { "name": "24/7 Obsługa klienta", "href": "/#customer-support" },
+                { "name": "Wsparcie na każdym etapie", "href": "/#how-it-works" },
+                { "name": "Pomoc na terenie całej Polski", "href": "/#nationwide-support" }
+            ]
+        },
+        {
+            "name": "Nasza Misja",
+            "links": [
+                { "name": "O nas", "href": "/mission#o-nas" },
+                { "name": "Nasza Misja", "href": "/mission#nasza-misja" },
+                { "name": "Nasze Wartości", "href": "/mission#nasze-wartosci" },
+                { "name": "Nasza Historia", "href": "/mission#nasza-historia" }
+            ]
+        },
+        {
+            "name": "Zakłady pogrzebowe",
+            "links": [
+                { "name": "Zakłady pogrzebowe w Twojej okolicy", "href": "/search" },
+                { "name": "Oceny i recenzje", "href": "/search" },
+                { "name": "Szczegółowe informacje", "href": "/search" }
+            ]
+        },
+        {
+            "name": "Zaufali nam",
+            "links": [
+                { "name": "Opinie naszych klientów", "href": "/trust#opinie" },
+                { "name": "Podziel się swoją opinią", "href": "/trust#podziel-sie" },
+                { "name": "Domy pogrzebowe, które nam zaufały", "href": "/trust#zaufanie" },
+                { "name": "Dołącz do nas", "href": "/trust#dolacz" }
+            ]
+        },
+        {
+            "name": "Współpracuj z nami",
+            "links": [
+                { "name": "Zostań naszym partnerem", "href": "/partner#zostan-partnerem" },
+                { "name": "Korzyści ze współpracy", "href": "/partner#korzysci" },
+                { "name": "Formularz zgłoszeniowy", "href": "/partner#formularz" }
+            ]
+        },
+        {
+            "name": "Kontakt",
+            "links": [
+                { "name": "Warszawa 05-444 ul. Ostrobramska 52", "href": "/contact" },
+                { "name": "Tel. 600 600 600", "href": "tel:+48600600600" },
+                { "name": "kontakt@pdpogrzebowy.pl", "href": "mailto:kontakt@pdpogrzebowy.pl" }
+            ]
+        }
+    ]
+}
+

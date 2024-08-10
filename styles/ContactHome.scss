@@ -1,0 +1,150 @@
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+.contact-title {
+  font-size: 2em;
+  margin-bottom: 10px;
+  text-align: center;
+  margin: 20px 0;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: -15px;
+    width: 10%;
+    height: 2px;
+    background-color: $color-gold;
+    transform: translateX(-50%);
+  }
+}
+.polska-map-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  .map {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    margin-bottom: 20px;
+  }
+
+
+  .contact-info {
+    max-width: 600px;
+    margin: 20px 0;
+    background-color: white;
+    padding: 0;
+    display: flex;
+    align-items: flex-start;
+    p {
+      font-weight: normal;
+    }
+    .contact-info-text {
+      line-height: 1.5;
+      margin-bottom: 20px;
+      text-align: left;
+      border-top: 1px solid grey;
+      padding-top: 10px;
+      font-size: 1em;
+      @media (min-width: 768px) {
+          font-size: 1.2em;
+      }
+    }
+
+    .contact-methods {
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      max-width: 600px;
+      text-align: left;
+    }
+
+    h3 {
+      padding: 20px 0 0 20px;
+      font-family: "Bookman Old Style";
+      font-size: 2em;
+      position: relative;
+
+      &::after {
+        content: '';
+        position: absolute;
+        left: 9%;
+        top: 10px;
+        width: 10%;
+        height: 1px;
+        background-color: $color-gold;
+        transform: translateX(-50%);
+      }
+      @include mobile-mini-minus {
+        font-size: 1.2em;
+      }
+    }
+
+    .contact-methods-main {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-around;
+
+      .contact-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 10px;
+        text-align: center;
+        padding: 20px 50px;
+        @include mobile-mini-minus {
+          padding: 5px 10px;
+          font-size: 0.8em;
+        }
+        a {
+          text-decoration: none;
+          color: black;
+          display: flex;
+          flex-direction: row;
+          justify-content: end;
+          align-items: center;
+
+          i {
+            font-size: 32px;
+            margin-bottom: 5px;
+          }
+
+          p {
+            margin: 5px 20px;
+            font-weight: bold;
+            font-size: 1.2em;
+          }
+
+          span {
+            font-size: 0.9em;
+            color: grey;
+          }
+
+          &:hover {
+            color: $color-main2;
+          }
+        }
+        .contact-item-details {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+      }
+    }
+  }
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    justify-content: space-between;
+
+    .map, .contact-info {
+      max-width: 50%;
+    }
+  }
+}

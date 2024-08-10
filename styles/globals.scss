@@ -1,0 +1,69 @@
+@import "./settings/_variables";
+@import "./settings/_colors.scss";
+@import "./settings/_fonts.scss";
+@import "reset";
+@import "Footer";
+@import "Header.module";
+@import "SearchHome";
+@import "SupportHome";
+@import "FeaturesHome";
+@import "BenefitsHome";
+@import "FotoHome";
+@import "ProfessionalCeremonyHome";
+@import "HowHome";
+@import "ContactHome";
+@import "Search/Search";
+@import "Search/Results";
+@import "Search/TransportModal";
+@import "Form/Form";
+@import "Form/DetailsForm";
+@import "Form/DetailsSecond";
+@import "Form/Assortement";
+@import "Form/SummaryForm";
+@import "panel/login";
+@import "panel/funeral";
+@import "Funeral/FirstLogin";
+@import "Funeral/Panel";
+@import "Funeral/Orders";
+@import "Funeral/ManageForm";
+@import "Funeral/FuneralHomeAssortment";
+@import "Funeral/Reviews";
+@import "Funeral/Clients";
+
+html {
+  font-size: 8px;
+  text-decoration: none;
+}
+
+body {
+  font-size: 12px;
+  color: $color-grey;
+  overflow-x: hidden;
+  font-family: 'Avenir';
+  overflow-y: auto;
+}
+main {
+  min-height: 65vh;
+
+}
+a {
+  text-decoration: none;
+  cursor: pointer;
+  color: $color-menu;
+
+}
+
+h1 {
+  font-family: "Bookman Old Style";
+  font-size: 2em;
+}
+
+.view {
+  opacity: 0;
+  transform: translateY(-50px);
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

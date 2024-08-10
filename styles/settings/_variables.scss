@@ -66,8 +66,14 @@
   }
 }
 
-@mixin mobile {
-  @media (min-width: 800px) {
+@mixin mobile{
+  @media  (min-width: 800px) {
+    @content;
+  }
+}
+
+@mixin mobile-about {
+  @media (min-width: 700px) and (max-width: 800px) {
     @content;
   }
 }

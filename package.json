@@ -9,14 +9,46 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "react": "^18",
-    "react-dom": "^18",
-    "next": "14.2.5"
+    "@fortawesome/fontawesome-svg-core": "^6.6.0",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/react-fontawesome": "^0.2.2",
+    "@pdf-lib/fontkit": "^1.1.1",
+    "@react-google-maps/api": "^2.19.3",
+    "axios": "^1.7.2",
+    "bcryptjs": "^2.4.3",
+    "browser-image-compression": "^2.0.2",
+    "compressorjs": "^1.2.1",
+    "css-loader": "^7.1.2",
+    "date-fns": "^3.6.0",
+    "dayjs": "^1.11.12",
+    "dotenv": "^16.4.5",
+    "file-saver": "^2.0.5",
+    "firebase": "^10.12.4",
+    "firebase-admin": "^12.1.1",
+    "google-map-react": "^2.2.1",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.8.2",
+    "next": "^14.2.5",
+    "pdf-lib": "^1.17.1",
+    "prop-types": "^15.8.1",
+    "react": "^18.3.1",
+    "react-autosuggest": "^10.1.0",
+    "react-datepicker": "^6.9.0",
+    "react-dom": "^18.3.1",
+    "react-select": "^5.8.0",
+    "react-slick": "^0.30.2",
+    "react-star-ratings": "^2.3.0",
+    "sass": "^1.77.6",
+    "sass-loader": "^14.2.1",
+    "sharp": "^0.33.4",
+    "slick-carousel": "^1.8.1",
+    "style-loader": "^4.0.0",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
     "eslint": "^8",
-    "eslint-config-next": "14.2.5"
+    "eslint-config-next": "14.2.3",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1"
   }
 }

@@ -1,0 +1,152 @@
+.footer {
+  position: relative;
+  background-color: #2c2c2c; // lub przezroczysty, jeśli chcesz zobaczyć tło
+  padding: 20px 0;
+  color: #fff;
+  z-index: 2;
+  .footer-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+
+    .footer-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+
+      .footer-logo {
+        margin-bottom: 20px;
+
+        img {
+          max-width: 100%;
+          height: auto;
+        }
+      }
+
+      .footer-columns {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        @media (min-width: 768px) {
+          align-items: flex-start;
+          flex-direction: row;
+        }
+
+        .footer-column {
+          margin-bottom: 20px;
+          text-align: center;
+
+          h3 {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            color: #d4af37; // Złoty kolor dla nagłówków
+          }
+
+          ul {
+            list-style: none;
+            padding: 0;
+
+            li {
+              margin-bottom: 5px;
+
+              a {
+                color: #fff;
+                text-decoration: none;
+                transition: color 0.3s;
+
+                &:hover {
+                  color: #d4af37; // Złoty kolor na hover
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .footer-buttons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 20px;
+        @media (min-width: 768px) {
+          flex-direction: row;
+          justify-content: flex-end;
+          align-items: center;
+
+          .button {
+            margin-bottom: 0;
+            margin-left: 20px;
+
+            &:first-child {
+              margin-left: 0;
+            }
+          }
+        }
+
+        .button {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 10px 20px;
+          border: 1px solid #d4af37; // Złoty border
+          color: #d4af37;
+          text-decoration: none;
+          border-radius: 5px;
+          margin-bottom: 10px;
+          transition: background-color 0.3s;
+
+          &:hover {
+            background-color: rgba(212, 175, 55, 0.2); // Lekko złoty na hover
+          }
+
+          img {
+            margin-right: 10px;
+          }
+        }
+      }
+    }
+  }
+
+  @media (min-width: 768px) {
+    .footer-content {
+      flex-direction: row;
+      justify-content: space-between;
+
+      .footer-columns {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
+
+        .footer-column {
+          text-align: left;
+          margin-bottom: 0;
+          margin-right: 20px;
+
+          &:last-child {
+            margin-right: 0;
+          }
+        }
+      }
+
+    }
+  }
+}

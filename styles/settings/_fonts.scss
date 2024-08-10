@@ -1,8 +1,32 @@
-@import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Cormorant+Garamond:wght@400;700&family=Indie+Flower&family=Lora:wght@400;600&family=Playfair+Display:wght@400;600&family=Poppins&family=Quicksand:wght@400;500&family=Tangerine:wght@700&display=swap');$font-base: 'Calibri', sans-serif;
-$font-head: 'Amatic SC', cursive;
-$font-primary: 'Playfair Display', serif;
-$font-poppins: 'Poppins', sans-serif;
-$font-alt: 'Quicksand', sans-serif;
-$font-base: 'Calibri', sans-serif;
-$font-head2: "times new roman", sans-serif;
-$font-content: "sergoe UI", sans-serif;
+// Deklaracja czcionki Avenir
+@font-face {
+  font-family: 'Avenir';
+  src: url('/public/fonts/AvenirNextCyr-Regular.ttf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Avenir';
+  src: url('/public/fonts/AvenirLTStd-Book.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Avenir';
+  src: url('/public/fonts/AvenirLTStd-Black.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+// Deklaracja czcionki Bookman Old Style
+@font-face {
+  font-family: 'Bookman Old Style';
+  src: url('/public/fonts/BOOKOS.TTF') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+// Deklaracja czcionki Merriweather z Google Fonts
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap');

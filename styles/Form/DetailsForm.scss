@@ -1,0 +1,165 @@
+.funeral {
+  margin: 0 auto;
+
+}
+
+.funeral-home-container {
+  max-width: 1400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+  @media (min-width: 768px) {
+    flex-direction: row;
+    justify-content: space-around;
+  }
+}
+
+.funeral-home-card {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+.funeral-home-info {
+  display: flex;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.funeral-home-logo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-right: 20px;
+
+  @media (max-width: 768px) {
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+}
+
+.funeral-home-details {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  h1 {
+    text-align: center;
+    margin: 50px 0;
+  }
+  .back-button {
+    font-size: 1.5em;
+    margin: 10px 0 0 20px;
+    color: black;
+    cursor: pointer;
+    &:hover {
+      color: #007bff;
+    }
+  }
+  h2 {
+    margin: 0;
+    font-size: 1.5em;
+  }
+
+  p {
+    margin: 5px 0;
+  }
+}
+
+
+.form-info {
+  font-size: 1em;
+}
+.change-button, .contact-button {
+  background-color: #000;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 20px;
+
+  &:hover {
+    background-color: #333;
+  }
+}
+
+.contact-consultant {
+  text-align: center;
+  font-size: 1.2em;
+  p {
+    margin: 0 0 10px;
+  }
+}
+
+
+
+
+.funeral-details-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 20px 0 0 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  p {
+    margin: 0;
+    font-size: 0.8em;
+  }
+}
+
+.radio-label .selected {
+  color: #5A5414;
+  background-color: #e1e1e1;
+  border-color: #5A5414;
+}
+
+.radio-label:hover {
+  color: #007bff;
+}
+
+.submit-container {
+  text-align: right;
+}
+
+.submit-button {
+  background-color: #000;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-bottom: 20px;
+}
+
+.submit-button:hover {
+  background-color: #333;
+}
+
+@media (max-width: 768px) {
+  .radio-group {
+    flex-direction: column;
+  }
+}
