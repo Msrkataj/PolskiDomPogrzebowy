@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import ClientLogin from "@/components/panel/ClientLogin";
 import SummaryForm from "@/components/form/SummaryForm";
 
-const Home = () => {
+const LoginClientSite = () => {
     return (
         <>
             <header>
@@ -20,4 +20,4 @@ const Home = () => {
     );
 }
 
-export default Home
+export default LoginClientSite

@@ -13,8 +13,13 @@ const FuneralDetailsForm = () => {
         religiousCeremony: '',
         burialOption: '',
         clothingOption: '',
-        cemeteryPreference: '' // Dodane pole na preferowany cmentarz
+        cemeteryPreference: '', // Preferowany cmentarz do pochowku (gdy burialOption === 'Nie')
+        graveCemetery: '', // Cmentarz i numer kwatery (gdy burialOption === 'Tak')
+        gravePersonName: '', // Imię i nazwisko osoby do dochówku (gdy burialOption === 'Tak')
+        graveDeathDate: '' // Data śmierci osoby (gdy burialOption === 'Tak')
     });
+
+
 
     useEffect(() => {
         const loadData = async () => {
@@ -85,12 +90,14 @@ const FuneralDetailsForm = () => {
             newErrors.burialOption = 'Proszę wybrać, czy dochowujemy do grobu.';
         }
 
-        if (formData.burialOption === 'Tak' && !formData.cemeteryPreference) {
-            newErrors.cemeteryPreference = 'Proszę podać preferowany cmentarz do pochowku.';
+        if (formData.burialOption === 'Tak') {
+            if (!formData.graveCemetery && (!formData.gravePersonName || !formData.graveDeathDate)) {
+                newErrors.graveCemetery = 'Proszę podać cmentarz i numer kwatery lub imię, nazwisko i datę śmierci osoby.';
+            }
         }
 
-        if (!formData.clothingOption) {
-            newErrors.clothingOption = 'Proszę wybrać ubiór zmarłego.';
+        if (formData.burialOption === 'Nie' && !formData.cemeteryPreference) {
+            newErrors.cemeteryPreference = 'Proszę podać preferowany cmentarz do pochowku.';
         }
 
         if (Object.keys(newErrors).length > 0) {
@@ -103,7 +110,9 @@ const FuneralDetailsForm = () => {
         await saveData();
         await router.push('/assortment');
     };
-
+console.log(currentStep)
+    console.log(errors)
+    console.log(formData)
 
     return (
         <div className="form-container">
@@ -166,7 +175,7 @@ const FuneralDetailsForm = () => {
                 </div>
                 <p className="form-info">*Klient musi stawić się w kościele aby dopełnić formalności</p>
                 <h2>Czy dochowujemy do grobu?</h2>
-                <div className="radio-group-form ">
+                <div className="radio-group-form">
                     <label className={`radio-label ${formData.burialOption === 'Tak' ? 'selected' : ''}`}>
                         <input
                             type="radio"
@@ -193,7 +202,43 @@ const FuneralDetailsForm = () => {
 
                 {formData.burialOption === 'Tak' && (
                     <div className="form-group">
-                        <label htmlFor="cemeteryPreference">Preferowany cmentarz do pochowku:</label>
+                        <label htmlFor="graveCemetery">Podaj cmentarz i numer kwatery</label>
+                        <input
+                            type="text"
+                            id="graveCemetery"
+                            name="graveCemetery"
+                            value={formData.graveCemetery || ''}
+                            onChange={handleChange}
+                            placeholder="Podaj cmentarz i numer kwatery"
+                            required={formData.burialOption === 'Tak'}
+                        />
+                        <p>Lub</p>
+                        <label htmlFor="gravePersonName">Imię i nazwisko osoby, do której będzie robiony dochówek:</label>
+                        <input
+                            type="text"
+                            id="gravePersonName"
+                            name="gravePersonName"
+                            value={formData.gravePersonName || ''}
+                            onChange={handleChange}
+                            placeholder="Imię i nazwisko osoby, do której będzie robiony dochówek"
+                            required={formData.burialOption === 'Tak'}
+                        />
+                        <label htmlFor="graveDeathDate">Data śmierci osoby:</label>
+                        <input
+                            type="date"
+                            id="graveDeathDate"
+                            name="graveDeathDate"
+                            value={formData.graveDeathDate || ''}
+                            onChange={handleChange}
+                            required={formData.burialOption === 'Tak'}
+                        />
+                    </div>
+                )}
+
+
+                {formData.burialOption === 'Nie' && (
+                    <div className="form-group">
+                        <label htmlFor="cemeteryPreference">Podaj preferowany cmentarz do pochowku:</label>
                         <input
                             type="text"
                             id="cemeteryPreference"
@@ -201,9 +246,24 @@ const FuneralDetailsForm = () => {
                             value={formData.cemeteryPreference || ''}
                             onChange={handleChange}
                             placeholder="Podaj preferowany cmentarz"
+                            required
+                        />
+                    </div>
+                )}
+                {formData.burialOption === 'Tak' && (
+                    <div className="form-group">
+                        <label htmlFor="graveDetails">Podaj cmentarz i numer kwatery lub imię, nazwisko, datę śmierci osoby do której będzie robiony dochówek:</label>
+                        <input
+                            type="text"
+                            id="graveDetails"
+                            name="graveDetails"
+                            value={formData.graveDetails || ''}
+                            onChange={handleChange}
+                            placeholder="Podaj szczegóły dochówku"
                             required={formData.burialOption === 'Tak'}
                         />
                     </div>
+
                 )}
 
                 <h2>Ubiór zmarłego:</h2>
@@ -243,7 +303,6 @@ const FuneralDetailsForm = () => {
                     ))}
                     <button type="submit" className="submit-button">Zapisz i przejdź do wyboru asortymentu</button>
                 </div>
-
             </form>
         </div>
     );

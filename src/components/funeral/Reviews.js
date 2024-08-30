@@ -50,7 +50,7 @@ const Reviews = () => {
                         {reviews.map((review, index) => (
                             <div key={index} className="review-item">
                                 <div className="review-main">
-                                    <p className="review-text">"{review.text}"</p>
+                                    <p className="review-text">&quot;{review.text}&quot;</p>
                                     <span className="review-author">- {review.author}</span>
                                 </div>
                                 <div className="review-meta">

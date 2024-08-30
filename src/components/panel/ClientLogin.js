@@ -22,7 +22,9 @@ const ClientLogin = () => {
                 return;
             }
 
-            querySnapshot.forEach(async (doc) => {
+            let loginSuccessful = false; // Flaga kontrolująca
+
+            for (const doc of querySnapshot.docs) {
                 const data = doc.data();
 
                 if (!data.password) {
@@ -32,16 +34,22 @@ const ClientLogin = () => {
 
                 const isPasswordValid = await bcrypt.compare(password, data.password);
                 if (isPasswordValid) {
+                    loginSuccessful = true;
                     localStorage.setItem('userRole', 'client');
-                    localStorage.setItem('email', email);
+                    localStorage.setItem('userEmail', email);
                     localStorage.setItem('userId', doc.id);
+                    localStorage.setItem('formId', doc.id);
                     localStorage.setItem('loginTime', Date.now().toString());
                     alert('Zalogowano pomyślnie.');
-                    await router.push("client/first")
-                } else {
-                    alert('Nieprawidłowe hasło.');
+                    await router.push("client/panel");
+                    break; // Przerywamy pętlę po pomyślnym logowaniu
                 }
-            });
+            }
+
+            if (!loginSuccessful) {
+                alert('Nieprawidłowe hasło.');
+            }
+
         } catch (error) {
             console.error('Błąd logowania:', error);
             alert('Wystąpił błąd podczas logowania.');
@@ -70,19 +78,16 @@ const ClientLogin = () => {
                         required
                     />
                     <Link href={"/form"} className="forgot-password">Zapomniałeś hasła?</Link>
-
                 </div>
                 <div className="actions">
                     <button type="submit" className="login-button">Zaloguj się</button>
                 </div>
                 <div className="links">
-                    <Link href="/register" className="register-link">Jeszcze nie masz konta?<br/>
-                        Załóż tutaj</Link>
+                    <Link href="/search" className="register-link">Jeśli chcesz zalożyć konto,<br/>wyślij zgłoszenie</Link>
                 </div>
             </form>
             <div className="funeral-home-box">
-                <Link href="/login-dom" className="funeral-home-box-link">Logowanie Panelu Domu
-                    Pogrzebowego</Link>
+                <Link href="/login-dom" className="funeral-home-box-link">Logowanie Panelu Domu Pogrzebowego</Link>
             </div>
         </div>
     );

@@ -6,6 +6,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   text-align: center;
   font-size: 1.2em;
+  font-family: 'Avenir', sans-serif;
 }
 
 .form-container-main {
@@ -14,7 +15,7 @@
 
 h2 {
   margin: 40px 0;
-  font-size: 1.8em;
+  font-size: 2em;
   font-family: "Times New Roman", Times, serif;
   color: #333;
 }
@@ -85,6 +86,7 @@ h2 {
   border: 1px solid #ddd;
   border-radius: 4px;
   width: 100%;
+  margin: 10px;
   box-sizing: border-box;
 }
 

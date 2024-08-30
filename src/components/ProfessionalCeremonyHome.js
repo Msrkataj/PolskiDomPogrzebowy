@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Image from 'next/image';
+import dynamic from "next/dynamic";
 
 const ProfessionalCeremony = () => {
     const [selectedOption, setSelectedOption] = useState(null);
@@ -26,7 +27,13 @@ const ProfessionalCeremony = () => {
             <section id="professional" className="ceremony-section">
                 <div className="content-wrapper">
                     <div className="ceremony-image">
-                        <Image src={getImageSrc()} alt="Ceremony Image" layout="fill" objectFit="cover"/>
+                        <Image
+                            src={getImageSrc()}
+                            alt="Ceremony Image"
+                            fill
+                            style={{ objectFit: 'cover' }}
+                            loading={"lazy"}
+                        />
                     </div>
                     <div className="ceremony-text">
                         <h2>Profesjonalna organizacja ceremonii</h2>
@@ -74,5 +81,4 @@ const ProfessionalCeremony = () => {
         </div>
     );
 };
-
-export default ProfessionalCeremony;
+export default dynamic (() => Promise.resolve(ProfessionalCeremony), {ssr: false})

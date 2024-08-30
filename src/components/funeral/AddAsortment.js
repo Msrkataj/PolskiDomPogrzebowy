@@ -28,6 +28,10 @@ const Assortment = ({ products, setProducts, productCounter, setProductCounter }
                 return 'wooden';
             case 'Kamienna':
                 return 'stone';
+            case 'Ceramiczna':
+                return 'Ceramiczna'
+            case 'Szklana':
+                return 'Szklana'
             default:
                 return type ? type.toLowerCase() : '';
         }
@@ -104,13 +108,14 @@ const Assortment = ({ products, setProducts, productCounter, setProductCounter }
                                                 onChange={(e) => handleProductChange(product.id, 'type', e.target.value)}
                                             >
                                                 <option value="wooden">Drewniana</option>
-                                                <option value="metal">Metalowa</option>
                                                 <option value="stone">Kamienna</option>
+                                                <option value="metal">Ceramiczna</option>
+                                                <option value="stone">Szklana</option>
                                             </select>
                                         </>
                                     ) : (
                                         <>
-                                            <label>Z czego wykonane:</label>
+                                        <label>Z czego wykonane:</label>
                                             <input
                                                 type="text"
                                                 value={product.build}

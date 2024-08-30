@@ -2,12 +2,32 @@
   padding: 0;
   max-width: 1400px;
   margin: 0 auto;
+  font-family: 'Avenir', sans-serif;
+
   @media (min-width: 768px) {
     padding: 20px;
   }
 
   h1 {
   text-align: center;
+  }
+  select {
+    padding: 10px;
+    font-size: 1em;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    color: #333;
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  select:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
   }
 
   .budget-input {
@@ -221,6 +241,7 @@
 
     p {
       font-size: 1.2em;
+      margin: 10px;
       color: black;
     }
   }

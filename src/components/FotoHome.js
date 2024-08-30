@@ -1,9 +1,18 @@
+import { useState } from 'react';
 import Image from 'next/image';
 import heartIcon from '../../public/assets/icons/heart.png';
 import phoneIcon from '../../public/assets/icons/phone.png';
 import consultantIcon from '../../public/assets/icons/consultant.png';
+import SupportModal from "@/components/SupportModal";
+import Link from "next/link";
+import dynamic from "next/dynamic";
 
 const FotoHome = () => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const openModal = () => setIsModalOpen(true);
+    const closeModal = () => setIsModalOpen(false);
+
     return (
         <div className="container">
             <section id="emotional-support" className="support-section">
@@ -18,10 +27,17 @@ const FotoHome = () => {
                             Nasza platforma ma na celu usprawnienie procesu organizacji pogrzebu,
                             oferując pomoc w każdej fazie, od formalności po ceremonie.
                         </p>
-                        <a href="/form" className="support-button">Uzyskaj wsparcie i wskazówki</a>
+                        <button onClick={openModal} className="support-button">Uzyskaj wsparcie i wskazówki</button>
                     </div>
                     <div className="support-image">
-                        <Image src="/assets/images/wsparcie-pychologiczne.webp" alt="wsparcie-pychologiczne" layout="fill" objectFit="cover" />
+                        <Image
+                            src="/assets/images/wsparcie-pychologiczne.webp"
+                            alt="wsparcie-pychologiczne"
+                            fill
+                            style={{ objectFit: 'cover', objectPosition: 'center' }}
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            loading={"lazy"}
+                        />
                     </div>
                 </div>
                 <div id="customer-support" className="contact-options">
@@ -33,27 +49,28 @@ const FotoHome = () => {
                         Niezależnie od pory dnia czy nocy, możesz liczyć na pełne wsparcie w trudnych chwilach.
                     </p>
                     <div className="option-main">
-                        <div className="option">
+                        <div className="option option-down">
                             <div className="option-select">
-                                <a href="tel:+48600000000">
+                                <Link href="tel:+48600000000">
                                     <Image src={phoneIcon} alt="Phone" width={32} height={32}/>
                                     <p>+48 600 000 000</p>
-                                </a>
+                                </Link>
                             </div>
                         </div>
-                        <div className="option">
+                        <div className="option option-down">
                             <div className="option-select">
-                                <a href="/chat">
+                                <div>
                                     <Image src={consultantIcon} alt="Consultant" width={32} height={32}/>
-                                    <p>Konsultant</p>
-                                </a>
+                                    <p>Doradca</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
+            <SupportModal isOpen={isModalOpen} onClose={closeModal} />
         </div>
     );
 };
+export default dynamic (() => Promise.resolve(FotoHome), {ssr: false})
 
-export default FotoHome;

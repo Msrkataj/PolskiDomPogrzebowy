@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import phoneIcon from '../../../public/assets/icons/phone.png';
+import Link from "next/link";
 
 const SearchResults = () => {
     const [location, setLocation] = useState('');
@@ -49,10 +50,10 @@ const SearchResults = () => {
             <div className="contact-section">
                 <p>Masz jakieś pytania? Zadzwoń</p>
                 <div className="contact-option">
-                    <a href="tel:+48600000000">
+                    <Link href="tel:+48600000000">
                         <Image src={phoneIcon} alt="Phone" width={32} height={32} />
                         <p>+48 600 000 000</p>
-                    </a>
+                    </Link>
                 </div>
             </div>
         </div>

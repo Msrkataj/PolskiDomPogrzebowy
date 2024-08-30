@@ -38,6 +38,10 @@ const UnifiedForm = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [isInfoBubbleVisible, setIsInfoBubbleVisible] = useState(false);
     const [isInfoLoginVisible, setIsInfoLoginVisible] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const openModal = () => setIsModalOpen(true);
+    const closeModal = () => setIsModalOpen(false);
 
     const toggleInfoBubble = (event) => {
         event.preventDefault();
@@ -154,9 +158,7 @@ const UnifiedForm = () => {
         if (!formData.pesel) {
             newErrors.push('PESEL jest wymagany.');
         }
-        if (formData.pensionCertificate && !selectedFile) {
-            newErrors.push('Jeśli zaznaczyłeś zaświadczenie, musisz załadować plik.');
-        }
+
 
         if (newErrors.length > 0) {
             setErrors(newErrors);
@@ -243,7 +245,7 @@ const UnifiedForm = () => {
                 <button className="nav-button" onClick={() => router.back()}>← Cofnij</button>
                 <button className="nav-button" onClick={() => handleSaveAndNavigate('funeraldetails')}>Dalej →</button>
             </div>
-            <StepNavigation currentStep={currentStep} handleSaveAndNavigate={handleSaveAndNavigate}/>
+            <StepNavigation currentStep={currentStep} setCurrentStep={setCurrentStep} handleSaveAndNavigate={handleSaveAndNavigate}/>
             <div className="form-container-main">
                 <form onSubmit={handleSubmit}>
                     <h2>Informacje o Osobie zmarłej:</h2>
@@ -268,20 +270,20 @@ const UnifiedForm = () => {
                         />
                     </div>
                     <div className="form-group form-group-name">
-                        <label htmlFor="deathDate">Data śmierci</label>
-                        <input
-                            type="date"
-                            id="deathDate"
-                            name="deathDate"
-                            value={formData.deathDate || ''}
-                            onChange={handleChange}
-                        />
                         <label htmlFor="birthDate">Data urodzin</label>
                         <input
                             type="date"
                             id="birthDate"
                             name="birthDate"
                             value={formData.birthDate || ''}
+                            onChange={handleChange}
+                        />
+                        <label htmlFor="deathDate">Data śmierci</label>
+                        <input
+                            type="date"
+                            id="deathDate"
+                            name="deathDate"
+                            value={formData.deathDate || ''}
                             onChange={handleChange}
                         />
                     </div>
@@ -297,65 +299,55 @@ const UnifiedForm = () => {
                         />
                     </div>
                     <div className="form-group form-group-down">
-                        <label>
-                            <input
-                                type="checkbox"
-                                name="pensionCertificate"
-                                checked={formData.pensionCertificate}
-                                onChange={handleChange}
-                            />
-                            Zaświadczenie, że na dzień zgonu podlegało się składkom emerytalno-rentowym
-                        </label>
-                        {formData.pensionCertificate && (
-                            <div className="additional-info">
-                                <p>Pobierz plik poniżej i go wypełnij </p>
-                                <div className="additional-info-download">
-                                        <button type="button" onClick={handleDownloadCertificate}>Pobierz
-                                            zaświadczenie
-                                            <FontAwesomeIcon icon={faDownload} className="fa-xl"/>
-                                        </button>
-
-                                    <p>Jeśli wypełniłeś go już teraz, mozesz go załadować poniżej</p><br/>
-                                    <input type="file" onChange={handleFileUpload}/>
-                                </div>
-                                <p>... lub poźniej w swoim panelu klienta</p>
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="form-group form-group-down">
-                        <h2>Czy Osoba pracowała?</h2>
+                        <h2>Czy osoba podlegała składkom emerytalno-rentowym?</h2>
                         <div className="radio-group">
-                            <label className={`radio-label ${formData.worked === 'Tak' ? 'selected' : ''}`}>
+                            <label
+                                className={`radio-label ${formData.pensionCertificate === 'Tak' ? 'selected' : ''}`}>
                                 <input
                                     type="radio"
-                                    name="worked"
+                                    name="pensionCertificate"
                                     value="Tak"
-                                    checked={formData.worked === 'Tak'}
+                                    checked={formData.pensionCertificate === 'Tak'}
                                     onChange={handleChange}
                                 />
                                 Tak
-                                {formData.worked === 'Tak' && <span className="checkmark">✔</span>}
+                                {formData.pensionCertificate === 'Tak' && <span className="checkmark">✔</span>}
                             </label>
-                            <label className={`radio-label ${formData.worked === 'Nie' ? 'selected' : ''}`}>
+                            <label
+                                className={`radio-label ${formData.pensionCertificate === 'Nie' ? 'selected' : ''}`}>
                                 <input
                                     type="radio"
-                                    name="worked"
+                                    name="pensionCertificate"
                                     value="Nie"
-                                    checked={formData.worked === 'Nie'}
+                                    checked={formData.pensionCertificate === 'Nie'}
                                     onChange={handleChange}
                                 />
                                 Nie
-                                {formData.worked === 'Nie' && <span className="checkmark">✔</span>}
+                                {formData.pensionCertificate === 'Nie' && <span className="checkmark">✔</span>}
                             </label>
                         </div>
+                        {formData.pensionCertificate === 'Tak' && (
+                            <div className="form-group form-group-down">
+                                <div className="additional-info">
+                                    <p>Pobierz plik poniżej i go wypełnij</p>
+                                    <div className="additional-info-download">
+                                        <button type="button" onClick={handleDownloadCertificate}>
+                                            Pobierz zaświadczenie
+                                            <FontAwesomeIcon icon={faDownload} className="fa-xl"/>
+                                        </button>
+                                        <p>Jeśli wypełniłeś go już teraz, możesz go załadować poniżej</p><br/>
+                                        <input type="file" onChange={handleFileUpload}/>
+                                    </div>
+                                    <p>... lub później w swoim panelu klienta</p>
+                                </div>
+                            </div>
+                        )}
                     </div>
                     {showInfoBubble && (
                         <div className={`info-bubble info-bubble-first ${isInfoBubbleVisible ? 'visible' : 'hidden'}`}>
                             <p>Twoje Dane: <br/>Nasza Odpowiedzialność</p>
                             <p>Chronimy Twoje dane z najwyższą starannością. Zapewniamy, że wszelkie informacje są
                                 przechowywane bezpiecznie i z zachowaniem pełnej poufności.</p>
-                            {/*<button onClick={() => setShowInfoBubble(false)}>Zamknij</button>*/}
                         </div>
                     )}
                     {showInfoLogin && (
@@ -433,13 +425,13 @@ const UnifiedForm = () => {
                             <input
                                 type="checkbox"
                                 name="noCertificate"
-                                checked={formData.noCertificate}
+                                checked={formData.noCertificate || ''}
                                 onChange={handleChange}
                             />
                             Brak świadczeń?
                         </label>
                     </div>
-                    <h2>Osoba udzielająca pełnomocnictwa:</h2>
+                    <h2>Osoba udzielająca pełnomocnictwa - Osoba do kontaktu:</h2>
                     <div className="form-group">
                         <label htmlFor="authorizedPerson.name">Imię i Nazwisko</label>
                         <input

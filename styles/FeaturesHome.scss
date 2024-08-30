@@ -1,8 +1,5 @@
 .features-section {
-  padding: 50px;
   text-align: center;
-  box-shadow: 0 0 5px grey;
-  margin: 20px 0;
 
   h2 {
     position: relative;
@@ -42,6 +39,8 @@
       align-items: center;
       flex-direction: column;
       line-height: 2;
+      font-family: 'Avenir', sans-serif;
+
       @media (min-width: 768px) {
         height: 700px;
       }

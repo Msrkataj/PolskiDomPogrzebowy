@@ -8,7 +8,9 @@ const Form = () => {
     const [formData, setFormData] = useState({
         location: '',
         documents: '',
-        address: ''
+        city: '',
+        street: '',
+        postalCode: '',
     });
     const [addressVisible, setAddressVisible] = useState(false);
     const router = useRouter();
@@ -125,14 +127,33 @@ const Form = () => {
                         </div>
                         {addressVisible && (
                             <div className="address-input address-form-input">
-                                <label htmlFor="address">Podaj dokładny adres:</label>
+                                <h2>Podaj dokładny adres:</h2>
+                                <label htmlFor="city">Miejscowość</label>
                                 <input
                                     type="text"
-                                    id="address"
-                                    name="address"
-                                    value={formData.address}
+                                    id="city"
+                                    name="city"
+                                    value={formData.city || ''}
                                     onChange={handleChange}
-                                    placeholder="Wprowadź adres"
+                                    placeholder="Wprowadź miejscowosść"
+                                />
+                                <label htmlFor="street">Ulica:</label>
+                                <input
+                                    type="text"
+                                    id="street"
+                                    name="street"
+                                    value={formData.street || ''}
+                                    onChange={handleChange}
+                                    placeholder="Wprowadź ulicę"
+                                />
+                                <label htmlFor="postalCode">Kod pocztowy:</label>
+                                <input
+                                    type="text"
+                                    id="postalCode"
+                                    name="postalCode"
+                                    value={formData.postalCode || ''}
+                                    onChange={handleChange}
+                                    placeholder="Wprowadź kod pocztowy"
                                 />
                             </div>
                         )}

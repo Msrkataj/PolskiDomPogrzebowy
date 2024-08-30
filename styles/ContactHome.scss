@@ -42,6 +42,8 @@
     padding: 0;
     display: flex;
     align-items: flex-start;
+    font-family: 'Avenir', sans-serif;
+
     p {
       font-weight: normal;
     }
@@ -51,9 +53,10 @@
       text-align: left;
       border-top: 1px solid grey;
       padding-top: 10px;
-      font-size: 1em;
+      font-size: 1.3em;
+      padding: 20px;
       @media (min-width: 768px) {
-          font-size: 1.2em;
+          font-size: 1.4em;
       }
     }
 
@@ -119,6 +122,40 @@
             margin: 5px 20px;
             font-weight: bold;
             font-size: 1.2em;
+            @media (min-width: 768px) {
+              font-size: 1.5em;
+            }
+          }
+
+          span {
+            font-size: 0.9em;
+            color: grey;
+          }
+
+          &:hover {
+            color: $color-main2;
+          }
+        }
+        div {
+          text-decoration: none;
+          color: black;
+          display: flex;
+          flex-direction: row;
+          justify-content: end;
+          align-items: center;
+
+          i {
+            font-size: 32px;
+            margin-bottom: 5px;
+          }
+
+          p {
+            margin: 5px 20px;
+            font-weight: bold;
+            font-size: 1.2em;
+            @media (min-width: 768px) {
+              font-size: 1.5em;
+            }
           }
 
           span {

@@ -163,7 +163,6 @@ const InsuranceForm = () => {
                     />
                 </div>
                 <div className="form-group">
-                    <a href="/path/to/form.pdf" className="download-link">Pobierz druk o wypłatę świadczenia <span>&#128065;</span></a>
                 </div>
                 <div className="info-text">
                     <p className="save-link">Sprawdź jak wypełnić</p>

@@ -4,6 +4,7 @@ import { collection, doc, getDoc, setDoc } from 'firebase/firestore';
 import Image from "next/image";
 import { format } from 'date-fns';
 import { useRouter } from 'next/router';
+import dynamic from "next/dynamic";
 
 const TransportModal = ({ isOpen, onClose, funeralHome }) => {
     const [phone, setPhone] = useState('');
@@ -100,10 +101,10 @@ const TransportModal = ({ isOpen, onClose, funeralHome }) => {
                         <h3>Potrzebuję natychmiastowego transportu</h3>
                         <p>Zadzwoń tutaj, aby jak najszybciej zamówić transport</p>
                         <div className="contact-info">
-                            <span>
-                                <Image src={"/assets/icons/phone.png"} alt="phone" width={24} height={24} />
-                                <p>{funeralHome.phone}</p>
-                            </span>
+                            {/*<span>*/}
+                            {/*    <Image src={"/assets/icons/phone.png"} alt="phone" width={24} height={24} />*/}
+                            {/*    <p>{funeralHome.phone}</p>*/}
+                            {/*</span>*/}
                             <p>{funeralHome.funeralHomeName}</p>
                         </div>
                         <div className="form-section-contact">

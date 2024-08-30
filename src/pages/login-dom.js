@@ -3,7 +3,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FuneralHomeLogin from "@/components/panel/FuneralHomeLogin";
 
-const Home = () => {
+const FuneralLoginSite = () => {
     return (
         <>
             <header>
@@ -19,4 +19,4 @@ const Home = () => {
     );
 }
 
-export default Home
+export default FuneralLoginSite

@@ -2,17 +2,30 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import data from '../../src/data/data.json';
+import dynamic from "next/dynamic";
 
-const Footer = () => {
+const Footer = ({handleOpenChat}) => {
     return (
-        <footer className="footer">
+        <div className="footer">
             <div className="footer-background">
             </div>
             <div className="container">
                 <div className="footer-content">
-                    <div className="footer-logo">
-                        <Image src="/assets/logo.png" alt="Polskidompogrzebowy.pl" width={200} height={60} />
-                    </div>
+                    <Link href="/">
+                        <div className="footer-logo">
+                            <div style={{position: "relative", width: "300px", height: "50px"}}>
+                                <Image
+                                    src="/assets/logo.webp"
+                                    alt="Polskidompogrzebowy.pl"
+                                    width={300}
+                                    height={50}
+                                    sizes="(max-width: 768px) 205vw, 300px"
+                                    priority
+                                    style={{objectFit: "contain"}}
+                                />
+                            </div>
+                        </div>
+                    </Link>
                     <div className="footer-columns">
                         {data.navigationData.map((section, index) => (
                             <div className="footer-column" key={index}>
@@ -30,15 +43,15 @@ const Footer = () => {
                         ))}
                     </div>
                     <div className="footer-buttons">
-                        <a href="/chat" className="button">
+                        <div onClick={handleOpenChat} className="button">
                             <Image src="/assets/icons/consultant-white.png" alt="Consultant" width={25} height={25} /> Zapytaj teraz
-                        </a>
-                        <a href="/login" className="button">Logowanie</a>
+                        </div>
+                        <Link href="/login" className="button">Logowanie</Link>
                     </div>
                 </div>
             </div>
-        </footer>
+        </div>
     );
 };
 
-export default Footer;
+export default dynamic (() => Promise.resolve(Footer), {ssr: false})

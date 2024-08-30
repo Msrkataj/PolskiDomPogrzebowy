@@ -1,7 +1,8 @@
 import React from 'react';
 import Image from 'next/image';
-import patternBg from '../../public/assets/images/Wzór2.png';
-import Link from "next/link"; // Importowanie tła
+import patternBg from '../../public/assets/images/chessboard.webp';
+import Link from "next/link";
+import dynamic from "next/dynamic"; // Importowanie tła
 
 const HowItWorks = () => {
     const steps = [
@@ -58,7 +59,14 @@ const HowItWorks = () => {
                             <h4>{item.title}</h4>
                             <p>{item.description}</p>
                             <div className="image-wrapper">
-                                <Image src={item.icon} alt={item.title} layout="fill" objectFit="contain"/>
+                                <Image
+                                    src={item.icon}
+                                    alt={item.title}
+                                    width={150}
+                                    height={150}
+                                    style={{ objectFit: 'contain' }}
+                                    loading={"lazy"}
+                                />
                             </div>
                         </div>
                     ))}
@@ -71,5 +79,6 @@ const HowItWorks = () => {
     );
 };
 
-export default HowItWorks;
+export default dynamic (() => Promise.resolve(HowItWorks), {ssr: false})
+
 

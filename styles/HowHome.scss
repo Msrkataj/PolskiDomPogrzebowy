@@ -1,9 +1,10 @@
 .how-it-works-container {
   background-color: #fff;
   padding: 20px;
-  background-image: url("../public/assets/images/wzór2.png");
+  background-image: url("../public/assets/images/chessboard.webp");
   background-size: cover;
   background-repeat: repeat-y;
+  font-family: 'Avenir', sans-serif;
 
   @media (min-width: 768px) {
     padding: 40px 20px;
@@ -37,7 +38,7 @@
   }
 
   p {
-    font-size: 1.2em;
+    font-size: 1.4em;
     margin: 30px 0;
     line-height: 1.5;
   }
@@ -91,6 +92,8 @@
       width: 100%;
       height: 150px;
       margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
     }
 
     img {

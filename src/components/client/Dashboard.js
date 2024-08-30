@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import { db } from '../../../firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import {useRouter} from "next/router";
+import { useRouter } from 'next/router';
 
 const Dashboard = () => {
     const [notifications, setNotifications] = useState([]);
@@ -10,6 +10,20 @@ const Dashboard = () => {
     const [role, setRole] = useState(null);
     const router = useRouter();
 
+    const fieldTranslations =  useMemo(() => ({
+        formType: 'Typ formularza',
+        insurance: 'Ubezpieczenie',
+        documents: 'Dokumenty',
+        deathDate: 'Data śmierci',
+        pensionCertificate: 'Zaświadczenie o emeryturze/rencie',
+        pensionDetails: 'Szczegóły emerytalne',
+        pesel: 'PESEL',
+        religiousCeremony: 'Ceremonia religijna',
+        name: 'Imię',
+        surname: 'Nazwisko',
+        who: 'Osoba sporządzająca akt zgonu',
+        worked: 'Status zatrudnienia',
+    }), []);
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -17,8 +31,6 @@ const Dashboard = () => {
             setRole(storedRole);
         }
     }, []);
-    console.log(role)
-;
 
     useEffect(() => {
         if (role) {
@@ -27,16 +39,10 @@ const Dashboard = () => {
             const currentTime = Date.now();
             const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
-            console.log('Middleware check:', { userRole, loginTime, currentTime });
-
             if (!userRole || isNaN(loginTime) || currentTime - loginTime > ONE_DAY_MS) {
-                console.log('User not authenticated or session expired');
                 router.push('/login');
             } else if (userRole !== role) {
-                console.log(`User role does not match: requiredRole(${role}) !== userRole(${userRole})`);
                 router.push('/login');
-            } else {
-                console.log('User authenticated');
             }
         }
     }, [role, router]);
@@ -57,15 +63,18 @@ const Dashboard = () => {
                         const missingFields = [];
 
                         ['formType', 'insurance', 'documents', 'deathDate', 'pensionCertificate', 'pensionDetails', 'pesel', 'religiousCeremony', 'name', 'surname', 'who', 'worked'].forEach((field) => {
-                            if (!data[field]) missingFields.push(field);
+                            if (!data[field]) missingFields.push(fieldTranslations[field] || field);
                         });
 
                         if (missingFields.length > 0) {
                             setIncompleteForms([{ ...data, missingFields, id: docSnap.id }]);
                         }
 
-                        const submissionDate = new Date(data.date).toLocaleString();
-                        const formSentMessage = `${submissionDate} - Formularz został wysłany.`;
+                        const submissionDate = data.timestamp && typeof data.timestamp.toDate === 'function'
+                            ? data.timestamp.toDate().toLocaleString()
+                            : 'Brak daty';
+
+                        const formSentMessage = `Formularz został wysłany.`;
 
                         const alreadyNotified = notifications.some(
                             (notification) => notification.message === formSentMessage
@@ -75,8 +84,9 @@ const Dashboard = () => {
                             setNotifications(prevNotifications => [
                                 ...prevNotifications,
                                 {
-                                    date: data.date,
+                                    date: submissionDate,
                                     message: formSentMessage,
+                                    isFormSent: true,
                                 }
                             ]);
                         }
@@ -85,14 +95,21 @@ const Dashboard = () => {
                             setNotifications(prevNotifications => [
                                 ...prevNotifications,
                                 ...data.notifications.map(notification => {
-                                    const message = `${new Date(notification.date).toLocaleString()} - ${notification.message}`;
+                                    const timestamp = notification.timestamp;
+
+                                    const dateString = timestamp && typeof timestamp.toDate === 'function'
+                                        ? timestamp.toDate().toLocaleString()
+                                        : new Date(timestamp).toLocaleString();
+
+                                    const message = `${notification.message}`;
                                     const notificationAlreadyExists = prevNotifications.some(
-                                        (n) => n.message === message
+                                        (n) => n.message === message && n.date === dateString
                                     );
                                     if (!notificationAlreadyExists) {
                                         return {
-                                            date: notification.date,
+                                            date: dateString,
                                             message: message,
+                                            isFormSent: false,
                                         };
                                     }
                                     return null;
@@ -109,9 +126,13 @@ const Dashboard = () => {
         };
 
         fetchUserData();
-    }, [notifications]);
+    }, [fieldTranslations, notifications]);
 
-    const sortedNotifications = notifications.sort((a, b) => new Date(b.date) - new Date(a.date));
+    const sortedNotifications = notifications
+        .filter(notification => !notification.isFormSent)
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    const formSentNotification = notifications.find(notification => notification.isFormSent);
 
     return (
         <div className="dashboard">
@@ -120,10 +141,10 @@ const Dashboard = () => {
                 <p>{email}</p>
                 <span className="settings-icon">⚙️</span>
             </div>
-            <div className="notifications">
+            <div className="notifications-client">
                 <h2>Twoje Powiadomienia</h2>
                 {incompleteForms.length > 0 && (
-                    <div className="notification warning">
+                    <div className="notification-client warning">
                         <span>❗</span> Proszę uzupełnić brakujące dane w formularzu!
                         <ul>
                             {incompleteForms.map((form) => (
@@ -135,10 +156,15 @@ const Dashboard = () => {
                     </div>
                 )}
                 {sortedNotifications.map((notification, index) => (
-                    <div className="notification" key={index}>
-                        {notification.message}
+                    <div className="notification-client" key={index}>
+                        {notification.date} - {notification.message}
                     </div>
                 ))}
+                {formSentNotification && (
+                    <div className="notification-client">
+                        {formSentNotification.date} - {formSentNotification.message}
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -1,0 +1,176 @@
+{
+    "questions": [
+        {
+            "question": "Informacje o dokumentach",
+            "options": [
+                {
+                    "text": "W jaki sposób mam dostać akt zgonu?",
+                    "answer": "Osobiście do biura pogrzebowego, jeśli będzie pośredniczył w składaniu dokumentów o wypłatę zasiłku pogrzebowego."
+                },
+                {
+                    "text": "Kto wydaje akt zgonu?",
+                    "answer": "Akt zgonu wydaje Urząd Stanu Cywilnego."
+                },
+                {
+                    "text": "Gdzie znajdę numer świadczenia?",
+                    "answer": "Rodzina powinna posiadać te informacje. Może to być nr świadczenia na odcinku emerytury, nr przelewu itp."
+                },
+                {
+                    "text": "Jakie dokumenty są potrzebne do załatwienia formalności pogrzebowych?",
+                    "answer": "Najważniejsze dokumenty to akt zgonu, dowód osobisty zmarłego, oraz dokumenty związane z ubezpieczeniem (ZUS, KRUS itp.)."
+                }
+            ]
+        },
+        {
+            "question": "Informacje o ubezpieczeniach",
+            "options": [
+                {
+                    "text": "Skąd mam wiedzieć, czy zmarły był ubezpieczony?",
+                    "answer": "Rodzina posiada takie informacje. Mogą to być dokumenty emerytalne, odcinki wypłat, nr świadczenia, lub wskazanie przez zakład pracy."
+                },
+                {
+                    "text": "Jak sprawdzić, czy zmarły był ubezpieczony?",
+                    "answer": "ZUS powinien udzielić takiej informacji."
+                },
+                {
+                    "text": "Co mam zrobić, jak nie wiem, czy zmarły był ubezpieczony?",
+                    "answer": "Rodzina może pochować zmarłego ze swojego świadczenia. Wskazanie swojego świadczenia (tylko członek rodziny) nie ma żadnych konsekwencji prawnych."
+                },
+                {
+                    "text": "Czy zakład pogrzebowy pomoże w załatwieniu formalności ubezpieczeniowych?",
+                    "answer": "Tak, zakład pogrzebowy może pomóc w załatwieniu formalności ubezpieczeniowych, w tym w uzyskaniu zasiłku pogrzebowego."
+                }
+            ]
+        },
+        {
+            "question": "Formalności kościelne",
+            "options": [
+                {
+                    "text": "Gdzie mam się stawić w kościele, żeby dopełnić formalności?",
+                    "answer": "Do biura parafialnego lub do księdza."
+                },
+                {
+                    "text": "Jakie formalności muszę dopełnić w kościele?",
+                    "answer": "Podczas wizyty w biurze parafialnym potrzebny jest akt zgonu (kopia) oraz informacja o uroczystości pogrzebowej."
+                },
+                {
+                    "text": "Czy potrzebuję dodatkowych dokumentów do pochówku w kościele?",
+                    "answer": "Zazwyczaj potrzebny jest tylko akt zgonu, ale warto skonsultować się z księdzem w sprawie dodatkowych wymagań."
+                }
+            ]
+        },
+        {
+            "question": "Informacje o pochówku",
+            "options": [
+                {
+                    "text": "Od czego zależy, czy mogę dochować zmarłego do istniejącego grobu?",
+                    "answer": "Wymagane są zgody na dochowanie do grobu rodzinnego, ustalenie dysponentów grobu zgodnie z ustawą o cmentarzach i chowaniu zmarłych."
+                },
+                {
+                    "text": "Jak sprawdzić, czy mogę zmarłego dochować do grobu?",
+                    "answer": "Takie informacje sprawdzane są w administracji cmentarza. Na cmentarzach parafialnych mogą obowiązywać różne zasady."
+                },
+                {
+                    "text": "Gdzie dostarczyć ubranie dla zmarłego?",
+                    "answer": "Do biura pogrzebowego."
+                },
+                {
+                    "text": "Jakie ubrania trzeba dostarczyć dla zmarłego?",
+                    "answer": "To, co zmarły ubierał na co dzień (bielizna, buty, odzież wierzchnia). Mogą to być również przedmioty, które lubił."
+                },
+                {
+                    "text": "Czy można dochować zmarłego do grobu obok kogoś z rodziny?",
+                    "answer": "Tak, ale potrzebne są odpowiednie zgody oraz dokumentacja, które należy uzyskać w administracji cmentarza."
+                }
+            ]
+        },
+        {
+            "question": "Informacje o kosztach",
+            "options": [
+                {
+                    "text": "Czy w budżecie, który wybrałem, zawarty jest już zasiłek pogrzebowy?",
+                    "answer": "Zasiłek pogrzebowy to kwota 4000 zł (może się zmienić na 7000 zł). Może pomniejszyć wartość usługi."
+                },
+                {
+                    "text": "Kto płaci za pogrzeb?",
+                    "answer": "Za pogrzeb płaci osoba zlecająca. Ona jest pełnomocnikiem i wszelkie dokumenty są wystawiane na nią."
+                },
+                {
+                    "text": "Kwota z zasiłku pogrzebowego?",
+                    "answer": "4000 zł (ma ulec zmianie na 7000 zł)."
+                },
+                {
+                    "text": "Kiedy mam zapłacić za pogrzeb - czy muszę pokryć część z zasiłku?",
+                    "answer": "Jeśli firma pogrzebowa posiada upoważnienie, zasiłek wpłynie na konto Zakładu Pogrzebowego, a różnicę należy dopłacić."
+                },
+                {
+                    "text": "Czy istnieje możliwość negocjacji ceny za usługi pogrzebowe?",
+                    "answer": "W niektórych przypadkach istnieje możliwość negocjacji ceny, zależy to od indywidualnych ustaleń z zakładem pogrzebowym."
+                }
+            ]
+        },
+        {
+            "question": "Organizacja pogrzebu",
+            "options": [
+                {
+                    "text": "Jak długo czekamy na pogrzeb tradycyjny?",
+                    "answer": "To zależy od wielkości miasta. Przeważnie w ciągu dwóch dni można załatwić formalności."
+                },
+                {
+                    "text": "Jak długo czekamy na pogrzeb świecki?",
+                    "answer": "To zależy od wielkości miasta. Przeważnie w ciągu dwóch dni można załatwić formalności."
+                },
+                {
+                    "text": "Jak długo czekamy na pogrzeb urnowy?",
+                    "answer": "To zależy od wielkości miasta. Przeważnie w ciągu dwóch dni można załatwić formalności."
+                },
+                {
+                    "text": "Jak wygląda procedura kremacji?",
+                    "answer": "Kremacja obejmuje spopielenie ciała w piecu kremacyjnym, a następnie umieszczenie prochów w urnie. Rodzina może uczestniczyć w ceremonii."
+                }
+            ]
+        },
+        {
+            "question": "Inne pytania",
+            "options": [
+                {
+                    "text": "Sprawy urzędowe - kto załatwia przy pogrzebie?",
+                    "answer": "Firma może wykonać wszystkie formalności w imieniu rodziny na podstawie pełnomocnictwa."
+                },
+                {
+                    "text": "Czy możemy być w trakcie kremacji?",
+                    "answer": "Większość krematoriów ma salki telewizyjne, jednak czas uczestnictwa dotyczy momentu, kiedy trumna wjeżdża do pieca."
+                },
+                {
+                    "text": "Miejsce na cmentarzu - co jeśli nam nie pasuje?",
+                    "answer": "Uwagi i zapytania należy kierować do biura administracji cmentarza."
+                },
+                {
+                    "text": "Nie jestem zadowolony z obsługi ceremonii - gdzie zgłosić?",
+                    "answer": "Do biura pogrzebowego jako forma reklamacji."
+                },
+                {
+                    "text": "Pomoc psychologa - jak skorzystać?",
+                    "answer": "Mamy w pakiecie pomoc najlepszych psychologów. Ważna jest rozmowa i wsparcie w najcięższych chwilach."
+                },
+                {
+                    "text": "Czy mogę negocjować cenę pogrzebu/artykułów?",
+                    "answer": "Dzięki naszej platformie mamy wynegocjowane najlepsze warunki finansowe na usługi i artykuły pogrzebowe."
+                },
+                {
+                    "text": "Czy obsługujecie pogrzeby świeckie?",
+                    "answer": "Obsługujemy pogrzeby świeckie."
+                },
+                {
+                    "text": "Czy platforma jest płatna?",
+                    "answer": "Nasza platforma jest bezpłatna. Klientów obowiązuje ten sam cennik za usługi pogrzebowe oraz artykuły funeralne."
+                },
+                {
+                    "text": "W jakich godzinach pracujemy?",
+                    "answer": "Pogotowie pogrzebowe jest czynne całą dobę."
+                }
+            ]
+        }
+    ]
+}
+

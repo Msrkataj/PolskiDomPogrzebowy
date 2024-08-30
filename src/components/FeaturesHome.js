@@ -1,7 +1,8 @@
 import Image from 'next/image';
-import houseIcon from '../../public/assets/icons/house.png';
-import panelIcon from '../../public/assets/icons/panel.png';
-import supportIcon from '../../public/assets/icons/support.png';
+import houseIcon from '../../public/assets/icons/house.webp';
+import panelIcon from '../../public/assets/icons/panel.webp';
+import supportIcon from '../../public/assets/icons/support.webp';
+import dynamic from "next/dynamic";
 
 const FeaturesSection = () => {
     const features = [
@@ -23,21 +24,32 @@ const FeaturesSection = () => {
     ];
 
     return (
-        <section id="kim-jestesmy" className="features-section">
-            <h2>Kim jesteśmy i co oferujemy?</h2>
-            <div className="features-container">
-                {features.map((feature, index) => (
-                    <div key={index} className="feature-card">
-                        <div className="feature-image">
-                            <Image src={feature.icon} alt={feature.title} layout="fill" objectFit="contain" />
+        <div className="container">
+            <section id="kim-jestesmy" className="features-section">
+                <h2>Kim jesteśmy i co oferujemy?</h2>
+                <div className="features-container">
+                    {features.map((feature, index) => (
+                        <div key={index} className="feature-card">
+                            <div className="feature-image">
+                                <Image
+                                    src={feature.icon}
+                                    alt={feature.title}
+                                    fill
+                                    sizes="(max-width: 768px) 100vw,
+                                       (max-width: 1200px) 50vw,
+                                       33vw"
+                                    loading={"lazy"}
+                                    style={{objectFit: "contain"}}
+                                />
+                            </div>
+                            <h3>{feature.title}</h3>
+                            <p>{feature.description}</p>
                         </div>
-                        <h3>{feature.title}</h3>
-                        <p>{feature.description}</p>
-                    </div>
-                ))}
-            </div>
-        </section>
+                    ))}
+                </div>
+            </section>
+        </div>
     );
 };
+export default dynamic (() => Promise.resolve(FeaturesSection), {ssr: false})
 
-export default FeaturesSection;

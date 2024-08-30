@@ -8,35 +8,46 @@ const AdminLogin = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setIsLoading(true); // Start loading
 
         try {
-            const q = query(collection(db, 'admins'), where('email', '==', email));
+            const q = query(collection(db, 'admin'), where('email', '==', email));
             const querySnapshot = await getDocs(q);
 
             if (querySnapshot.empty) {
                 alert('Email or password is incorrect');
+                setIsLoading(false);
                 return;
             }
 
-            querySnapshot.forEach(async (doc) => {
-                const data = doc.data();
-                const isPasswordValid = await bcrypt.compare(password, data.passwordHash);
+            if (querySnapshot.size > 1) {
+                alert('Multiple accounts found with this email. Please contact support.');
+                setIsLoading(false);
+                return;
+            }
 
-                if (isPasswordValid) {
-                    localStorage.setItem('userRole', 'admin');
-                    localStorage.setItem('userId', doc.id);
-                    localStorage.setItem('loginTime', Date.now());
-                    router.push('/admin/dashboard');
-                } else {
-                    alert('Email or password is incorrect');
-                }
-            });
+            const doc = querySnapshot.docs[0];
+            const data = doc.data();
+            const isPasswordValid = await bcrypt.compare(password, data.password);
+
+            if (isPasswordValid) {
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('userRole', 'admin');
+                localStorage.setItem('userId', doc.id);
+                localStorage.setItem('loginTime', Date.now());
+                router.push('/admin/panel');
+            } else {
+                alert('Email or password is incorrect');
+                setIsLoading(false);
+            }
         } catch (error) {
             console.error('Error logging in: ', error);
             alert('An error occurred while logging in. Please try again.');
+            setIsLoading(false);
         }
     };
 
@@ -44,8 +55,8 @@ const AdminLogin = () => {
         <div className="login-container">
             <form onSubmit={handleLogin} className="login-form">
                 <h2>Admin Login</h2>
-                <div className="form-group">
-                    <label>Email</label>
+                <div className="login-form-group">
+                    <label>Login:</label>
                     <input
                         type="email"
                         value={email}
@@ -53,8 +64,8 @@ const AdminLogin = () => {
                         required
                     />
                 </div>
-                <div className="form-group">
-                    <label>Password</label>
+                <div className="login-form-group">
+                    <label>Hasło:</label>
                     <input
                         type="password"
                         value={password}
@@ -62,7 +73,8 @@ const AdminLogin = () => {
                         required
                     />
                 </div>
-                <button type="submit">Login</button>
+                {isLoading && <div className="spinner"></div>}
+                <button type="submit">Zaloguj się</button>
             </form>
         </div>
     );

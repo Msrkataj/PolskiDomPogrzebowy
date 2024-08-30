@@ -143,7 +143,7 @@ const FuneralHomeDetails = () => {
                     <div className="reviews-main">
                         {funeralHomeDetails.reviews.length > 0 ? funeralHomeDetails.reviews.map((review, i) => (
                             <blockquote key={i} className="funeral-home-text reviews-main-text">
-                                <p>{review.date}</p> "{review.text}" - <cite>{review.author}</cite>
+                                <p>{review.date}</p> &quot;{review.text}&quot; - <cite>{review.author}</cite>
                             </blockquote>
                         )) : <p>Brak opinii.</p>}
                     </div>

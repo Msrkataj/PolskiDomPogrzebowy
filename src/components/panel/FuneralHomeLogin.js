@@ -9,16 +9,20 @@ const FuneralHomeLogin = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setIsLoading(true);
 
         try {
             const q = query(collection(db, 'domyPogrzebowe'), where('email', '==', email));
             const querySnapshot = await getDocs(q);
 
             if (querySnapshot.empty) {
+                console.log('Login failed: Email or password is incorrect');
                 alert('Email or password is incorrect');
+                setIsLoading(false);
                 return;
             }
 
@@ -27,6 +31,7 @@ const FuneralHomeLogin = () => {
                 const isPasswordValid = await bcrypt.compare(password, data.password);
 
                 if (isPasswordValid) {
+                    console.log('Login successful');
                     localStorage.setItem('userRole', 'funeralHome');
                     localStorage.setItem('email', email);
                     localStorage.setItem('userEmail', email);
@@ -34,31 +39,54 @@ const FuneralHomeLogin = () => {
                     localStorage.setItem('loginTime', Date.now().toString());
                     await checkFirstLogin(doc.id);
                 } else {
+                    console.log('Login failed: Incorrect password');
                     alert('Email or password is incorrect');
+                    setIsLoading(false);
                 }
             });
         } catch (error) {
             console.error('Error logging in: ', error);
+            setIsLoading(false);
             alert('An error occurred while logging in. Please try again.');
         }
     };
 
-    const checkFirstLogin = async (userId) => {
-        const userDocRef = doc(db, 'domyPogrzebowe', userId);
-        const userDoc = await getDoc(userDocRef);
+    useEffect(() => {
+        router.events.on('routeChangeComplete', () => {
+            console.log('Route change complete:', router.pathname);
+        });
 
-        if (userDoc.exists()) {
-            const userData = userDoc.data();
-            console.log(userData)
-            if (!userData.ownerName || !userData.city || !userData.street) {
-                await router.push('/funeral/first');
+        return () => {
+            router.events.off('routeChangeComplete', () => {
+                console.log('Route change complete:', router.pathname);
+            });
+        };
+    }, [router]);
+
+    const checkFirstLogin = async (userId) => {
+        try {
+            const userDocRef = doc(db, 'domyPogrzebowe', userId);
+            const userDoc = await getDoc(userDocRef);
+
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                console.log(userData);
+                if (!userData.ownerName || !userData.city || !userData.street) {
+                    await router.push('/funeral/first');
+                } else {
+                    await router.push('/funeral/panel');
+                }
             } else {
-                await router.push('/funeral/panel');
+                await router.push('/login');
             }
-        } else {
+        } catch (error) {
+            console.error('Error checking first login: ', error);
             await router.push('/login');
+        } finally {
+            setIsLoading(false); // Upewnij się, że zawsze wywołasz to na końcu
         }
     };
+
 
     return (
         <div className="login-container">
@@ -83,11 +111,12 @@ const FuneralHomeLogin = () => {
                     />
                     <Link href={"/form"} className="forgot-password">Zapomniałeś hasła?</Link>
                 </div>
+                {isLoading && <div className="spinner"></div>}
                 <div className="actions">
                     <button type="submit" className="login-button">Zaloguj się</button>
                 </div>
                 <div className="links">
-                    <Link href="/register" className="register-link">Jeszcze nie masz konta?<br/>
+                    <Link href="/join" className="register-link">Jeszcze nie masz konta?<br/>
                         Wyślij wniosek</Link>
                 </div>
             </form>

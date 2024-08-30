@@ -1,12 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
+import Script from 'next/script'; // Import Script component from Next.js
 import StarRating from './StarRating';
 import { db, storage } from '../../../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { ref, getDownloadURL } from 'firebase/storage';
-import GoogleMapReact from 'google-map-react';
 import { GoogleMap, Marker } from '@react-google-maps/api';
 import TransportModal from "@/components/TransportModal";
+import dynamic from "next/dynamic";
+
 
 const mapContainerStyle = {
     height: "400px",
@@ -24,6 +26,9 @@ const FuneralHomeResults = () => {
     const [selectedCoordinates, setSelectedCoordinates] = useState(null);
     const [selectedFuneralHome, setSelectedFuneralHome] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [isEditingServices, setIsEditingServices] = useState(false);
+    const mapRef = useRef();
 
     const handleSelectFuneralHome = (home) => {
         setSelectedFuneralHome(home);
@@ -51,6 +56,20 @@ const FuneralHomeResults = () => {
     };
 
     useEffect(() => {
+        const getFileUrl = async (basePath, fileName, extensions) => {
+            for (const ext of extensions) {
+                try {
+                    const filePath = `${basePath}/${fileName}.${ext}`;
+                    const fileUrl = await getDownloadURL(ref(storage, filePath));
+                    return fileUrl;
+                } catch (error) {
+                    if (error.code !== 'storage/object-not-found') {
+                        console.error(`Error fetching file with extension .${ext}:`, error);
+                    }
+                }
+            }
+            return null; // Jeśli żaden plik nie zostanie znaleziony, zwróć null
+        };
         const fetchData = async () => {
             try {
                 const querySnapshot = await getDocs(collection(db, 'domyPogrzebowe'));
@@ -84,7 +103,6 @@ const FuneralHomeResults = () => {
                         };
                     }
                 }));
-
                 const userLocation = localStorage.getItem('location') || 'Warszawa';
                 const userCoordinates = await fetchCoordinates(userLocation);
 
@@ -128,15 +146,20 @@ const FuneralHomeResults = () => {
     const renderServices = (services = []) => {
         return services.map((service, index) => (
             <div key={index} className="service-item">
-                <div style={{ width: '50px', height: '50px', position: 'relative' }}>
-                    <Image src={`/assets/icons/${service}.png`} alt={service} layout="fill" objectFit="contain" />
-                </div>
+                {/*<div style={{ width: '50px', height: '50px', position: 'relative' }}>*/}
+                {/*    <Image*/}
+                {/*        src={`/assets/icons/${service}.png`}*/}
+                {/*        alt={service}*/}
+                {/*        fill*/}
+                {/*        style={{ objectFit: 'contain' }}*/}
+                {/*        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"*/}
+                {/*    />*/}
+                {/*</div>*/}
                 <span>{service}</span>
             </div>
         ));
     };
 
-    const mapRef = useRef();
     const onLoad = map => {
         mapRef.current = map;
     };
@@ -147,93 +170,221 @@ const FuneralHomeResults = () => {
     });
 
     return (
-        <div className="funeral-home-results">
-            {funeralHomes.map((home, index) => (
-                <div key={index} className={`funeral-home ${index % 2 === 0 ? 'funeral-home-reverse' : ''}`}>
-                    <div className="home-details">
-                        <div className="home-details-name">
-                            <Image src={home.logoUrl} alt={`${home.funeralHomeName} logo`} width={50} height={50} />
-                            <div className="home-details-name-title">
-                                <h3>{home.funeralHomeName}</h3>
-                                <StarRating rating={home.rating} />
+        <>
+            <Script
+                async
+                src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&loading=async&libraries=places&callback=initMap`}
+                strategy="afterInteractive" // Zmień strategię na "afterInteractive" lub "lazyOnload"
+            />
+            <div className="funeral-home-results">
+                {funeralHomes.map((home, index) => (
+                    <div key={index} className={`funeral-home ${index % 2 === 0 ? 'funeral-home-reverse' : ''}`}>
+                        <div className="home-details">
+                            <div className="home-details-name">
+                                <Image
+                                    src={home.logoUrl}
+                                    alt={`${home.funeralHomeName} logo`}
+                                    width={50}
+                                    height={50}
+                                    style={{ objectFit: 'contain' }}
+                                    sizes="200px"
+                                />
+                                <div className="home-details-name-title">
+                                    <h3>{home.funeralHomeName}</h3>
+                                    <StarRating rating={home.rating} />
+                                </div>
                             </div>
-                        </div>
-                        <div className="home-details-contact">
-                            <p><strong>Adres:</strong> {home.city} ul.{home.street}, {home.postalCode}</p>
-                            <p><strong>Godziny otwarcia:</strong> {home.hours}</p>
-                            <p><strong>Email:</strong> {home.email}</p>
-                            <p><strong>Telefon:</strong> {home.phone}</p>
-                        </div>
-                        <div className="services">
-                            <h4>Usługi:</h4>
-                            <div className="home-details-item">
-                                {renderServices(home.services)}
-                            </div>
-                        </div>
-                        <h4>Opis:</h4>
-                        <div className="funeral-home-text">
-                            <p className="description">{home.description}</p>
-                        </div>
-                        <div className="reviews">
-                            <h4>Opinie:</h4>
-                            <div className="reviews-main">
-                                {home.reviews && home.reviews.length > 0 ? home.reviews.map((review, i) => (
-                                    <blockquote key={i} className="funeral-home-text reviews-main-text">
-                                        <p>{review.date}</p> "{review.text}" - <cite>{review.author}</cite>
-                                    </blockquote>
-                                )) : <p>Brak opinii.</p>}
-                            </div>
-                        </div>
-                        {selectedFuneralHome && (
-                            <TransportModal
-                                isOpen={isModalOpen}
-                                onClose={() => setIsModalOpen(false)}
-                                funeralHome={selectedFuneralHome}
-                            />
-                        )}
-                        <button
-                            className="select-button"
-                            onClick={() => handleSelectFuneralHome(home)}
-                        >
-                            Wybierz ten zakład
-                        </button>
-                    </div>
-                    <div className="home-images">
-                        <div className="selected-image">
-                            <Image src={selectedImage || (home.images && home.images.main ? home.images.main : '/default-image.webp')} alt="Selected" layout="fill" objectFit="cover" />
-                        </div>
-                        <div className="image-selector">
-                            <button onClick={() => handleImageSelection(home.images?.main || '/default-image.webp')}>Zdjęcie zakładu</button>
-                            <button onClick={() => handleImageSelection(home.images?.hall || '/default-image.webp')}>Zdjęcie sali pożegnań</button>
-                            <button onClick={() => handleImageSelection(home.images?.car || '/default-image.webp')}>Zdjęcie karawanu</button>
-                        </div>
-                        <div className="map">
-                            {selectedCoordinates && (
-                                <GoogleMap
-                                    mapContainerStyle={mapContainerStyle}
-                                    center={markerPosition(home.latitude, home.longitude)}
-                                    zoom={15}
-                                    onLoad={onLoad}
-                                    options={options}
-                                >
-                                    <div className="map-marker">
-                                        <p className="marker-label">{home.funeralHomeName}</p>
-                                        <Marker
-                                            position={markerPosition(home.latitude, home.longitude)}
-                                            icon={{
-                                                url: "/assets/icons/marker.png",
-                                                scaledSize: new window.google.maps.Size(30, 40)
-                                            }}
+                            <div className="home-details-contact">
+                                <p><strong>Adres:</strong></p>
+                                <div>
+                                    <label>Miasto:</label>
+                                    {isEditing ? (
+                                        <input
+                                            type="text"
+                                            value={editableDetails.city}
+                                            onChange={(e) => handleChange('city', e.target.value)}
                                         />
-                                    </div>
-                                </GoogleMap>
+                                    ) : (
+                                        <span>{home.city}</span>
+                                    )}
+                                </div>
+                                <div>
+                                    <label>Ulica:</label>
+                                    {isEditing ? (
+                                        <input
+                                            type="text"
+                                            value={editableDetails.street}
+                                            onChange={(e) => handleChange('street', e.target.value)}
+                                        />
+                                    ) : (
+                                        <span>{home.street}</span>
+                                    )}
+                                </div>
+                                <div>
+                                    <label>Kod pocztowy:</label>
+                                    {isEditing ? (
+                                        <input
+                                            type="text"
+                                            value={editableDetails.postalCode}
+                                            onChange={(e) => handleChange('postalCode', e.target.value)}
+                                        />
+                                    ) : (
+                                        <span>{home.postalCode}</span>
+                                    )}
+                                </div>
+                                <p><strong>Godziny otwarcia:</strong></p>
+                                {isEditing ? (
+                                    editableDetails.openingHours && editableDetails.openingHours.length > 0 ? (
+                                        editableDetails.openingHours.map((hour, index) => (
+                                            <div key={index}>
+                                                <select
+                                                    value={hour.dayFrom}
+                                                    onChange={(e) => {
+                                                        const newOpeningHours = [...editableDetails.openingHours];
+                                                        newOpeningHours[index].dayFrom = e.target.value;
+                                                        handleChange('openingHours', newOpeningHours);
+                                                    }}
+                                                >
+                                                    <option value="Poniedziałek">Poniedziałek</option>
+                                                    <option value="Wtorek">Wtorek</option>
+                                                    <option value="Środa">Środa</option>
+                                                    <option value="Czwartek">Czwartek</option>
+                                                    <option value="Piątek">Piątek</option>
+                                                    <option value="Sobota">Sobota</option>
+                                                    <option value="Niedziela">Niedziela</option>
+                                                </select>
+                                                <select
+                                                    value={hour.dayTo}
+                                                    onChange={(e) => {
+                                                        const newOpeningHours = [...editableDetails.openingHours];
+                                                        newOpeningHours[index].dayTo = e.target.value;
+                                                        handleChange('openingHours', newOpeningHours);
+                                                    }}
+                                                >
+                                                    <option value="Poniedziałek">Poniedziałek</option>
+                                                    <option value="Wtorek">Wtorek</option>
+                                                    <option value="Środa">Środa</option>
+                                                    <option value="Czwartek">Czwartek</option>
+                                                    <option value="Piątek">Piątek</option>
+                                                    <option value="Sobota">Sobota</option>
+                                                    <option value="Niedziela">Niedziela</option>
+                                                </select>
+                                                <input
+                                                    type="time"
+                                                    value={hour.from}
+                                                    onChange={(e) => {
+                                                        const newOpeningHours = [...editableDetails.openingHours];
+                                                        newOpeningHours[index].from = e.target.value;
+                                                        handleChange('openingHours', newOpeningHours);
+                                                    }}
+                                                />
+                                                <input
+                                                    type="time"
+                                                    value={hour.to}
+                                                    onChange={(e) => {
+                                                        const newOpeningHours = [...editableDetails.openingHours];
+                                                        newOpeningHours[index].to = e.target.value;
+                                                        handleChange('openingHours', newOpeningHours);
+                                                    }}
+                                                />
+                                                <button onClick={() => handleRemoveOpeningHour(index)}>Usuń</button>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p>Brak dostępnych godzin otwarcia</p>
+                                    )
+                                ) : (
+                                    home.openingHours && home.openingHours.length > 0 ? (
+                                        home.openingHours.map((hour, index) => (
+                                            <span key={index}>
+                {`${hour.dayFrom} - ${hour.dayTo} od ${hour.from} do ${hour.to}`}
+            </span>
+                                        ))
+                                    ) : (
+                                        <p>Brak dostępnych godzin otwarcia</p>
+                                    )
+                                )}
+                                {isEditing && <button onClick={handleAddOpeningHour}>Dodaj kolejne godzinny otwarcia</button>}
+                                <p><strong>Email:</strong> {home.email}</p>
+                                <p><strong>Telefon:</strong> {home.phone}</p>
+                            </div>
+                            <div className="services">
+                                <h4>Usługi:</h4>
+                                <div className="home-details-item">
+                                    {renderServices(home.services)}
+                                </div>
+                            </div>
+                            <h4>Opis:</h4>
+                            <div className="funeral-home-text">
+                                <p className="description">{home.description}</p>
+                            </div>
+                            <div className="reviews">
+                                <h4>Opinie:</h4>
+                                <div className="reviews-main">
+                                    {home.reviews && home.reviews.length > 0 ? home.reviews.map((review, i) => (
+                                        <blockquote key={i} className="funeral-home-text reviews-main-text">
+                                            <p>{review.date}</p>&quot;{review.text}&quot; - <cite>{review.author}</cite>
+                                        </blockquote>
+                                    )) : <p>Brak opinii.</p>}
+                                </div>
+                            </div>
+                            {selectedFuneralHome && (
+                                <TransportModal
+                                    isOpen={isModalOpen}
+                                    onClose={() => setIsModalOpen(false)}
+                                    funeralHome={selectedFuneralHome}
+                                />
                             )}
+                            <button
+                                className="select-button"
+                                onClick={() => handleSelectFuneralHome(home)}
+                            >
+                                Wybierz ten zakład
+                            </button>
+                        </div>
+                        <div className="home-images">
+                            <div className="selected-image">
+                                <Image
+                                    src={selectedImage || (home.images && home.images.main ? home.images.main : '/default-image.webp')}
+                                    alt="Selected"
+                                    fill
+                                    style={{ objectFit: 'cover' }}
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                />
+                            </div>
+                            <div className="image-selector">
+                                <button onClick={() => handleImageSelection(home.images?.main || '/default-image.webp')}>Zdjęcie zakładu</button>
+                                <button onClick={() => handleImageSelection(home.images?.hall || '/default-image.webp')}>Zdjęcie sali pożegnań</button>
+                                <button onClick={() => handleImageSelection(home.images?.car || '/default-image.webp')}>Zdjęcie karawanu</button>
+                            </div>
+                            <div className="map">
+                                {selectedCoordinates && (
+                                    <GoogleMap
+                                        mapContainerStyle={mapContainerStyle}
+                                        center={markerPosition(home.latitude, home.longitude)}
+                                        zoom={15}
+                                        onLoad={onLoad}
+                                        options={options}
+                                    >
+                                        <div className="map-marker">
+                                            <p className="marker-label">{home.funeralHomeName}</p>
+                                            <Marker
+                                                position={markerPosition(home.latitude, home.longitude)}
+                                                icon={{
+                                                    url: "/assets/icons/marker.png",
+                                                    scaledSize: new window.google.maps.Size(30, 40)
+                                                }}
+                                            />
+                                        </div>
+                                    </GoogleMap>
+                                )}
+                            </div>
                         </div>
                     </div>
-                </div>
-            ))}
-        </div>
+                ))}
+            </div>
+        </>
     );
 };
+export default dynamic (() => Promise.resolve(FuneralHomeResults), {ssr: false})
 
-export default FuneralHomeResults;

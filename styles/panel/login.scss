@@ -68,12 +68,13 @@
 
 .links a {
   font-size: 1.2em;
-  color: #000;
   text-decoration: none;
   margin-top: 10px;
 }
 .register-link {
   padding: 5px;
+  color: #000;
+
 }
 .links .forgot-password {
   font-size: 12px;
@@ -105,251 +106,435 @@
     font-size: 16px;
   }
 }
+$color-primary: #007BFF;
+$color-secondary: #28a745;
+$color-danger: #dc3545;
+$color-warning: #ffc107;
+$color-dark: #343a40;
+$color-light: #f9f9f9;
+$color-muted: #6c757d;
+$color-border: #ddd;
+$color-shadow: rgba(0, 0, 0, 0.1);
+
 .dashboard {
   max-width: 1200px;
-  margin: 0 10px;
-  //display: flex;
-  //flex-direction: column;
-  //align-items: center;
-  @media (min-width: 768px) {
-    margin: 0 auto;
-    padding: 20px;
+  margin: 0 auto;
+  padding: 20px;
+
+  @media (max-width: 768px) {
+    padding: 10px;
   }
+
   h1 {
-    margin-top: 50px;
+    font-size: 2em;
+    color: $color-dark;
+    text-align: center;
+    margin-bottom: 20px;
+
+    @media (max-width: 768px) {
+      font-size: 1.5em;
+    }
   }
+
   .user-info {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
-    .settings-icon {
-      cursor: pointer;
-    }
-  }
-  .notifications {
+    margin-bottom: 20px;
 
-    margin-top: 20px;
-    h2 {
-      @media (max-width: 768px) {
-        margin: 10px 0;
+    p {
+      color: $color-dark;
+      font-weight: bold;
+    }
+
+    .settings-icon {
+      font-size: 1.5em;
+      cursor: pointer;
+      color: $color-muted;
+
+      &:hover {
+        color: $color-dark;
       }
     }
-    .notification {
-      padding: 10px;
-      border: 1px solid #ccc;
+  }
+
+  .notifications-client {
+    border-radius: 8px;
+    box-shadow: 0 4px 6px $color-shadow;
+    padding: 20px;
+    margin-bottom: 20px;
+
+    @media (max-width: 768px) {
+      padding: 15px;
+    }
+
+
+
+    .notification-client {
+      padding: 15px;
+      border: 1px solid $color-border;
       border-radius: 5px;
       margin-bottom: 10px;
       font-size: 1em;
-      @media (min-width: 768px) {
-        font-size: 1.3em;
-      }
-      &.warning {
-        background-color: #ffefef;
-        border-color: #ffcccc;
-        line-height: 30px;
-      }
-    }
-  }
-}
+      color: $color-dark;
+      background-color: $color-light;
+      transition: background-color 0.3s ease-in-out;
 
-.submissions {
-  padding: 20px;
-  .submission {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    .status {
-      font-weight: bold;
+      @media (max-width: 768px) {
+        font-size: 0.9em;
+        padding: 10px;
+      }
+
+      &:hover {
+        background-color: lighten($color-light, 5%);
+      }
+
+      &.warning {
+        background-color: $color-warning;
+        color: $color-dark;
+        border-color: darken($color-warning, 10%);
+      }
+    }
+
+    ul {
+      margin-top: 10px;
+      list-style-type: disc;
+      padding-left: 20px;
+
+      li {
+        color: $color-muted;
+
+        @media (max-width: 768px) {
+          font-size: 0.9em;
+        }
+      }
     }
   }
+
+
+  h2 {
+    font-size: 2em;
+    color: $color-dark;
+    text-align: center;
+    margin-bottom: 20px;
+
+    @media (max-width: 768px) {
+      font-size: 1.5em;
+    }
+  }
+
+  .submissions-container {
+
+
+
+    @media (max-width: 768px) {
+      padding: 15px;
+    }
+
+    .submission-item {
+      margin-bottom: 20px;
+      padding: 20px;
+
+
+      @media (max-width: 768px) {
+        padding: 15px;
+      }
+
+      &-first {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background-color: $color-light;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px $color-shadow;
+        padding: 20px;
+        margin-bottom: 20px;
+        @media (min-width: 768px) {
+          flex-direction: row;
+          align-items: center;
+        }
+
+        .submission-item-element {
+          display: flex;
+          flex-direction: column;
+          margin: 10px 0;
+          align-items: center;
+
+          p {
+            margin: 10px 0 10px;
+            color: $color-muted;
+          }
+
+          a {
+            color: $color-primary;
+            text-decoration: none;
+            font-size: 1.3em;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+
+          strong {
+            font-weight: bold;
+            color: $color-dark;
+            font-size: 1.3em;
+
+          }
+
+          span.status {
+            font-weight: bold;
+            &.completed {
+              color: $color-secondary;
+            }
+
+            &.in-progress {
+              font-size: 1.3em;
+              color: $color-warning;
+            }
+          }
+        }
+
+        button {
+          background-color: $color-primary;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 5px;
+          cursor: pointer;
+          margin-top: 10px;
+          transition: background-color 0.3s;
+
+          &:hover {
+            background-color: darken($color-primary, 10%);
+          }
+        }
+      }
+
+      &-second {
+        margin-top: 20px;
+        border-top: 1px solid $color-border;
+        padding-top: 20px;
+
+        .details {
+          display: flex;
+          flex-direction: column;
+
+          @media (min-width: 768px) {
+            justify-content: space-between;
+          }
+
+          h3 {
+            font-size: 1.3em;
+            color: $color-dark;
+            margin-bottom: 15px;
+          }
+
+          .details-elements {
+            display: flex;
+            flex-direction: column;
+            gap: 20px; // Dodanie odstępów między elementami
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+            @media (min-width: 768px) {
+              flex-direction: row;
+              justify-content: space-between;
+              gap: 30px; // Większy odstęp między kolumnami na większych ekranach
+            }
+
+            .details-element {
+              flex: 1;
+              margin-right: 20px;
+              padding: 10px;
+              background-color: white;
+              border-radius: 5px;
+              box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+              p {
+                margin-bottom: 10px;
+                color: $color-muted;
+                line-height: 1.5;
+                font-size: 0.95em;
+
+                strong {
+                  color: $color-dark;
+                  font-weight: 600;
+                }
+              }
+
+              &:last-child {
+                margin-right: 0;
+              }
+            }
+          }
+
+          .details-elements h3 {
+            font-size: 1.2em;
+            color: $color-dark;
+            margin-bottom: 15px;
+            border-bottom: 2px solid $color-border;
+            padding-bottom: 5px;
+            text-transform: uppercase; // Duże litery dla tytułów
+          }
+
+          .details-element p {
+            margin: 8px 0;
+            color: $color-muted;
+
+            strong {
+              color: $color-dark;
+              font-weight: 700;
+            }
+
+
+          .details-element-zestaw {
+              border-top: 1px solid $color-border;
+              margin-top: 20px;
+              padding-top: 20px;
+
+              &-buttons {
+                display: flex;
+                justify-content: center;
+                margin-top: 10px;
+
+                button {
+                  background-color: $color-primary;
+                  color: white;
+                  border: none;
+                  padding: 10px 20px;
+                  border-radius: 5px;
+                  cursor: pointer;
+                  transition: background-color 0.3s;
+
+                  &:hover {
+                    background-color: darken($color-primary, 10%);
+                  }
+
+                  &:not(:last-child) {
+                    margin-right: 10px;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   .actions {
     display: flex;
     justify-content: space-between;
-    margin-top: 20px;
-  }
-}
-.submissions-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-.submissions-container {
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.submission {
-
-}
-
-.submissions-container {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 16px;
-  margin: 16px 0;
-  background-color: #f9f9f9;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: 1400px;
-}
-
-.submission-item {
-  width: auto;
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: max-height 0.3s ease-in-out;
-  font-size: 1.1em;
-  @media (min-width: 768px) {
-    width: 100%;
-  }
-.submission-item-first {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  @media (min-width: 768px) {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-}
-  .submission-item-second {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-top: 1px solid black;
-    margin-top: 10px;
-    .details {
-      margin-top: 20px;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      h3 {
-        font-size: 1.1em;
-        @media (min-width: 768px) {
-          font-size: 1.3em;
-        }
-      }
-      .details-elements {
-        display: flex;
-        flex-direction: column;
-        @media (min-width: 768px) {
-          flex-direction: row;
-        }
-      }
-      .details-element {
-        display: flex;
-        flex-direction: column;
-        margin: 10px;
-        strong {
-          font-weight: bold;
-          margin-right: 10px;
-        }
-      }
-      .details-element-zestaw {
-        border-top: 1px solid black;
-        margin-top: 10px;
-        padding-top: 10px;
-        &-buttons {
-          display: flex;
-          justify-content: center;
-          button {
-            margin: 10px;
-          }
-          button:hover {
-            background-color: $color-gold;
-            color: white;
-          }
-        }
-        div {
-          border: 1px solid black;
-          padding: 10px;
-        }
-      }
-    }
-  }
-  .submission-item-element {
-    display: flex;
-    flex-direction: column;
     flex-wrap: wrap;
-    margin: 0 10px;
-    p {
+    margin-top: 20px;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
+
+    button {
+      background-color: white;
+      border: 2px solid $color-primary;
+      color: $color-primary;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
       margin: 10px 0;
-    }
-    span {
-      margin: 0 0 10px 0;
-    }
-    @media (min-width: 768px) {
-      p {
-        margin: 0;
-      }
-      span {
-        margin: 0;
+      transition: background-color 0.3s, color 0.3s;
+
+      &:hover {
+        background-color: $color-primary;
+        color: white;
       }
     }
-    strong {
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    overflow-x: auto;
+    display: block; // Dodajemy możliwość przewijania tabeli w poziomie
+
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid $color-border;
+      white-space: nowrap; // Zabezpiecza przed zawijaniem tekstu w komórkach
+
+      @media (max-width: 768px) {
+        padding: 8px 10px;
+      }
+    }
+
+    th {
+      background-color: $color-primary;
+      color: white;
       font-weight: bold;
     }
-    a {
-      color: darkgoldenrod;
+
+    td {
+      vertical-align: middle;
+      color: $color-dark;
+
+      word-wrap: break-word; // Zawija tekst na końcach słów, jeśli jest to konieczne
+      white-space: normal; // Pozwala na zawijanie tekstu wewnątrz komórki
+      @media (max-width: 768px) {
+        max-width: 200px; // Maksymalna szerokość komórki, po której tekst zacznie się zawijać
+      }
+      &.selected-items-image img {
+        max-width: 50px;
+        max-height: 50px;
+        border-radius: 5px;
+      }
+    }
+
+    tr:hover {
+      background-color: $color-light;
     }
   }
-}
 
-.status {
-  color: orange;
-  font-weight: bold;
-}
+  .edit-button,
+  .save-button,
+  .cancel-button {
+    background-color: royalblue;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
 
+    &:hover {
+      background-color: darken($color-primary, 10%);
+    }
 
+    &.cancel-button {
+      background-color: $color-danger;
 
-.details p {
-  margin: 5px 0;
-  font-size: 1em;
-  @media (min-width: 768px) {
-    font-size: 1.2em;
+      &:hover {
+        background-color: darken($color-danger, 10%);
+      }
+    }
   }
-}
 
-.edit-button {
-  border: none;
-  text-align: center;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 10px;
-}
+  .spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(0, 0, 0, 0.3);
+    border-top: 3px solid $color-dark;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 10px;
 
-.edit-button:hover {
-  background-color: #e68900;
-}
-
-.actions {
-  display: flex;
-  justify-content: space-between;
-  flex-direction: row;
-  margin-top: 20px;
-  @media (max-width: 768px) {
-    flex-direction: column;
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   }
-}
-
-.actions button {
-  background-color: white;
-  border: 1px solid goldenrod;
-  color: black;
-  margin: 10px;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.actions button:hover {
-  background-color: #30d4ff;
 }

@@ -3,6 +3,7 @@ import Image from 'next/image';
 import phoneIcon from '../../public/assets/icons/phone.png';
 import data from '../data/data.json';
 import Link from "next/link";
+import dynamic from "next/dynamic";
 
 const SupportHome = () => {
     const supportItems = data.supportItems;
@@ -13,21 +14,30 @@ const SupportHome = () => {
             <div className="support-items">
                 {supportItems.map((item, index) => (
                     <div key={index} className="support-item">
-                        <a href={item.anchor}>
-                            <Image src={item.icon} alt={item.text} width={40} height={40}/>
-                            <p>{item.text}</p>
-                        </a>
+                        <Link href={item.anchor}>
+                            <div>
+                                <Image
+                                    src={item.icon}
+                                    alt={item.text}
+                                    width={40}
+                                    height={40}
+                                    sizes="(max-width: 768px) 100vw, 150px"
+                                    loading={"lazy"}
+                                />
+                                <p>{item.text}</p>
+                            </div>
+                        </Link>
                     </div>
                 ))}
             </div>
             <div className="contact-call">
                 <h3>Zadzwoń do nas, my zorganizujemy pogrzeb</h3>
-                <a href="tel:+48600000000">
-                    <Image src={phoneIcon} alt="Phone" width={32} height={32}/>
+                <Link href="tel:+48600000000">
+                    <Image src={phoneIcon} alt="Phone" width={32} height={32} sizes="(max-width: 768px) 100vw, 40px"/>
                     <p>+48 600 000 000</p>
-                </a>
+                </Link>
             </div>
-            <p>lub</p>
+            <p className="or-title">lub</p>
             <div className="start-yourself">
                 <Link href="/search">
                     <h3 href="#start">Zacznij tutaj samodzielnie, my dalej wszystko zorganizujemy</h3>
@@ -43,15 +53,15 @@ const SupportHome = () => {
                         zakładami.
                         U nas załatwisz wszystko, łącznie z dokumentami i wyborem asortymentu, nie opuszczając
                         domu.</h3>
-                    <a href="#how-it-works" className="check-how-it-works">
+                    <Link href="#how-it-works" className="check-how-it-works">
                         Sprawdź jak to działa
                         <span className="arrow-icon"></span>
-                    </a>
+                    </Link>
                 </div>
             </div>
         </div>
     );
 };
+export default dynamic (() => Promise.resolve(SupportHome), {ssr: false})
 
-export default SupportHome;
 

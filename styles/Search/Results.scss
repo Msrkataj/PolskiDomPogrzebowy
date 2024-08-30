@@ -48,7 +48,7 @@
 }
 
 .home-details {
-  background-image: url("../../public/assets/images/wzór2.png");
+  background-image: url("../../public/assets/images/chessboard.webp");
   flex: 1;
   padding: 0;
   h4 {
@@ -78,58 +78,107 @@
 
 .home-details-contact {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  padding: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  flex-direction: column;
-  flex-wrap: wrap;
+  padding: 15px;
+  line-height: 25px;
   background-color: white;
+  border-radius: 10px;
+  max-width: 600px;
+  margin: 0 auto;
   @media (min-width: 768px) {
-    padding: 10px;
+    padding: 20px;
   }
   p {
-    padding: 5px;
-
+    margin: 10px 0;
+    font-size: 1em;
+    line-height: 1.5;
+    color: #333;
     strong {
-      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+      font-size: 1.2em;
+      color: #000;
     }
   }
 }
-p {
-  line-height: 2;
-  font-size: 1.2em;
+.home-details-name-panel {
+  justify-content: center;
+}
+
+
+.home-details-name {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  img {
+    width: 100px;
+    height: auto;
+    border-radius: 5px;
+  }
+  h3 {
+    margin: 0;
+    font-size: 1.8em;
+    color: #333;
+  }
+}
+.home-details-contact input[type="text"],
+.home-details-contact input[type="email"],
+.home-details-contact input[type="tel"],
+.home-details-contact input[type="time"],
+.home-details-contact select {
+  width: calc(100% - 20px);
+  padding: 10px;
+  margin: 5px 0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1em;
+  box-sizing: border-box;
+}
+
+.home-details-contact input[type="text"]:focus,
+.home-details-contact input[type="email"]:focus,
+.home-details-contact input[type="tel"]:focus,
+.home-details-contact input[type="time"]:focus,
+.home-details-contact select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 .services, .reviews {
   margin-top: 20px;
   .funeral-home-text p {
     padding: 5px;
-    color: grey;
+    color: #666;
+    font-size: 1em;
+    line-height: 1.5;
   }
-
 }
+
 .home-details-item {
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
   flex-direction: row;
   flex-wrap: wrap;
-  margin: 5px 0;
-  font-size: 1.2em;
+  margin: 10px 0;
+  font-size: 1em;
+  color: #333;
 }
+
 .service-item {
   display: flex;
   align-items: center;
-  gap: 5px;
-  margin-bottom: 5px;
+  gap: 10px;
+  margin-bottom: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 10px;
+  background-color: white;
+  border-radius: 5px;
   justify-content: space-between;
   flex-direction: row;
   flex-wrap: wrap;
-  background-color: white;
-
 }
+
 .funeral-home-text {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 10px;
@@ -149,24 +198,6 @@ p {
     justify-content: flex-start;
   }
 }
-
-
-.service-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
-
-  img {
-    width: 40px;
-    height: 40px;
-    margin-right: 10px;
-  }
-
-  span {
-    font-weight: 500;
-  }
-}
-
 
 .select-button {
   background-color: #000;
@@ -290,5 +321,34 @@ max-width: 100vw;
 
   .home-details, .home-images {
     width: 100%;
+  }
+}
+.services-details {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  line-height: 25px;
+  background-color: white;
+  border-radius: 10px;
+  max-width: 600px;
+  margin: 0 auto;
+  @media (min-width: 768px) {
+    padding: 20px;
+  }
+  p {
+    margin: 10px 0;
+    font-size: 1em;
+    line-height: 1.5;
+    color: #333;
+    strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 1.2em;
+      color: #000;
+    }
+  }
+  textarea {
+    width: 80vw;
+    height: 100px;
+    max-width: 500px;
   }
 }

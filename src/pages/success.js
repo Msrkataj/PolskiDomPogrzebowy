@@ -1,10 +1,12 @@
-import React from "react";
+import React, {useState} from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import Form from "@/components/form/Form";
 import Success from "@/components/form/Success";
+import ChatComponent from "@/components/common/ChatComponent";
 
-const Home = () => {
+const SuccessHome = () => {
+    const [minimized, setMinimized] = useState(true);
+
     return (
         <>
             <header>
@@ -16,8 +18,9 @@ const Home = () => {
             <footer>
                 <Footer/>
             </footer>
+            <ChatComponent minimized={minimized} setMinimized={setMinimized} />
         </>
     );
 }
 
-export default Home
+export default SuccessHome

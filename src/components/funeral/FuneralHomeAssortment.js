@@ -5,6 +5,7 @@ import {getDownloadURL, listAll, ref} from 'firebase/storage';
 import Assortment from "./AddAsortment";
 import {v4 as uuidv4} from 'uuid';
 import Link from "next/link";
+import Image from 'next/image';
 
 const FuneralHomeAssortment = () => {
     const [assortment, setAssortment] = useState([]);
@@ -18,6 +19,7 @@ const FuneralHomeAssortment = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [filterCategory, setFilterCategory] = useState('all');
+    const [filterType, setFilterType] = useState('all'); // Nowy stan do filtrowania typu
     const [newProducts, setNewProducts] = useState([{
         id: uuidv4(),
         name: '',
@@ -84,7 +86,14 @@ const FuneralHomeAssortment = () => {
         setFilterCategory(e.target.value);
     };
 
-    const filteredAssortment = assortment.filter(item => filterCategory === 'all' || item.category === filterCategory);
+    const handleTypeFilterChange = (e) => {
+        setFilterType(e.target.value);
+    };
+
+    const filteredAssortment = assortment.filter(item =>
+        (filterCategory === 'all' || item.category === filterCategory) &&
+        (filterType === 'all' || item.type === filterType)
+    );
 
     const sortedProducts = React.useMemo(() => {
         let sortableProducts = [...filteredAssortment];
@@ -211,11 +220,13 @@ const FuneralHomeAssortment = () => {
         };
         return translations[category] || category;
     };
+
     const translateType = (type) => {
         const translations = {
-            'wooden': 'Drewno',
-            'woden': 'Drewno',
-            'stolen': 'Kamień',
+            'wooden': 'Drewniana',
+            'stone': 'Kamienna',
+            'Ceramiczna': 'Ceramiczna',
+            'Szklana': 'Szklana',
         };
         return translations[type] || type;
     };
@@ -225,7 +236,7 @@ const FuneralHomeAssortment = () => {
     }
 
     return (
-        <div className={isModalOpen ? "container assortment-none" : "container"} >
+        <div className={isModalOpen ? "container assortment-none" : "container"}>
             <Link className="back-link" href="/funeral/panel">
                 Wróć do panelu
             </Link>
@@ -240,54 +251,57 @@ const FuneralHomeAssortment = () => {
                     <option value="crosses">Krzyże</option>
                     <option value="music">Odprawy muzyczne</option>
                 </select>
+                <select onChange={handleTypeFilterChange}>
+                    <option value="all">Wszystkie typy</option>
+                    <option value="wooden">Drewniana</option>
+                    <option value="stone">Kamienna</option>
+                    <option value="Ceramiczna">Ceramiczna</option>
+                    <option value="Szklana">Szklana</option>
+                </select>
             </div>
-            <div className={isModalOpen ? "assortment assortment-none" : "assortment"}>
+            <table className="assortment-table">
+                <thead>
+                <tr>
+                    <th>Miniaturka</th>
+                    <th>Nazwa</th>
+                    <th>Kategoria</th>
+                    <th>Typ</th>
+                    <th>Dostępność</th>
+                    <th>Cena</th>
+                    <th>Producent</th>
+                    <th>Akcje</th>
+                </tr>
+                </thead>
+                <tbody>
                 {currentItems.map((product, index) => (
-                    <div key={index} className="assortment-item">
-                        <h2>{product.name}</h2>
-                        {product.imageUrls.length > 0 ? (
-                            <div className="image-slider-funeral">
-                                <button onClick={() => handlePrevImage(index)}>←</button>
-                                <img src={product.imageUrls[currentImageIndexes[index] || 0]} alt={product.name}/>
-                                <button onClick={() => handleNextImage(index)}>→</button>
-                            </div>
-                        ) : (
-                            <span>Brak zdjęć</span>
-                        )}
-                        <p>
-                            <strong>Kategoria:</strong> {translateCategory(product.category)}
-                        </p>
-                        {product.type ?
-                            <p>
-                                <strong>Typ:</strong> {translateType(product.type)}
-                            </p>
-                            : null}
-                        {product.build ?
-                            <p>
-                                <strong>Typ:</strong> {product.build}
-                            </p>
-                            : null}
-                        <p>
-                            <strong>Dostępność:</strong> {product.availability}
-                        </p>
-                        <p>
-                            <strong>Opis:</strong> {product.text}
-                        </p>
-                        {product.type === null ? (
-                            <p>
-                                <strong>Materiał:</strong> {product.build}
-                            </p>
-                        ) : null}
-                        <p>
-                            <strong>Producent:</strong> {product.producent}
-                        </p>
-                        <p>
-                            <strong>Cena:</strong> {product.price} PLN
-                        </p>
-                        <button onClick={() => handleEditClick(index)}>Edytuj</button>
-                    </div>
+                    <tr key={index}>
+                        <td>
+                            {product.imageUrls.length > 0 ? (
+                                <Image
+                                    src={product.imageUrls[currentImageIndexes[index] || 0]}
+                                    alt={product.name}
+                                    className="product-thumbnail"
+                                    width={100} // Dostosuj szerokość
+                                    height={100} // Dostosuj wysokość
+                                    style={{ objectFit: 'cover' }} // Przeniesione ustawienie objectFit do style
+                                />
+                            ) : (
+                                <span>Brak zdjęć</span>
+                            )}
+                        </td>
+                        <td>{product.name}</td>
+                        <td>{translateCategory(product.category)}</td>
+                        <td>{translateType(product.type)}</td>
+                        <td>{product.availability}</td>
+                        <td>{product.price} PLN</td>
+                        <td>{product.producent}</td>
+                        <td>
+                            <button onClick={() => handleEditClick(index)}>Edytuj</button>
+                        </td>
+                    </tr>
                 ))}
-            </div>
+                </tbody>
+            </table>
             <div className="pagination">
                 {[...Array(Math.ceil(assortment.length / itemsPerPage)).keys()].map((number) => (
                     <button key={number + 1} onClick={() => paginate(number + 1)}>
@@ -300,7 +314,7 @@ const FuneralHomeAssortment = () => {
             </button>
             {isModalOpen && editItem && (
                 <div className="modal-edit">
-                    <div className="modal-content">
+                    <div className="modal-content-funeral">
                         <h2>Edytuj produkt</h2>
                         <p>Nazwa:</p>
                         <input type="text" value={editItem.name} onChange={(e) => handleInputChange(e, 'name')}/>
@@ -325,15 +339,18 @@ const FuneralHomeAssortment = () => {
                         <h3>Zdjęcia</h3>
                         <ul>
                             {editItem.imageUrls.map((url, index) => (
-                                <li key={index} style={{listStyleType: 'none', marginBottom: '10px'}}>
-                                    <img src={url} alt={`Zdjęcie ${index + 1}`} style={{
-                                        width: '80px',
-                                        height: '80px',
-                                        objectFit: 'cover',
-                                        marginRight: '10px'
-                                    }}/>
-                                    <button onClick={() => handleImageRemove(index)} style={{marginLeft: '10px'}}>Usuń
-                                    </button>
+                                <li key={index} style={{ listStyleType: 'none', marginBottom: '10px' }}>
+                                    <Image
+                                        src={url}
+                                        alt={`Zdjęcie ${index + 1}`}
+                                        width={80}
+                                        height={80}
+                                        style={{
+                                            marginRight: '10px',
+                                            objectFit: 'cover', // Nowy sposób ustawienia stylu
+                                        }}
+                                    />
+                                    <button onClick={() => handleImageRemove(index)} style={{ marginLeft: '10px' }}>Usuń</button>
                                 </li>
                             ))}
                         </ul>
@@ -344,7 +361,6 @@ const FuneralHomeAssortment = () => {
                         </div>
                     </div>
                 </div>
-
             )}
             {isAddModalOpen && (
                 <div className="modal-add">

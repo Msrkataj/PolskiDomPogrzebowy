@@ -29,32 +29,51 @@
 @import "Funeral/FuneralHomeAssortment";
 @import "Funeral/Reviews";
 @import "Funeral/Clients";
-
+@import "Admin/panel";
+@import "Admin/orther";
+@import "Admin/funerals";
+@import "Form/modalsForm";
+@import "Mission/mission";
+@import "Trust/Trust";
+@import "Trust/TrustSecond";
+@import "Contact/Contact";
+@import "Admin/Rate.scss";
+@import "Join";
+@import "Join/Join";
+@import "documents/Pelnomocnictwo";
+@import "Client/Reports";
+@import "Common/ChatComponent";
+@import "404";
 html {
-  font-size: 8px;
+  font-size: 12px;
   text-decoration: none;
 }
 
 body {
-  font-size: 12px;
+  font-size: 14px;
   color: $color-grey;
   overflow-x: hidden;
-  font-family: 'Avenir';
+  //font-family: 'Avenir', sans-serif;
   overflow-y: auto;
+
 }
 main {
   min-height: 65vh;
 
 }
+body.no-scroll, html.no-scroll {
+  overflow: hidden;
+}
+
+
 a {
-  text-decoration: none;
+  text-decoration: none !important;
   cursor: pointer;
   color: $color-menu;
 
 }
 
 h1 {
-  font-family: "Bookman Old Style";
   font-size: 2em;
 }
 
@@ -65,5 +84,47 @@ h1 {
   &.visible {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Pełna wysokość widoku */
+  background-color: #f4f4f4; /* Tło w jasnym kolorze */
+}
+
+.loadingSpinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #ddd;
+  border-top-color: #007bff; /* Kolor ładowania */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loadingText {
+  font-size: 1.5em;
+  color: #555;
+  margin-top: 20px;
+  text-align: center;
+}
+.loading {
+  text-align: center;
+}
+
+/* Animacja dla spinnera */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+main {
+  @media (max-width: 768px) {
+    padding-top: 120px;
+  }
+}
+.main-mobile {
+  @media (max-width: 768px) {
+    padding-top: 0;
   }
 }

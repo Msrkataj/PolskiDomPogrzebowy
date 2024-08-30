@@ -9,7 +9,7 @@ const FuneralClient = () => {
             <header>
                 <Header/>
             </header>
-            <main>
+            <main className="main-mobile">
                 <Funeral/>
             </main>
             <footer>

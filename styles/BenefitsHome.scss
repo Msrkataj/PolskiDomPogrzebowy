@@ -28,6 +28,7 @@
     justify-content: center;
     gap: 20px;
     padding: 20px;
+    font-family: 'Avenir', sans-serif;
 
     .benefit-card {
       flex: 1 1 100%;
@@ -50,6 +51,8 @@
 
       p {
         color: #666;
+        font-size: 1.2em;
+        line-height: 30px;
       }
     }
   }

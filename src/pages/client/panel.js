@@ -10,7 +10,7 @@ const Home = () => {
             <header>
                 <Header/>
             </header>
-            <main>
+            <main className="main-mobile">
                 <Panel/>
                 <Reports/>
             </main>

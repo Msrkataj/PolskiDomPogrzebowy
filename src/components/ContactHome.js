@@ -3,6 +3,8 @@ import phoneIcon from '../../public/assets/icons/phone.png';
 import chatIcon from '../../public/assets/icons/consultant.png';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faEnvelope} from '@fortawesome/free-solid-svg-icons'
+import Link from "next/link";
+import dynamic from "next/dynamic";
 
 const PolskaMap = () => {
     return (
@@ -10,7 +12,11 @@ const PolskaMap = () => {
             <h2 id="nationwide-support" className="contact-title">Pomoc na terenie całej Polski</h2>
             <section className="polska-map-section">
                 <div className="map">
-                    <Image src="/assets/images/map.png" alt="Mapa Polski" layout="fill" objectFit="contain"/>
+                    <Image src="/assets/images/map.png" alt="Mapa Polski" fill style={{objectFit: "contain"}} sizes="(max-width: 768px) 100vw,
+           (max-width: 1200px) 50vw,
+           33vw"
+                           loading={"lazy"}
+                    />
                 </div>
                 <div className="contact-info">
                     <p className="contact-info-text">Działamy na terenie całej Polski, oferując kompleksowe usługi
@@ -22,28 +28,28 @@ const PolskaMap = () => {
                         <h3>Kontakt</h3>
                         <div className="contact-methods-main">
                             <div className="contact-item">
-                                <a href="tel:+48600000000">
+                                <Link href="tel:+48600000000">
                                     <Image src={phoneIcon} alt="Telefon" width={32} height={32}/>
                                     <div className="contact-item-details">
                                         <p>+48 600 000 000</p>
                                         <span>Telefon całodobowy</span>
                                     </div>
-                                </a>
+                                </Link>
                             </div>
                             <div className="contact-item">
-                                <a href="/chat">
+                                <div >
                                     <Image src={chatIcon} alt="Czat na żywo" width={32} height={32}/>
                                     <div className="contact-item-details">
                                         <p>Czat na żywo</p>
                                         <span>W razie dostępności</span>
                                     </div>
-                                </a>
+                                </div>
                             </div>
                             <div className="contact-item">
-                                <a href="mailto:kontakt@pdpogrzebowy.pl">
+                                <Link href="mailto:kontakt@pdpogrzebowy.pl">
                                     <FontAwesomeIcon icon={faEnvelope} size="2x"/>
                                     <p>kontakt@pdpogrzebowy.pl</p>
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -52,5 +58,5 @@ const PolskaMap = () => {
         </div>
     );
 };
+export default dynamic (() => Promise.resolve(PolskaMap), {ssr: false})
 
-export default PolskaMap;

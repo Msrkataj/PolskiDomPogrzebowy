@@ -9,6 +9,7 @@
   align-items: center;
   padding: 20px;
   text-align: center;
+  font-family: 'Avenir', sans-serif;
 
   .content-wrapper {
     display: flex;
@@ -18,6 +19,13 @@
     background-color: white;
     margin: 20px 0;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
   }
 
   .support-text {
@@ -25,25 +33,34 @@
     margin: 20px;
 
     h3 {
-      font-size: 1.5em;
-      margin: 10px 0;
+      font-size: 2em;
+      margin: 20px 0;
+      text-align: center;
+
+      @media (min-width: 768px) {
+        text-align: left;
+      }
     }
 
     p {
-      font-size: 1.3em;
+      font-size: 1.2em;
       line-height: 1.5;
     }
 
     .support-button {
-      border: 1px solid $color-main2;
-      color: black;
-      padding: 10px 20px;
-      text-decoration: none;
-      display: inline-block;
-      margin-top: 20px;
+      width: 100%;
+      padding: 8px 5px;
+      border-radius: 10px;
+      border: 1px solid $color-gold;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       background-color: white;
-      border-radius: 5px;
-      transition: background-color 0.3s;
+      color: black;
+
+      @include mobile-mini-plus {
+        padding: 15px 30px;
+        font-size: 1.3em;
+
+      }
 
       &:hover {
         background-color: #f0f0f0; // zmień na odpowiedni kolor
@@ -59,21 +76,24 @@
     background-color: #f0f0f0;
     border: 2px solid black;
 
-    @media (min-width: 1208px) {
+    @media (min-width: 1200px) {
       height: 400px;
     }
 
     img {
       position: absolute;
-      right: 0;
+      left: 0; // zmiana położenia obrazu na lewą stronę
       top: 0;
       height: 100%;
       object-fit: cover;
-      object-position: right;
+      object-position: center; // wyrównanie obrazu
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      &:hover {
+        transform: scale(1.1);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+      }
     }
   }
-
-
 
   .contact-options {
     max-width: 600px;
@@ -81,7 +101,7 @@
     margin: 20px 0;
 
     h2 {
-      font-size: 1.5em;
+      font-size: 2em;
       margin-bottom: 10px;
       font-family: "Bookman Old Style";
       display: inline-block;
@@ -101,7 +121,6 @@
     }
 
     p {
-      font-size: 1em;
       line-height: 2;
       font-size: 1.2em;
     }
@@ -112,24 +131,17 @@
       margin-bottom: 20px;
 
       .option-select {
-
         transition: transform 0.3s;
 
         &:hover {
           transform: scale(1.05);
         }
-
-
       }
     }
   }
 
   @media (min-width: 768px) {
     .content-wrapper {
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-
       .support-text {
         max-width: 50%;
         text-align: left;
@@ -147,9 +159,6 @@
       .option-main {
         display: flex;
         justify-content: center;
-      }
-
-      .option {
       }
     }
   }

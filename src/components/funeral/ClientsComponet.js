@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {useRouter} from 'next/router';
 import {db} from '../../../firebase';
 import {collection, query, where, getDocs, onSnapshot, doc, updateDoc} from 'firebase/firestore';
@@ -8,10 +8,12 @@ import {faCog} from '@fortawesome/free-solid-svg-icons';
 import Uwagi from './Comments';
 import useFetchFuneralHomeData from './FetchFuneralHomeData';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
+import Image from "next/image";
 const Clients = () => {
     const funeralHome = useFetchFuneralHomeData(); // Użycie hooka do pobrania danych
     const [orders, setOrders] = useState([]);
     const [selectedRows, setSelectedRows] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [statusOptions, setStatusOptions] = useState([
         'Nowe zgłoszenie',
         'Weryfikacja danych',
@@ -40,31 +42,45 @@ const Clients = () => {
         'Ceremonia pogrzebowa': 'Ceremonia pogrzebowa jest w trakcie realizacji.',
         'Zakończone': 'Wszystkie czynności związane z zamówieniem zostały zakończone.'
     };
-    useEffect(() => {
-        const fetchOrders = async () => {
-            const q = query(collection(db, 'forms'), where('status', '!=', null));
+    const fetchOrders = useCallback(async () => {
+        if (!funeralHome) return;
+
+        try {
+            const q = query(collection(db, 'forms'), where('funeralHomeName', '==', funeralHome.funeralHomeName));
             const querySnapshot = await getDocs(q);
 
             const ordersData = [];
             querySnapshot.forEach((doc) => {
-                ordersData.push({id: doc.id, ...doc.data()});
+                ordersData.push({ id: doc.id, ...doc.data() });
             });
 
             setOrders(ordersData);
-        };
+            setLoading(false);
+        } catch (error) {
+            console.error("Error fetching orders:", error);
+            setLoading(false);
+        }
+    }, [funeralHome]); // Zależność od funeralHome
 
-        fetchOrders();
+    useEffect(() => {
+        if (funeralHome) {
+            fetchOrders(); // Teraz bezpieczne wywołanie z useEffect
 
-        const unsubscribe = onSnapshot(query(collection(db, 'forms')), (snapshot) => {
-            const updatedOrders = [];
-            snapshot.forEach((doc) => {
-                updatedOrders.push({id: doc.id, ...doc.data()});
-            });
-            setOrders(updatedOrders);
-        });
+            const unsubscribe = onSnapshot(
+                query(collection(db, 'forms'), where('funeralHomeName', '==', funeralHome.funeralHomeName)),
+                (snapshot) => {
+                    const updatedOrders = [];
+                    snapshot.forEach((doc) => {
+                        updatedOrders.push({ id: doc.id, ...doc.data() });
+                    });
+                    setOrders(updatedOrders);
+                }
+            );
 
-        return () => unsubscribe();
-    }, []);
+            return () => unsubscribe();
+        }
+    }, [funeralHome, fetchOrders]);
+
     const toggleActionDropdown = (orderId) => {
         setActiveActionDropdown(activeActionDropdown === orderId ? null : orderId);
     };
@@ -116,15 +132,29 @@ const Clients = () => {
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-    if (!orders.length) return <div>Loading...</div>;
+    if (loading) return <div className="loadingContainer">
+        <div className="loadingSpinner"></div>
+        <div className="loadingText">Ładowanie danych...</div>
+    </div>;
 
     return (
         <div className="dashboardContainer">
             <h1>Witamy w Twoim Panelu Domu Pogrzebowego</h1>
             <div className="funeralHomeInfo">
-                <img src={funeralHome.logoUrl} alt="Logo" className="funeralHomeLogo"/>
+                {funeralHome && funeralHome.logoUrl && (
+                    <Image
+                        src={funeralHome.logoUrl}
+                        alt="Logo"
+                        width={100}  // Szerokość obrazu (dostosuj według potrzeb)
+                        height={100}  // Wysokość obrazu (dostosuj według potrzeb)
+                        className="funeralHomeLogo"
+                        style={{ objectFit: 'contain' }}  // Dodaj stylizację CSS dla `objectFit`
+                    />
+                )}
                 <div className="funeralHomeDetails">
-                    <h2>{funeralHome.funeralHomeName}</h2>
+                    {funeralHome && funeralHome.funeralHomeName && (
+                        <h2>{funeralHome.funeralHomeName}</h2>
+                    )}
                 </div>
             </div>
             <div className="orderTableContainer">
@@ -159,7 +189,8 @@ const Clients = () => {
                     </tr>
                     </thead>
                     <tbody>
-                    {currentItems.map((order) => (
+                    {currentItems.length > 0 ? (
+                        currentItems.map((order) => (
                         <tr key={order.id} className={selectedRows.includes(order.id) ? 'selected' : ''}>
                             <td><input type="checkbox" checked={selectedRows.includes(order.id)}
                                        onChange={() => handleRowSelect(order.id)}/></td>
@@ -194,10 +225,10 @@ const Clients = () => {
                                     </button>
                                     {activeActionDropdown === order.id && (
                                         <div className="actionDropdown">
-                                            <div onClick={() => handleActionSelect(order.id, 'clientDetails')}>Zobacz
+                                            <div className="button" onClick={() => handleActionSelect(order.id, 'clientDetails')}>Zobacz
                                                 szczegóły klienta
                                             </div>
-                                            <div onClick={() => handleActionSelect(order.id, 'orderDetails')}>Zobacz
+                                            <div className="button" onClick={() => handleActionSelect(order.id, 'orderDetails')}>Zobacz
                                                 zamówienie klienta
                                             </div>
                                         </div>
@@ -205,7 +236,14 @@ const Clients = () => {
                                 </div>
                             </td>
                         </tr>
-                    ))}
+                            ))
+                    ) : (
+                        <tr>
+                            <td colSpan="9" style={{ textAlign: 'center' }}>
+                                Brak klientów do wyświetlenia.
+                            </td>
+                        </tr>
+                    )}
                     </tbody>
                 </table>
                 {/* Dodajemy paginację */}

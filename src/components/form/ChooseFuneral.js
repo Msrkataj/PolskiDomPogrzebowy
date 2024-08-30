@@ -3,7 +3,7 @@ import {db} from '../../../firebase';
 import {doc, getDoc, collection, query, where, getDocs} from 'firebase/firestore';
 import {getStorage, ref, getDownloadURL} from 'firebase/storage';
 import Link from "next/link";
-
+import Image from 'next/image';
 
 const SelectedFuneralHome = (success) => {
     const [funeralHome, setFuneralHome] = useState(null);
@@ -28,7 +28,6 @@ const SelectedFuneralHome = (success) => {
                     if (formDoc.exists()) {
                         const formData = formDoc.data();
                         if (formData && formData.funeralHomeName) {
-                            console.log(formData.funeralHomeName)
                             const funeralHomesCollection = collection(db, 'domyPogrzebowe');
                             const q = query(funeralHomesCollection, where('funeralHomeName', '==', formData.funeralHomeName));
                             const querySnapshot = await getDocs(q);
@@ -55,7 +54,6 @@ const SelectedFuneralHome = (success) => {
 
         fetchData();
     }, []);
-console.log(success.success)
 
     if (!funeralHome) return <div>Loading...</div>;
 
@@ -65,7 +63,14 @@ console.log(success.success)
                 <div className="funeral-home-container">
                     <div className="funeral-home-card">
                         <div className="funeral-home-info">
-                            <img src={funeralHome.logoURL} alt="Logo" className="funeral-home-logo"/>
+                            <Image
+                                src={funeralHome.logoURL}  // Zakładając, że logoURL to prawidłowy URL do obrazu
+                                alt="Logo"
+                                className="funeral-home-logo"
+                                width={100}  // Ustaw szerokość obrazu
+                                height={100}  // Ustaw wysokość obrazu
+                                style={{ objectFit: 'cover' }}  // Opcjonalnie dodaj styl dopasowania obrazu
+                            />
                             <div className="funeral-home-details">
                                 <h2>{funeralHome.funeralHomeName}</h2>
                                 <p>Ocena: {funeralHome.rating} ★</p>
@@ -87,7 +92,14 @@ console.log(success.success)
             ) : (
                 <div className="funeral-home-card">
                     <div className="funeral-home-info">
-                        <img src={funeralHome.logoURL} alt="Logo" className="funeral-home-logo"/>
+                        <Image
+                            src={funeralHome.logoURL} // Użyj dynamicznego URL-a do obrazu
+                            alt="Logo"  // Alternatywny tekst dla obrazu
+                            className="funeral-home-logo"  // Klasa CSS dla stylizacji
+                            width={100}  // Ustaw szerokość obrazu (dostosuj do swoich potrzeb)
+                            height={100}  // Ustaw wysokość obrazu (dostosuj do swoich potrzeb)
+                            style={{ objectFit: 'contain' }}  // Stylizowanie obrazu
+                        />
                         <div className="funeral-home-details">
                             <h2>{funeralHome.name}</h2>
                             <p>Ocena: {funeralHome.rating} ★</p>

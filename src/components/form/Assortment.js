@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { db, storage } from '../../../firebase';
 import { collection, doc, getDoc, getDocs, query, where, updateDoc } from 'firebase/firestore';
 import { ref, listAll, getDownloadURL } from 'firebase/storage';
@@ -92,7 +92,7 @@ const Assortment = () => {
         }
     };
 
-    const filterAssortment = () => {
+    const filterAssortment = useCallback(() => {
         const filtered = assortyment.filter(item => {
             if (selectedCategory === 'coffins' || selectedCategory === 'urns') {
                 return item.category === selectedCategory &&
@@ -105,11 +105,12 @@ const Assortment = () => {
                     (budget === '' || item.price <= parseFloat(budget));
             }
         });
+
         setFilteredAssortyment(filtered);
-        const newImages = {...images}; // Kopia obecnych obrazów
+        const newImages = { ...images }; // Kopia obecnych obrazów
         const imagePromises = filtered.map(async (item) => {
             if (item.category !== 'music') {
-                const urls = await fetchImages(item);
+                const urls = await fetchImages(item);  // Używamy fetchImages z useCallback
                 newImages[item.name] = urls;
             }
             return null;
@@ -120,10 +121,10 @@ const Assortment = () => {
         });
 
         setCurrentIndex(null);
-    };
+    }, [assortyment, selectedCategory, selectedType, budget, images]);
 
 
-    const fetchImages = async (assortmentItem) => {
+    const fetchImages = useCallback(async (assortmentItem) => {
         const { category, type, name } = assortmentItem;
         const sanitizedCategory = category;
         const sanitizedName = name;
@@ -144,7 +145,7 @@ const Assortment = () => {
             console.error('Błąd pobierania URL do zdjęcia:', error);
             return [];
         }
-    };
+    }, []);
 
     const handleItemClick = (index) => {
         if (selectedCategory !== 'music') {
@@ -244,15 +245,22 @@ const Assortment = () => {
         }
 
         try {
+            const cartWithImages = cart.map(item => {
+                return {
+                    ...item,
+                    imageUrls: images[item.name] || []  // Dodanie linków do obrazów asortymentu
+                };
+            });
+
             const formRef = doc(db, 'forms', formId);
             await updateDoc(formRef, {
-                selectedItems: cart,
+                selectedItems: cartWithImages, // Zaktualizowany koszyk z linkami do obrazów
                 timestamp: new Date()
             });
             console.log("Dane zapisane w formularzu z ID: ", formId);
             setCart([]);
             await router.push("/summary");
-            handleHideCart()
+            handleHideCart();
             localStorage.removeItem('cart');
         } catch (error) {
             console.error("Błąd przy zapisie danych: ", error);
@@ -289,12 +297,13 @@ const Assortment = () => {
                 <h1>Wybierz asortyment</h1>
                 <div className="budget-input">
                     <label>Podaj swój budżet, zaproponujemy Ci najlepszy zestaw do Twoich możliwości:</label>
-                    <input
-                        type="number"
-                        value={budget}
-                        onChange={(e) => setBudget(e.target.value)}
-                        placeholder="Wpisz budżet"
-                    />
+                    <select value={budget} onChange={(e) => setBudget(e.target.value)}>
+                        <option value="">Wybierz budżet</option>
+                        <option value="4000">do 4000zł</option>
+                        <option value="6000">do 6000zł</option>
+                        <option value="8000">do 8000zł</option>
+                        <option value="8000+">powyżej 8000zł</option>
+                    </select>
                 </div>
                 <div className="category-buttons">
                     <button onClick={() => setSelectedCategory('coffins')}
@@ -344,8 +353,9 @@ const Assortment = () => {
                                             <p>Cena: {formatPrice(item.price)} PLN</p>
                                             {selectedCategory !== 'music' && images[item.name] && (
                                                 <div className="image-container">
-                                                    <Image src={images[item.name][0]} alt={item.name} layout="fill"
-                                                           style={{objectFit: 'contain'}}/>
+                                                    <Image src={images[item.name][0]} alt={item.name} fill
+                                                           style={{objectFit: 'contain'}} sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                                    />
                                                 </div>
                                             )}
                                         </>
@@ -367,8 +377,13 @@ const Assortment = () => {
 
                                         <div className="expanded-image-container">
                                             {images[item.name] && (
-                                                <Image src={images[item.name][currentImageIndex]} alt={item.name}
-                                                       layout="fill" objectFit="contain"/>
+                                                <Image
+                                                    src={images[item.name][currentImageIndex]}
+                                                    alt={item.name}
+                                                    fill
+                                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                                    style={{ objectFit: 'contain' }}
+                                                />
                                             )}
                                         </div>
                                         <div className="image-navigation" onClick={(e) => e.stopPropagation()}>
@@ -407,7 +422,13 @@ const Assortment = () => {
                                                     <span>{index + 1}</span>
                                                     {item.category !== 'music' ? (
                                                         images[item.name] ? (
-                                                            <img src={images[item.name][0]} alt={item.name}/>
+                                                            <Image
+                                                                src={images[item.name][0]}
+                                                                alt={item.name}
+                                                                width={100}  // Ustaw szerokość obrazu
+                                                                height={100}  // Ustaw wysokość obrazu
+                                                                style={{ objectFit: 'cover' }}  // Opcjonalnie dodaj styl dopasowania obrazu
+                                                            />
                                                         ) : (
                                                             <span>Brak zdjęcia</span>
                                                         )

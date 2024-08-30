@@ -1,24 +1,52 @@
 {
     "menuItems": [
-        { "name": "Home", "href": "/", "img": "/assets/icons/home.png" },
-        { "name": "Nasza misja", "href": "/mission", "img": "/assets/icons/mission.png" },
-        { "name": "Pomoc krok po kroku", "href": "/search", "img": "/assets/icons/help.png" },
-        { "name": "Zaufali nam", "href": "/trust", "img": "/assets/icons/trust.png" },
-        { "name": "Kontakt", "href": "/contact", "img": "/assets/icons/contact.png" }
+        { "name": "Home", "href": "/", "img": "/assets/icons/white/home.webp" },
+        { "name": "Nasza misja", "href": "/mission", "img": "/assets/icons/white/mission.webp" },
+        { "name": "Pomoc krok po kroku", "href": "/search", "img": "/assets/icons/white/help.webp" },
+        { "name": "Zaufali nam", "href": "/trust", "img": "/assets/icons/white/trust.webp" },
+        { "name": "Kontakt", "href": "/contact", "img": "/assets/icons/white/contact.webp" }
+    ],
+    "menuMobileItems": [
+        { "name": "Home", "href": "/", "img": "/assets/icons/black/home.webp" },
+        { "name": "Nasza misja", "href": "/mission", "img": "/assets/icons/black/mission.webp" },
+        { "name": "Pomoc krok po kroku", "href": "/search", "img": "/assets/icons/black/help.webp" },
+        { "name": "Zaufali nam", "href": "/trust", "img": "/assets/icons/black/trust.webp" },
+        { "name": "Kontakt", "href": "/contact", "img": "/assets/icons/black/contact.webp" }
     ],
     "FuneralmenuItems": [
-        { "name": "Zamówienia", "href": "/funeral/orders"},
-        { "name": "Klienci", "href": "/funeral/clients"},
-        { "name": "Produkty", "href": "/funeral/assortment"},
-        { "name": "Profil Zakładu", "href": "/funeral/my-funeral"},
-        { "name": "Opinie", "href": "/funeral/reviews"}
+        { "name": "Zamówienia", "href": "/funeral/orders", "img": "/assets/icons/white/zamowienia.webp"},
+        { "name": "Klienci", "href": "/funeral/clients", "img": "/assets/icons/white/klienci.webp"},
+        { "name": "Produkty", "href": "/funeral/assortment", "img": "/assets/icons/white/przedmioty.webp"},
+        { "name": "Profil Zakładu", "href": "/funeral/my-funeral", "img": "/assets/icons/white/domy.webp"},
+        { "name": "Opinie", "href": "/funeral/reviews", "img": "/assets/icons/white/opinie.webp"}
+    ],
+    "FuneralmenuMobileItems": [
+        { "name": "Zamówienia", "href": "/funeral/orders", "img": "/assets/icons/black/zamowienia.webp"},
+        { "name": "Klienci", "href": "/funeral/clients", "img": "/assets/icons/black/klienci.webp"},
+        { "name": "Produkty", "href": "/funeral/assortment", "img": "/assets/icons/black/przedmioty.webp"},
+        { "name": "Profil Zakładu", "href": "/funeral/my-funeral", "img": "/assets/icons/black/domy.webp"},
+        { "name": "Opinie", "href": "/funeral/reviews", "img": "/assets/icons/black/opinie.webp"}
+    ],
+    "AdminmenuItems": [
+        { "name": "Strona główna - zamówienia", "href": "/admin/panel", "img": "/assets/icons/white/zamowienia.webp"},
+        { "name": "Klienci", "href": "/admin/clients", "img": "/assets/icons/white/klienci.webp"},
+        { "name": "Domy pogrzebowe", "href": "/admin/funerals", "img": "/assets/icons/white/domy.webp"},
+        { "name": "Opinie", "href": "/admin/rate", "img": "/assets/icons/white/opinie.webp"},
+        { "name": "Pomoc", "href": "/admin/help", "img": "/assets/icons/white/znak.webp"}
+    ],
+    "AdminmenuMobileItems": [
+        { "name": "Strona główna - zamówienia", "href": "/admin/panel", "img": "/assets/icons/black/zamowienia.webp"},
+        { "name": "Klienci", "href": "/admin/clients", "img": "/assets/icons/black/klienci.webp"},
+        { "name": "Domy pogrzebowe", "href": "/admin/funerals", "img": "/assets/icons/black/domy.webp"},
+        { "name": "Opinie", "href": "/admin/rate", "img": "/assets/icons/black/opinie.webp"},
+        { "name": "Pomoc", "href": "/admin/help", "img": "/assets/icons/black/znak.webp"}
     ],
     "supportItems": [
         { "icon": "/assets/icons/heart.png", "text": "Wsparcie na każdym etapie organizacji pogrzebu", "anchor": "#how-it-works" },
         { "icon": "/assets/icons/phone.png", "text": "24/7 Obsługa klienta", "anchor": "#customer-support" },
         { "icon": "/assets/icons/transport.png", "text": "Profesjonalna organizacja ceremonii", "anchor": "#professional" },
-        { "icon": "/assets/icons/trumna.png", "text": "Szeroki wybór asortymentu pogrzebowego", "anchor": "#asortyment" },
-        { "icon": "/assets/icons/supportico.png", "text": "Wsparcie emocjonalne i psychologiczne", "anchor": "#emotional-support" },
+        { "icon": "/assets/icons/coffin.png", "text": "Szeroki wybór asortymentu pogrzebowego", "anchor": "#asortyment" },
+        { "icon": "/assets/icons/hearse.png", "text": "Wsparcie emocjonalne i psychologiczne", "anchor": "#emotional-support" },
         { "icon": "/assets/icons/map.png", "text": "Pomoc na terenie całej Polski", "anchor": "#nationwide-support" }
     ],
     "navigationData": [
@@ -62,9 +90,9 @@
         {
             "name": "Współpracuj z nami",
             "links": [
-                { "name": "Zostań naszym partnerem", "href": "/partner#zostan-partnerem" },
-                { "name": "Korzyści ze współpracy", "href": "/partner#korzysci" },
-                { "name": "Formularz zgłoszeniowy", "href": "/partner#formularz" }
+                { "name": "Zostań naszym partnerem", "href": "/join/cooperation" },
+                { "name": "Korzyści ze współpracy", "href": "/join/cooperation#korzysci" },
+                { "name": "Formularz zgłoszeniowy", "href": "/join" }
             ]
         },
         {

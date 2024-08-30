@@ -1,11 +1,10 @@
 import React from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import Form from "@/components/form/Form";
 import Assortment from "@/components/form/Assortment";
 import ChooseFuneral from "@/components/form/ChooseFuneral";
 
-const Home = () => {
+const AssortymentHome = () => {
     return (
         <>
             <header>
@@ -22,4 +21,4 @@ const Home = () => {
     );
 }
 
-export default Home
+export default AssortymentHome
