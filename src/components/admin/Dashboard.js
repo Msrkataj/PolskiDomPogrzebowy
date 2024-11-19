@@ -4,15 +4,14 @@ import { db } from '../../../firebase';
 import { collection, getDocs, onSnapshot, doc, updateDoc } from 'firebase/firestore';
 import dayjs from 'dayjs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCog } from '@fortawesome/free-solid-svg-icons';
+import { faCog, faQuestionCircle, faTrash } from '@fortawesome/free-solid-svg-icons';
 import Uwagi from '../funeral/Comments';
-import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 import FilterComponent from "@/components/admin/FilterComponent";
 import DeleteButton from "@/components/admin/DeleteButton";
 import AuthGuard from "@/components/panel/AuthGuard";
 
 const Dashboard = () => {
-    const [loading, setLoading] = useState(true); // Dodano stan ładowania
+    const [loading, setLoading] = useState(true);
     const [orders, setOrders] = useState([]);
     const [selectedRows, setSelectedRows] = useState([]);
     const [statusOptions, setStatusOptions] = useState([
@@ -32,6 +31,10 @@ const Dashboard = () => {
     const itemsPerPage = 20;
     const router = useRouter();
     const [filteredOrders, setFilteredOrders] = useState([]);
+
+    const [showStatusModal, setShowStatusModal] = useState(false);
+    const [newStatus, setNewStatus] = useState('');
+
     const statusDescriptions = {
         'Nowe zgłoszenie': 'Nowe, jeszcze nieprzetworzone zamówienie.',
         'Weryfikacja danych': 'Zamówienie jest w trakcie weryfikacji danych.',
@@ -44,6 +47,18 @@ const Dashboard = () => {
         'Ceremonia pogrzebowa': 'Ceremonia pogrzebowa jest w trakcie realizacji.',
         'Zakończone': 'Wszystkie czynności związane z zamówieniem zostały zakończone.'
     };
+    const [statusPercentages, setStatusPercentages] = useState({
+        'Nowe zgłoszenie': 10,
+        'Weryfikacja danych': 20,
+        'Oczekiwanie na dokumenty': 30,
+        'Planowanie ceremonii': 40,
+        'Potwierdzenie terminu': 50,
+        'Przygotowanie miejsca pochówku': 60,
+        'Oczekiwanie na odbiór trumny/urny': 70,
+        'Przygotowanie ciała': 80,
+        'Ceremonia pogrzebowa': 90,
+        'Zakończone': 100
+    });
 
     const fetchOrders = async () => {
         const querySnapshot = await getDocs(collection(db, 'forms'));
@@ -79,14 +94,12 @@ const Dashboard = () => {
 
     useEffect(() => {
         const handleRouteChange = () => {
-            setOrders([]);  // Resetowanie stanu przed ponownym załadowaniem danych
-            fetchOrders();  // Ponowne załadowanie danych
+            setOrders([]);
+            fetchOrders();
         };
 
-        // Nasłuchiwanie na zmianę trasy
         router.events.on('routeChangeComplete', handleRouteChange);
 
-        // Czyszczenie nasłuchiwacza po odmontowaniu komponentu
         return () => {
             router.events.off('routeChangeComplete', handleRouteChange);
         };
@@ -121,28 +134,49 @@ const Dashboard = () => {
     };
 
     const formatDate = (order) => {
-        // Sprawdź, czy jest timestamp i użyj go
         if (order.timestamp) {
             return dayjs(order.timestamp.toDate()).format('DD.MM.YYYY HH:mm');
         }
-        // Jeśli nie ma timestamp, użyj pola date
         if (order.date) {
             return dayjs(order.date, "DD.MM.YYYY HH:mm").format('DD.MM.YYYY HH:mm');
         }
-        // Jeśli żadna z powyższych opcji nie jest dostępna, zwróć "Brak daty"
         return 'Brak daty';
     };
 
+    const handleManageStatuses = () => {
+        setShowStatusModal(true);
+    };
+
+    const [newStatusPercentage, setNewStatusPercentage] = useState(0);
+
+// Funkcja do aktualizacji procentu dla istniejących statusów
+    const handlePercentageChange = (status, newPercentage) => {
+        setStatusPercentages(prev => ({
+            ...prev,
+            [status]: newPercentage
+        }));
+    };
+
+// Funkcja do dodawania nowego statusu z procentem
     const handleAddCustomStatus = () => {
-        const customStatus = prompt('Wprowadź nowy status:');
-        if (customStatus) {
-            setStatusOptions([...statusOptions, customStatus]);
+        if (newStatus && !statusOptions.includes(newStatus)) {
+            setStatusOptions([...statusOptions, newStatus]);
+            setStatusPercentages(prev => ({
+                ...prev,
+                [newStatus]: newStatusPercentage
+            }));
+            setNewStatus('');
+            setNewStatusPercentage(0);  // Resetuj po dodaniu
         }
     };
 
-    const handleShowDetails = (orderId) => {
-        router.push(`/funeral/manage?formId=${orderId}`);
+
+    const handleDeleteStatus = (statusToDelete) => {
+        if (window.confirm(`Czy na pewno chcesz usunąć status "${statusToDelete}"?`)) {
+            setStatusOptions(statusOptions.filter(status => status !== statusToDelete));
+        }
     };
+
     const handleFilterChange = (filters) => {
         console.log("Filters applied:", filters);
         const { funeralHomeName, startDate, endDate } = filters;
@@ -175,8 +209,7 @@ const Dashboard = () => {
     };
 
     const calculateProgress = (status) => {
-        const statusIndex = statusOptions.indexOf(status);
-        return Math.round(((statusIndex + 1) / statusOptions.length) * 100);
+        return statusPercentages[status] || 0;  // Domyślnie 0% jeśli status nie został znaleziony
     };
 
     const ProgressIndicator = ({ progress }) => (
@@ -186,6 +219,7 @@ const Dashboard = () => {
             </div>
         </div>
     );
+
     // Paginacja
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -245,7 +279,6 @@ const Dashboard = () => {
                             <td>{order.phone}</td>
                             <td>{order.formType}</td>
                             <td>{order.funeralHomeName || 'Brak danych'}</td>
-                            {/* Dodanie domu pogrzebowego */}
                             <td><Uwagi formId={order.id} formDate={order.date}/></td>
                             <td>
                                 <select
@@ -278,7 +311,7 @@ const Dashboard = () => {
                                             <DeleteButton orderId={order.id} onDelete={(id) => {
                                                 setOrders(orders.filter(order => order.id !== id));
                                                 setFilteredOrders(filteredOrders.filter(order => order.id !== id));
-                                            }}/> {/* Użycie komponentu DeleteButton */}
+                                            }}/>
                                         </div>
                                     )}
                                 </div>
@@ -287,19 +320,67 @@ const Dashboard = () => {
                     ))}
                     </tbody>
                 </table>
-                {/* Dodajemy paginację */}
                 <div className="pagination">
-                    {[...Array(Math.ceil(orders.length / itemsPerPage)).keys()].map(number => (
+                    {[...Array(Math.ceil(filteredOrders.length / itemsPerPage)).keys()].map(number => (
                         <button key={number} onClick={() => paginate(number + 1)} className="paginationButton">
                             {number + 1}
                         </button>
                     ))}
                 </div>
             </div>
-            <button onClick={handleAddCustomStatus} className="addStatusButton">Dodaj własny status</button>
+            <button onClick={handleManageStatuses} className="manageStatusButton">Zarządzaj statusami</button>
+
+            {/* Modal do zarządzania statusami */}
+            {showStatusModal && (
+                <div className="modal-overlay" onClick={() => setShowStatusModal(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <h3>Zarządzaj statusami</h3>
+                        <ul className="status-list">
+                            {statusOptions.map((status, index) => (
+                                <li key={index} className="status-item">
+                                    <span>{status}</span>
+                                    <div>
+                                        <input
+                                            type="number"
+                                            value={statusPercentages[status]}
+                                            onChange={(e) => handlePercentageChange(status, e.target.value)}
+                                            className="percentage-input"
+                                            min="0" max="100"
+                                        />
+                                        <button className="delete-status-button"
+                                                onClick={() => handleDeleteStatus(status)}>
+                                            <FontAwesomeIcon icon={faTrash}/>
+                                        </button>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                        <div className="add-status-form">
+                            <input
+                                type="text"
+                                value={newStatus}
+                                onChange={(e) => setNewStatus(e.target.value)}
+                                placeholder="Nowy status"
+                                className="status-input"
+                            />
+                            <input
+                                type="number"
+                                value={newStatusPercentage}
+                                onChange={(e) => setNewStatusPercentage(e.target.value)}
+                                placeholder="Procent dla nowego statusu"
+                                className="percentage-input"
+                                min="0" max="100"
+                            />
+                            <button onClick={handleAddCustomStatus} className="add-status-button">Dodaj status</button>
+                        </div>
+                        <button onClick={() => setShowStatusModal(false)} className="close-modal-button">Zamknij</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
+
 const DashboardWithAuth = () => (
     <AuthGuard>
         <Dashboard />

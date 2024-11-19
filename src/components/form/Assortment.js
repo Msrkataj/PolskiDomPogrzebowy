@@ -1,12 +1,13 @@
+// Assortment.js
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { db, storage } from '../../../firebase';
+import { db } from '../../../firebase';
 import { collection, doc, getDoc, getDocs, query, where, updateDoc } from 'firebase/firestore';
-import { ref, listAll, getDownloadURL } from 'firebase/storage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { useRouter } from "next/router";
 import Image from 'next/image';
 import StepNavigation from "@/components/StepNavigation";
+import { v4 as uuidv4 } from 'uuid';
 
 const formatPrice = (price) => {
     const numericPrice = parseFloat(price);
@@ -16,13 +17,10 @@ const formatPrice = (price) => {
     return numericPrice.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,').replace('.00', '');
 };
 
-
-
 const Assortment = () => {
     const [budget, setBudget] = useState('');
     const [assortyment, setAssortyment] = useState([]);
     const [filteredAssortyment, setFilteredAssortyment] = useState([]);
-    const [images, setImages] = useState({});
     const [formType, setFormType] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('coffins');
     const [selectedType, setSelectedType] = useState('stolen');
@@ -35,7 +33,7 @@ const Assortment = () => {
     const [countByCategory, setCountByCategory] = useState({});
     const [showValidationMessage, setShowValidationMessage] = useState(false);
     const [validationMessage, setValidationMessage] = useState('');
-    const [currentStep, setCurrentStep] = useState('assortment');
+    const [currentStep, setCurrentStep] = useState('assortyment');
     const router = useRouter();
 
     useEffect(() => {
@@ -66,24 +64,25 @@ const Assortment = () => {
     useEffect(() => {
         filterAssortment();
     }, [assortyment, selectedCategory, selectedType, budget]);
+
     const handleSaveAndNavigate = async (step) => {
         await proceedToSummary();
         setCurrentStep(step);
         await router.push(`/${step}`);
     };
+
     const fetchFuneralHomeAssortment = async (funeralHomeName) => {
         try {
             const q = query(collection(db, 'domyPogrzebowe'), where('funeralHomeName', '==', funeralHomeName));
             const querySnapshot = await getDocs(q);
             if (!querySnapshot.empty) {
                 const funeralHomeDoc = querySnapshot.docs[0];
-                if (selectedCategory === 'music') {
-                    const musicData = funeralHomeDoc.data().music || [];
-                    setAssortyment(musicData);
-                } else {
-                    const assortymentData = funeralHomeDoc.data().assortyment || [];
-                    setAssortyment(assortymentData);
-                }
+                const assortymentData = funeralHomeDoc.data().assortment || [];
+                const musicData = funeralHomeDoc.data().music || [];
+                // Dodajemy kategorię 'music' do elementów muzycznych
+                const musicItems = musicData.map(item => ({ ...item, category: 'music' }));
+                const combinedAssortyment = [...assortymentData, ...musicItems];
+                setAssortyment(combinedAssortyment);
             } else {
                 console.error('Dokument domyPogrzebowe nie istnieje w Firestore');
             }
@@ -98,8 +97,6 @@ const Assortment = () => {
                 return item.category === selectedCategory &&
                     item.type?.toLowerCase() === selectedType &&
                     (budget === '' || item.price <= parseFloat(budget));
-            } else if (selectedCategory === 'music') {
-                return true;
             } else {
                 return item.category === selectedCategory &&
                     (budget === '' || item.price <= parseFloat(budget));
@@ -107,48 +104,12 @@ const Assortment = () => {
         });
 
         setFilteredAssortyment(filtered);
-        const newImages = { ...images }; // Kopia obecnych obrazów
-        const imagePromises = filtered.map(async (item) => {
-            if (item.category !== 'music') {
-                const urls = await fetchImages(item);  // Używamy fetchImages z useCallback
-                newImages[item.name] = urls;
-            }
-            return null;
-        });
-
-        Promise.all(imagePromises).then(() => {
-            setImages(newImages); // Aktualizacja stanu obrazów po załadowaniu wszystkich
-        });
-
         setCurrentIndex(null);
-    }, [assortyment, selectedCategory, selectedType, budget, images]);
-
-
-    const fetchImages = useCallback(async (assortmentItem) => {
-        const { category, type, name } = assortmentItem;
-        const sanitizedCategory = category;
-        const sanitizedName = name;
-
-        let storagePath = `assortment/${sanitizedCategory}`;
-        if (type) {
-            const sanitizedType = type.toLowerCase();
-            storagePath += `/${sanitizedType}`;
-        }
-        storagePath += `/${sanitizedName}`;
-
-        try {
-            const listRef = ref(storage, storagePath);
-            const listResult = await listAll(listRef);
-            const urls = await Promise.all(listResult.items.map(item => getDownloadURL(item)));
-            return urls;
-        } catch (error) {
-            console.error('Błąd pobierania URL do zdjęcia:', error);
-            return [];
-        }
-    }, []);
+    }, [assortyment, selectedCategory, selectedType, budget]);
 
     const handleItemClick = (index) => {
-        if (selectedCategory !== 'music') {
+        // Dla kategorii 'music' nie rozwijamy elementu
+        if (filteredAssortyment[index].category !== 'music') {
             setCurrentIndex(currentIndex === index ? null : index);
             setCurrentImageIndex(0); // Resetowanie indeksu obrazu
             setShowValidationMessage(false); // Zamknięcie okna walidacji po otwarciu produktu
@@ -157,28 +118,31 @@ const Assortment = () => {
 
     const handlePreviousImage = (e) => {
         e.stopPropagation();
-        setCurrentImageIndex((prevIndex) => (prevIndex - 1 + images[filteredAssortyment[currentIndex].name].length) % images[filteredAssortyment[currentIndex].name].length);
+        const imagesArray = filteredAssortyment[currentIndex].imageUrls || [];
+        setCurrentImageIndex((prevIndex) => (prevIndex - 1 + imagesArray.length) % imagesArray.length);
     };
 
     const handleNextImage = (e) => {
         e.stopPropagation();
-        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images[filteredAssortyment[currentIndex].name].length);
+        const imagesArray = filteredAssortyment[currentIndex].imageUrls || [];
+        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imagesArray.length);
     };
 
     const handleAddToCart = (item) => {
-        const newItem = {...item, category: selectedCategory}; // Dodanie kategorii do nowego elementu
+        const newItem = { ...item, category: selectedCategory, id: uuidv4() };
         setCart([...cart, newItem]);
         localStorage.setItem('cart', JSON.stringify([...cart, newItem]));
         setShowNotification(true);
-        setTimeout(() => setShowNotification(false), 2000); // Ukrycie powiadomienia po 2 sekundach
+        setTimeout(() => setShowNotification(false), 2000);
     };
 
 
-    const handleRemoveFromCart = (index) => {
-        const newCart = cart.filter((_, i) => i !== index);
+    const handleRemoveFromCart = (id) => {
+        const newCart = cart.filter(item => item.id !== id);
         setCart(newCart);
         localStorage.setItem('cart', JSON.stringify(newCart));
     };
+
 
     const handleShowCart = () => {
         const newCountByCategory = cart.reduce((acc, item) => {
@@ -194,14 +158,11 @@ const Assortment = () => {
         document.body.classList.add('no-scroll');
     };
 
-
     const handleHideCart = () => {
         setShowCart(false);
         document.body.classList.remove('no-scroll');
     };
-    const handleHideCart2 = () => {
-        document.body.classList.remove('no-scroll');
-    };
+
     const handleSummary = async () => {
         const newCountByCategory = cart.reduce((acc, item) => {
             if (!acc[item.category]) {
@@ -224,7 +185,7 @@ const Assortment = () => {
         };
 
         for (const [category, count] of Object.entries(newCountByCategory)) {
-            if (count > 1 && category !== 'wreaths') { // Pomijanie wieńców kwiatowych
+            if (count > 1 && category !== 'wreaths') {
                 validationMessages.push(`Czy na pewno chcesz dodać ${count} sztuki kategorii ${categoryNames[category]}?`);
             }
         }
@@ -245,21 +206,14 @@ const Assortment = () => {
         }
 
         try {
-            const cartWithImages = cart.map(item => {
-                return {
-                    ...item,
-                    imageUrls: images[item.name] || []  // Dodanie linków do obrazów asortymentu
-                };
-            });
-
             const formRef = doc(db, 'forms', formId);
             await updateDoc(formRef, {
-                selectedItems: cartWithImages, // Zaktualizowany koszyk z linkami do obrazów
+                selectedItems: cart,
                 timestamp: new Date()
             });
             console.log("Dane zapisane w formularzu z ID: ", formId);
             setCart([]);
-            await router.push("/summary");
+            await router.push("/podsumowanie");
             handleHideCart();
             localStorage.removeItem('cart');
         } catch (error) {
@@ -268,11 +222,18 @@ const Assortment = () => {
         }
     };
 
+    useEffect(() => {
+        if (showValidationMessage) {
+            document.body.style.overflow = 'hidden'; // Blokujemy przewijanie strony
+        } else {
+            document.body.style.overflow = ''; // Przywracamy normalne przewijanie
+        }
+    }, [showValidationMessage]);
+
     const handleConfirm = () => {
         setShowValidationMessage(false);
         proceedToSummary();
     };
-
 
     const categoryNames = {
         coffins: 'Trumny',
@@ -286,12 +247,11 @@ const Assortment = () => {
     return (
         <div className="container">
             <div className="navigation-buttons">
-                <button className="nav-button" onClick={() => handleSaveAndNavigate('funeraldetails')}>← Cofnij</button>
-                <button className="nav-button" onClick={() => handleSaveAndNavigate('summary')}>Dalej →</button>
+                <button className="nav-button" onClick={() => handleSaveAndNavigate('formularz-trzeci')}>← Cofnij</button>
+                <button className="nav-button" onClick={() => handleSaveAndNavigate('podsumowanie')}>Dalej →</button>
             </div>
             <div className="steps-assortment">
-                <StepNavigation currentStep={currentStep} setCurrentStep={setCurrentStep}
-                                handleSaveAndNavigate={handleSaveAndNavigate}/>
+                <StepNavigation currentStep={currentStep} setCurrentStep={setCurrentStep} handleSaveAndNavigate={handleSaveAndNavigate} />
             </div>
             <div className="assortment-container">
                 <h1>Wybierz asortyment</h1>
@@ -328,12 +288,11 @@ const Assortment = () => {
                 {(selectedCategory === 'coffins' || selectedCategory === 'urns') && (
                     <div className="type-buttons">
                         <h3>Wybierz typ:</h3>
-
                         <button onClick={() => setSelectedType('stolen')}
                                 className={selectedType === 'stolen' ? 'selected' : ''}>Kamienna
                         </button>
                         <button onClick={() => setSelectedType('wooden')}
-                                className={selectedType === 'wooden'  ? 'selected' : ''}>Drewniana
+                                className={selectedType === 'wooden' ? 'selected' : ''}>Drewniana
                         </button>
                     </div>
                 )}
@@ -344,30 +303,30 @@ const Assortment = () => {
                             <div
                                 key={index}
                                 className={`assortment-item ${currentIndex === index ? 'expanded' : ''}`}
-                                onClick={() => selectedCategory !== 'music' && handleItemClick(index)}
+                                onClick={() => handleItemClick(index)}
                             >
                                 <div className="assortment-summary">
                                     <h3>{item.name}</h3>
                                     {currentIndex !== index && (
                                         <>
                                             <p>Cena: {formatPrice(item.price)} PLN</p>
-                                            {selectedCategory !== 'music' && images[item.name] && (
+                                            {item.category !== 'music' && item.imageUrls && item.imageUrls.length > 0 && (
                                                 <div className="image-container">
-                                                    <Image src={images[item.name][0]} alt={item.name} fill
-                                                           style={{objectFit: 'contain'}} sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                                    <Image src={item.imageUrls[0]} alt={item.name} fill
+                                                           style={{objectFit: 'contain'}}
+                                                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                                     />
                                                 </div>
                                             )}
                                         </>
                                     )}
-                                    {selectedCategory === 'music' && (
-                                        <button onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleAddToCart(item);
-                                        }}>Dodaj +</button>
-                                    )}
+                                    <button onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleAddToCart(item);
+                                    }}>Dodaj +
+                                    </button>
                                 </div>
-                                {currentIndex === index && selectedCategory !== 'music' && (
+                                {currentIndex === index && item.category !== 'music' && (
                                     <div className="assortment-details">
                                         <p>Cena: {formatPrice(item.price)} PLN</p>
                                         <p>Producent: {item.producent}</p>
@@ -375,21 +334,21 @@ const Assortment = () => {
                                         <p>Opis: {item.text}</p>
                                         {item.build && <p>Materiał: {item.build}</p>}
 
-                                        <div className="expanded-image-container">
-                                            {images[item.name] && (
+                                        {item.imageUrls && item.imageUrls.length > 0 && (
+                                            <div className="expanded-image-container">
                                                 <Image
-                                                    src={images[item.name][currentImageIndex]}
+                                                    src={item.imageUrls[currentImageIndex]}
                                                     alt={item.name}
                                                     fill
                                                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                                     style={{ objectFit: 'contain' }}
                                                 />
-                                            )}
-                                        </div>
+                                            </div>
+                                        )}
                                         <div className="image-navigation" onClick={(e) => e.stopPropagation()}>
                                             <button onClick={handlePreviousImage}><FontAwesomeIcon
-                                                icon={faArrowLeft}/></button>
-                                            <button onClick={handleNextImage}><FontAwesomeIcon icon={faArrowRight}/>
+                                                icon={faArrowLeft} /></button>
+                                            <button onClick={handleNextImage}><FontAwesomeIcon icon={faArrowRight} />
                                             </button>
                                         </div>
                                         <button onClick={() => handleAddToCart(item)}>Dodaj +</button>
@@ -402,7 +361,7 @@ const Assortment = () => {
                     )}
                 </div>
                 {showNotification && (
-                    <div className="notification">
+                    <div className="notification-assortment">
                         Produkt został dodany do koszyka!
                     </div>
                 )}
@@ -418,16 +377,16 @@ const Assortment = () => {
                                         {cart
                                             .filter(item => item.category === category)
                                             .map((item, index) => (
-                                                <li key={index}>
+                                                <li key={item.id}>
                                                     <span>{index + 1}</span>
                                                     {item.category !== 'music' ? (
-                                                        images[item.name] ? (
+                                                        item.imageUrls && item.imageUrls.length > 0 ? (
                                                             <Image
-                                                                src={images[item.name][0]}
+                                                                src={item.imageUrls[0]}
                                                                 alt={item.name}
-                                                                width={100}  // Ustaw szerokość obrazu
-                                                                height={100}  // Ustaw wysokość obrazu
-                                                                style={{ objectFit: 'cover' }}  // Opcjonalnie dodaj styl dopasowania obrazu
+                                                                width={100}
+                                                                height={100}
+                                                                style={{ objectFit: 'cover' }}
                                                             />
                                                         ) : (
                                                             <span>Brak zdjęcia</span>
@@ -435,11 +394,10 @@ const Assortment = () => {
                                                     ) : null}
                                                     <div className="item-details">
                                                         <span className="item-name">{item.name}</span>
-                                                        <span
-                                                            className="item-price">{formatPrice(item.price)} PLN</span>
+                                                        <span className="item-price">{formatPrice(item.price)} PLN</span>
                                                     </div>
                                                     <button className="remove-button"
-                                                            onClick={() => handleRemoveFromCart(index)}>Usuń
+                                                            onClick={() => handleRemoveFromCart(item.id)}>Usuń
                                                     </button>
                                                 </li>
                                             ))}
@@ -448,7 +406,7 @@ const Assortment = () => {
                             ))}
                             <div className="cart-total">
                                 <h5>Suma koszyka:</h5>
-                                <p>{formatPrice(cart.reduce((total, item) => total + item.price, 0))} PLN</p>
+                                <p>{formatPrice(cart.reduce((total, item) => total + parseFloat(item.price), 0))} PLN</p>
                             </div>
 
                             <button className="close-button" onClick={handleHideCart}>Zamknij</button>
@@ -457,13 +415,16 @@ const Assortment = () => {
                     </>
                 )}
                 {showValidationMessage && (
-                    <div className="validation-message">
-                        {validationMessage.map((message, index) => (
-                            <p key={index}>{message}</p>
-                        ))}
-                        <button onClick={handleConfirm}>Potwierdź i przejdź do podsumowania</button>
-                        <button onClick={() => setShowValidationMessage(false)}>Wróć</button>
-                    </div>
+                    <>
+                        <div className="validation-overlay"></div> {/* Przyciemnienie tła */}
+                        <div className="validation-message">
+                            {validationMessage.map((message, index) => (
+                                <p key={index}>{message}</p>
+                            ))}
+                            <button onClick={handleConfirm}>Potwierdź i przejdź do podsumowania</button>
+                            <button onClick={() => setShowValidationMessage(false)}>Wróć</button>
+                        </div>
+                    </>
                 )}
                 <div className="assortment-buttons">
                     <button onClick={handleShowCart}>Pokaż wybrany zestaw ({cart.length})</button>
@@ -475,6 +436,4 @@ const Assortment = () => {
         </div>
     );
 };
-
-
 export default Assortment;

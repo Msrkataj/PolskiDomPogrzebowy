@@ -9,13 +9,14 @@ const Notifications = ({ notifications, formCreatedTimestamp }) => {
     useEffect(() => {
         if (notifications.length > 0) {
             const sorted = [...notifications].sort((a, b) => {
-                const dateA = typeof a.timestamp === 'string' ? new Date(a.timestamp) : a.timestamp.toDate();
-                const dateB = typeof b.timestamp === 'string' ? new Date(b.timestamp) : b.timestamp.toDate();
+                const dateA = a.timestamp ? (typeof a.timestamp.toDate === 'function' ? a.timestamp.toDate() : new Date(a.timestamp)) : new Date();
+                const dateB = b.timestamp ? (typeof b.timestamp.toDate === 'function' ? b.timestamp.toDate() : new Date(b.timestamp)) : new Date();
                 return dateB - dateA; // Sort by newest first
             });
             setSortedNotifications(sorted);
         }
     }, [notifications]);
+
 
     // Calculate the indices for the current page
     const indexOfLastNotification = currentPage * notificationsPerPage;
@@ -30,13 +31,16 @@ const Notifications = ({ notifications, formCreatedTimestamp }) => {
             <ul>
                 {currentNotifications.map((notification, index) => (
                     <li key={index}>
-                        <strong>{dayjs(notification.timestamp.toDate ? notification.timestamp.toDate() : notification.timestamp).format('DD.MM.YYYY HH:mm')}:</strong> {notification.message}
+                        <strong>
+                            {dayjs(notification.timestamp?.toDate ? notification.timestamp.toDate() : notification.timestamp).format('DD.MM.YYYY HH:mm')}:
+                        </strong>
+                        {notification.message}
                     </li>
                 ))}
             </ul>
             {/* Pagination Controls */}
             <div className="pagination-controls">
-                {Array.from({ length: Math.ceil(sortedNotifications.length / notificationsPerPage) }, (_, index) => (
+                {Array.from({length: Math.ceil(sortedNotifications.length / notificationsPerPage)}, (_, index) => (
                     <button
                         key={index + 1}
                         onClick={() => paginate(index + 1)}

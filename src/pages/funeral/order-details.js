@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import Panel from "@/components/funeral/Dashboard";
 import Orders from "@/components/funeral/Orders";
 import OrderDetails from "@/components/funeral/OrderDetails";
+import dynamic from "next/dynamic";
 
 const Home = () => {
     return (
@@ -20,5 +21,4 @@ const Home = () => {
         </>
     );
 }
-
-export default Home
+export default dynamic (() => Promise.resolve(Home), {ssr: false})

@@ -1,6 +1,6 @@
-@import "./settings/_variables";
-@import "./settings/_colors.scss";
-@import "./settings/_fonts.scss";
+@import "1settings/_variables";
+@import "1settings/_colors.scss";
+@import "1settings/_fonts.scss";
 @import "reset";
 @import "Footer";
 @import "Header.module";
@@ -43,14 +43,19 @@
 @import "documents/Pelnomocnictwo";
 @import "Client/Reports";
 @import "Common/ChatComponent";
+@import "Common/ChatAdmin";
+@import "Cookie";
+@import "next";
+@import "Funeral/Ankieta";
 @import "404";
+
 html {
   font-size: 12px;
   text-decoration: none;
 }
 
 body {
-  font-size: 14px;
+  font-size: 15px;
   color: $color-grey;
   overflow-x: hidden;
   //font-family: 'Avenir', sans-serif;
@@ -120,11 +125,11 @@ h1 {
 }
 main {
   @media (max-width: 768px) {
-    padding-top: 120px;
+    padding-top: 130px;
   }
 }
-.main-mobile {
-  @media (max-width: 768px) {
-    padding-top: 0;
-  }
-}
+//.main-mobile {
+//  @media (max-width: 768px) {
+//    padding-top: 0;
+//  }
+//}

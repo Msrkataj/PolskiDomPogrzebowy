@@ -1,0 +1,11 @@
+ErrorDocument 404 /404
+
+RewriteEngine On
+
+# Popraw przekierowanie z /polskidompogrzebowy/untitled5/ na główny adres
+RewriteCond %{REQUEST_URI} ^/polskidompogrzebowy/untitled5/ [NC]
+RewriteRule ^.*$ https://polskidompogrzebowy.pl/ [L,R=301]
+
+# Usunięcie www z adresu
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ https://%1/$1 [L,R=301]

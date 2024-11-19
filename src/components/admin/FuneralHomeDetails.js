@@ -30,10 +30,10 @@ const FuneralHomeDetails = () => {
             try {
                 const homeDocRef = doc(db, 'domyPogrzebowe', homeId);
                 const docSnap = await getDoc(homeDocRef);
-
                 if (docSnap.exists()) {
                     const homeData = docSnap.data();
                     const funeralHomeName = homeData.funeralHomeName.trim();
+                    console.log(funeralHomeName)
 
                     const logoPath = `${funeralHomeName}/logo/logo.png`;
                     const mainImagePath = `${funeralHomeName}/images/main.webp`;

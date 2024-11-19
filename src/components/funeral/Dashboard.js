@@ -1,19 +1,22 @@
+// Dashboard.js
 import React, { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { db } from '../../../firebase';
 import { collection, query, where, getDocs, onSnapshot, doc, updateDoc } from 'firebase/firestore';
 import dayjs from 'dayjs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCog } from '@fortawesome/free-solid-svg-icons';
+import { faCog, faQuestionCircle, faTrash } from '@fortawesome/free-solid-svg-icons';
 import Uwagi from './Comments';
 import useFetchFuneralHomeData from './FetchFuneralHomeData';
-import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
+import AuthGuardFuneral from "@/components/panel/AuthGuardFuneral";
+import Link from "next/link";
 
 const Dashboard = () => {
-    const funeralHome = useFetchFuneralHomeData(); // Użycie hooka do pobrania danych
+    const funeralHome = useFetchFuneralHomeData();
     const [loading, setLoading] = useState(true);
     const [orders, setOrders] = useState([]);
+    const [orderStatuses, setOrderStatuses] = useState({});
     const [selectedRows, setSelectedRows] = useState([]);
     const [statusOptions, setStatusOptions] = useState([
         'Nowe zgłoszenie',
@@ -32,6 +35,13 @@ const Dashboard = () => {
     const itemsPerPage = 20;
     const router = useRouter();
 
+    const [showStatusModal, setShowStatusModal] = useState(false);
+    const [newStatus, setNewStatus] = useState('');
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+    const [orderIdToUpdate, setOrderIdToUpdate] = useState(null);
+    const [previousStatus, setPreviousStatus] = useState('');
+    const [orderToUpdate, setOrderToUpdate] = useState(null);
+
     const statusDescriptions = {
         'Nowe zgłoszenie': 'Nowe, jeszcze nieprzetworzone zamówienie.',
         'Weryfikacja danych': 'Zamówienie jest w trakcie weryfikacji danych.',
@@ -44,8 +54,19 @@ const Dashboard = () => {
         'Ceremonia pogrzebowa': 'Ceremonia pogrzebowa jest w trakcie realizacji.',
         'Zakończone': 'Wszystkie czynności związane z zamówieniem zostały zakończone.'
     };
+    const [statusPercentages, setStatusPercentages] = useState({
+        'Nowe zgłoszenie': 10,
+        'Weryfikacja danych': 20,
+        'Oczekiwanie na dokumenty': 30,
+        'Planowanie ceremonii': 40,
+        'Potwierdzenie terminu': 50,
+        'Przygotowanie miejsca pochówku': 60,
+        'Oczekiwanie na odbiór trumny/urny': 70,
+        'Przygotowanie ciała': 80,
+        'Ceremonia pogrzebowa': 90,
+        'Zakończone': 100
+    });
 
-    // Fetch orders function wrapped in useCallback
     const fetchOrders = useCallback(async () => {
         if (!funeralHome) return;
 
@@ -63,27 +84,32 @@ const Dashboard = () => {
 
             setOrders(ordersData);
             setLoading(false);
+
+            // Inicjalizacja statusów zamówień
+            setOrderStatuses(ordersData.reduce((acc, order) => {
+                acc[order.id] = order.status || '';
+                return acc;
+            }, {}));
+
         } catch (error) {
             console.error("Error fetching orders:", error);
             setLoading(false);
         }
     }, [funeralHome]);
 
-    // Sprawdzenie autoryzacji użytkownika i pobranie zamówień
     useEffect(() => {
         const checkUserAuthAndFetchOrders = async () => {
             const userRole = localStorage.getItem('userRole');
             if (!userRole || userRole !== 'funeralHome') {
                 router.push('/login');
             } else {
-                await fetchOrders(); // Inicjalizacja danych
+                await fetchOrders();
             }
         };
 
         checkUserAuthAndFetchOrders();
-    }, [funeralHome, router, fetchOrders]); // Dodaj router i fetchOrders jako zależności
+    }, [funeralHome, router, fetchOrders]);
 
-    // Subskrypcja na zmiany zamówień
     useEffect(() => {
         if (funeralHome) {
             const unsubscribe = onSnapshot(
@@ -102,12 +128,21 @@ const Dashboard = () => {
                     });
 
                     setOrders(updatedOrders);
+
+                    // Aktualizacja statusów zamówień
+                    setOrderStatuses(prevStatuses => {
+                        const newStatuses = { ...prevStatuses };
+                        updatedOrders.forEach(order => {
+                            newStatuses[order.id] = order.status || '';
+                        });
+                        return newStatuses;
+                    });
                 }
             );
 
             return () => unsubscribe();
         }
-    }, [funeralHome]); // fetchOrders nie jest potrzebne jako zależność
+    }, [funeralHome]);
 
     const toggleActionDropdown = (orderId) => {
         setActiveActionDropdown(activeActionDropdown === orderId ? null : orderId);
@@ -123,8 +158,7 @@ const Dashboard = () => {
     };
 
     const calculateProgress = (status) => {
-        const statusIndex = statusOptions.indexOf(status);
-        return Math.round(((statusIndex + 1) / statusOptions.length) * 100);
+        return statusPercentages[status] || 0;  // Domyślnie 0% jeśli status nie został znaleziony
     };
 
     const ProgressIndicator = ({ progress }) => (
@@ -135,11 +169,116 @@ const Dashboard = () => {
         </div>
     );
 
-    const handleStatusChange = async (orderId, newStatus) => {
+    const handleStatusChange = (orderId, newStatus) => {
+        const order = orders.find(o => o.id === orderId);
+        if (!order) return;
+
+        if (newStatus === 'Zakończone') {
+            // Przywróć poprzedni status w interfejsie
+            setOrderStatuses(prevStatuses => ({
+                ...prevStatuses,
+                [orderId]: prevStatuses[orderId]
+            }));
+
+            // Pokaż modal potwierdzenia
+            setShowConfirmationModal(true);
+            setOrderIdToUpdate(orderId);
+            setPreviousStatus(orderStatuses[orderId]);
+            setOrderToUpdate(order);
+        } else {
+            // Aktualizuj status od razu
+            updateOrderStatus(orderId, newStatus);
+
+            // Aktualizuj stan lokalny
+            setOrderStatuses(prevStatuses => ({
+                ...prevStatuses,
+                [orderId]: newStatus
+            }));
+        }
+    };
+
+    const updateOrderStatus = async (orderId, newStatus) => {
         const orderRef = doc(db, 'forms', orderId);
         await updateDoc(orderRef, { status: newStatus });
 
+        // Aktualizuj stan lokalny
+        setOrderStatuses(prevStatuses => ({
+            ...prevStatuses,
+            [orderId]: newStatus
+        }));
+
         console.log(`Powiadomienie do klienta: status zmieniony na ${newStatus}`);
+    };
+
+    const handleConfirmStatusChange = async () => {
+        if (orderIdToUpdate) {
+            // Aktualizuj status na 'Zakończone'
+            await updateOrderStatus(orderIdToUpdate, 'Zakończone');
+
+            // Wyślij e-mail do klienta
+            await sendEmailToClient(orderToUpdate);
+
+            // Zamknij modal
+            setShowConfirmationModal(false);
+            setOrderIdToUpdate(null);
+            setPreviousStatus('');
+            setOrderToUpdate(null);
+        }
+    };
+
+    const handleCancelStatusChange = () => {
+        if (orderIdToUpdate && previousStatus) {
+            // Przywróć poprzedni status w interfejsie
+            setOrderStatuses(prevStatuses => ({
+                ...prevStatuses,
+                [orderIdToUpdate]: previousStatus
+            }));
+
+            // Zamknij modal
+            setShowConfirmationModal(false);
+            setOrderIdToUpdate(null);
+            setPreviousStatus('');
+            setOrderToUpdate(null);
+        }
+    };
+
+    const sendEmailToClient = async (order) => {
+        const clientEmail = order.email;
+
+        const emailData = {
+            to: clientEmail,
+            subject: 'Prośba o opinię - Polski Dom Pogrzebowy',
+            message: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2 style="text-align: center; color: #333;">Prośba o opinię</h2>
+                    <p>Szanowni Państwo,</p>
+                    <p>Chcielibyśmy poznać Państwa opinię na temat świadczonych przez nas usług. Państwa feedback jest dla nas niezwykle ważny i pomoże nam w dalszym doskonaleniu naszych usług.</p>
+                    <p>Prosimy o poświęcenie chwili na wypełnienie krótkiej ankiety.</p>
+                    <p><a href="https://polskidompogrzebowy.pl/ankieta?id=${order.id}" style="background-color: #007BFF; color: #fff; padding: 10px 20px; text-decoration: none;">Wypełnij ankietę</a></p>
+                    <p>Z poważaniem,<br/>Polski Dom Pogrzebowy</p>
+                </div>
+            `,
+        };
+
+        try {
+            const response = await fetch('/api/send-email-review', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(emailData),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                console.log('E-mail został wysłany pomyślnie.', order.id);
+            } else {
+                console.error('Błąd podczas wysyłania e-maila:', result.error);
+            }
+        } catch (error) {
+            console.error('Błąd podczas wysyłania e-maila:', error);
+        }
     };
 
     const handleRowSelect = (orderId) => {
@@ -157,42 +296,36 @@ const Dashboard = () => {
         return 'Brak daty';
     };
 
+    const handleManageStatuses = () => {
+        setShowStatusModal(true);
+    };
+
+    const [newStatusPercentage, setNewStatusPercentage] = useState(0);
+
+    const handlePercentageChange = (status, newPercentage) => {
+        setStatusPercentages(prev => ({
+            ...prev,
+            [status]: newPercentage
+        }));
+    };
+
     const handleAddCustomStatus = () => {
-        const customStatus = prompt('Wprowadź nowy status:');
-        if (customStatus) {
-            setStatusOptions([...statusOptions, customStatus]);
+        if (newStatus && !statusOptions.includes(newStatus)) {
+            setStatusOptions([...statusOptions, newStatus]);
+            setStatusPercentages(prev => ({
+                ...prev,
+                [newStatus]: newStatusPercentage
+            }));
+            setNewStatus('');
+            setNewStatusPercentage(0);  // Resetuj po dodaniu
         }
     };
 
-    const handleShowDetails = (orderId) => {
-        router.push(`/funeral/manage?formId=${orderId}`);
-    };
-
-    useEffect(() => {
-        const statusHelpElement = document.querySelector('.status-help');
-        const tooltip = document.querySelector('.status-tooltip');
-
-        if (statusHelpElement && tooltip) {
-            const handleMouseEnter = () => {
-                const rect = statusHelpElement.getBoundingClientRect();
-                tooltip.style.top = `${rect.top + window.scrollY - 150}px`;
-                tooltip.style.left = `${rect.left + window.scrollX + rect.width - 300}px`;
-                tooltip.style.display = 'block';
-            };
-
-            const handleMouseLeave = () => {
-                tooltip.style.display = 'none';
-            };
-
-            statusHelpElement.addEventListener('mouseenter', handleMouseEnter);
-            statusHelpElement.addEventListener('mouseleave', handleMouseLeave);
-
-            return () => {
-                statusHelpElement.removeEventListener('mouseenter', handleMouseEnter);
-                statusHelpElement.removeEventListener('mouseleave', handleMouseLeave);
-            };
+    const handleDeleteStatus = (statusToDelete) => {
+        if (window.confirm(`Czy na pewno chcesz usunąć status "${statusToDelete}"?`)) {
+            setStatusOptions(statusOptions.filter(status => status !== statusToDelete));
         }
-    }, []);
+    };
 
     // Paginacja
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -205,7 +338,6 @@ const Dashboard = () => {
         <div className="loadingSpinner"></div>
         <div className="loadingText">Ładowanie danych...</div>
     </div>
-
     return (
         <div className="dashboardContainer">
             <h1>Witamy w Twoim Panelu Domu Pogrzebowego</h1>
@@ -221,6 +353,23 @@ const Dashboard = () => {
                     <h2>{funeralHome.funeralHomeName}</h2>
                 </div>
             </div>
+            {!funeralHome.profileCompleted ? (
+                <div className="button-completed">
+                    <Link href={"/funeral/first"} >Nie uzupełniłeś profilu, uzupełnij tutaj i aktywuj</Link>
+                </div>
+
+            ) : null}
+            {!funeralHome.profileCompleted2 && funeralHome.profileCompleted ? (
+                <div className="button-completed">
+                    <Link href={"/funeral/first-form"} >Nie uzupełniłeś profilu, uzupełnij tutaj i aktywuj</Link>
+                </div>
+
+            ) : null}
+            {!funeralHome.profileCompleted3 && funeralHome.profileCompleted && funeralHome.profileCompleted2 ? (
+                <div className="button-completed">
+                    <Link href={"/funeral/first-summary"} >Nie uzupełniłeś profilu, uzupełnij tutaj i aktywuj</Link>
+                </div>
+            ) : null}
             <div className="orderTableContainer">
                 <table className="orderTable">
                     <thead>
@@ -231,6 +380,7 @@ const Dashboard = () => {
                         <th>Data Złożenia</th>
                         <th>Imię i Nazwisko Zmarłego</th>
                         <th>Imię i Nazwisko Zamawiającego</th>
+                        <th>Email</th>
                         <th>Numer Kontaktowy</th>
                         <th>Skrót Zamówienia</th>
                         <th>Uwagi</th>
@@ -267,12 +417,13 @@ const Dashboard = () => {
                                 >
                                     {order.authorizedPerson?.name || 'Brak danych'}
                                 </td>
+                                <td>{order.email}</td>
                                 <td>{order.phone}</td>
                                 <td>{order.formType}</td>
                                 <td><Uwagi formId={order.id} formDate={order.date}/></td>
                                 <td>
                                     <select
-                                        value={order.status}
+                                        value={orderStatuses[order.id] || ''}
                                         onChange={(e) => handleStatusChange(order.id, e.target.value)}
                                     >
                                         {statusOptions.map((status, index) => (
@@ -281,7 +432,7 @@ const Dashboard = () => {
                                     </select>
                                 </td>
                                 <td>
-                                    <ProgressIndicator progress={calculateProgress(order.status)}/>
+                                    <ProgressIndicator progress={calculateProgress(orderStatuses[order.id])}/>
                                 </td>
                                 <td>
                                     <div className="cogButtonWrapper">
@@ -306,7 +457,7 @@ const Dashboard = () => {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="9" style={{textAlign: 'center'}}>
+                            <td colSpan="10" style={{textAlign: 'center'}}>
                                 Brak zamówień do wyświetlenia.
                             </td>
                         </tr>
@@ -322,9 +473,75 @@ const Dashboard = () => {
                     ))}
                 </div>
             </div>
-            <button onClick={handleAddCustomStatus} className="addStatusButton">Dodaj własny status</button>
+            <button onClick={handleManageStatuses} className="manageStatusButton">Zarządzaj statusami</button>
+            {/* Modal potwierdzenia zmiany statusu na 'Zakończone' */}
+            {showConfirmationModal && (
+                <div className="modal-overlay" onClick={() => setShowConfirmationModal(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <h3>Potwierdzenie zmiany statusu</h3>
+                        <p>Czy na pewno chcesz zmienić status na "Zakończone"? Spowoduje to wysłanie prośby o opinię do klienta.</p>
+                        <div className="modal-buttons">
+                            <button onClick={handleConfirmStatusChange} className="confirm-button">Akceptuj</button>
+                            <button onClick={handleCancelStatusChange} className="cancel-button">Anuluj</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* Modal do zarządzania statusami */}
+            {showStatusModal && (
+                <div className="modal-overlay" onClick={() => setShowStatusModal(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <h3>Zarządzaj statusami</h3>
+                        <ul className="status-list">
+                            {statusOptions.map((status, index) => (
+                                <li key={index} className="status-item">
+                                    <span>{status}</span>
+                                    <div>
+                                        <input
+                                            type="number"
+                                            value={statusPercentages[status]}
+                                            onChange={(e) => handlePercentageChange(status, e.target.value)}
+                                            className="percentage-input"
+                                            min="0" max="100"
+                                        />
+                                        <button className="delete-status-button"
+                                                onClick={() => handleDeleteStatus(status)}>
+                                            <FontAwesomeIcon icon={faTrash}/>
+                                        </button>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                        <div className="add-status-form">
+                            <input
+                                type="text"
+                                value={newStatus}
+                                onChange={(e) => setNewStatus(e.target.value)}
+                                placeholder="Nowy status"
+                                className="status-input"
+                            />
+                            <input
+                                type="number"
+                                value={newStatusPercentage}
+                                onChange={(e) => setNewStatusPercentage(e.target.value)}
+                                placeholder="Procent dla nowego statusu"
+                                className="percentage-input"
+                                min="0" max="100"
+                            />
+                            <button onClick={handleAddCustomStatus} className="add-status-button">Dodaj status</button>
+                        </div>
+                        <button onClick={() => setShowStatusModal(false)} className="close-modal-button">Zamknij</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
 
-export default Dashboard;
+const DashboardWithAuth = () => (
+    <AuthGuardFuneral>
+        <Dashboard/>
+    </AuthGuardFuneral>
+);
+
+export default DashboardWithAuth;

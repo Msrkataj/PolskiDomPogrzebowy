@@ -1,11 +1,12 @@
-import React from "react";
+import React, {useState} from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import Panel from "@/components/funeral/Dashboard";
-import ManageForm from "@/components/funeral/ManageForm";
 import FuneralHomeAssortment from "@/components/funeral/FuneralHomeAssortment";
+import dynamic from "next/dynamic";
 
 const Assortment = () => {
+
+
     return (
         <>
             <header>
@@ -21,4 +22,4 @@ const Assortment = () => {
     );
 }
 
-export default Assortment
+export default dynamic (() => Promise.resolve(Assortment), {ssr: false})

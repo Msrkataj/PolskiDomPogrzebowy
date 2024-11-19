@@ -44,7 +44,7 @@ const NaszaMisja = () => {
                 <section className="mission-section" ref={missionRef}>
                     <h1 className="mission-section-title">O nas</h1>
                     <p className="mission-section-description">
-                        DomPogrzebowy24.pl to innowacyjny pomysł, który ma połączyć ze sobą zakłady pogrzebowe z całej Polski.
+                        Polskidompogrzebowy.pl to innowacyjny pomysł, który ma połączyć ze sobą zakłady pogrzebowe z całej Polski.
                         Ma pomóc w usprawnieniu organizacji pogrzebów i wsparciu rodzin w trudnych chwilach.
                         Jesteśmy tu, aby załatwić większość formalności za Ciebie,
                         a nasza strona jest całkowicie darmowa dla klientów.
@@ -59,7 +59,6 @@ const NaszaMisja = () => {
                         alt="panoramiczne"
                         fill
                         style={{ objectFit: 'cover' }}
-                        sizes="(max-width: 1200px) 100vw, (max-width: 1800px) 50vw, 33vw"
                     />
                 </section>
                 <section id="nasza-misja" className="mission-our">

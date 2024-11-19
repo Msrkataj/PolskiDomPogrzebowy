@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import { db } from '../../../firebase';
 import { collection, doc, getDoc, setDoc } from 'firebase/firestore';
 import { useRouter } from 'next/router';
@@ -15,7 +15,10 @@ const Form = () => {
     const [addressVisible, setAddressVisible] = useState(false);
     const router = useRouter();
     const [formId, setFormId] = useState('');
-    const [currentStep, setCurrentStep] = useState('');
+    const [currentStep, setCurrentStep] = useState('formularz-pierwszy');
+    const [postalCodeError, setPostalCodeError] = useState('');
+    const [errors, setErrors] = useState([]);
+    const errorContainerRef = useRef(null);
 
     useEffect(() => {
         const path = router.pathname.split('/').pop();
@@ -46,10 +49,21 @@ const Form = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+
+        if (name === 'postalCode') {
+            const postalCodePattern = /^[0-9]{2}-[0-9]{3}$/;
+            if (!postalCodePattern.test(value)) {
+                setPostalCodeError("Kod pocztowy musi być w formacie xx-xxx.");
+            } else {
+                setPostalCodeError('');
+            }
+        }
+
         setFormData(prevState => ({
             ...prevState,
             [name]: value
         }));
+
         if (name === 'location' && value !== '') {
             setAddressVisible(true);
         }
@@ -57,17 +71,47 @@ const Form = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const newErrors = [];
+
+        // Validate postal code before proceeding
+        const postalCodePattern = /^[0-9]{2}-[0-9]{3}$/;
+        if (!postalCodePattern.test(formData.postalCode)) {
+            setPostalCodeError("Kod pocztowy musi być w formacie xx-xxx.");
+            return; // Stop the submission if the postal code is invalid
+        }
+        if (!formData.documents) {
+            newErrors.push('Proszę określić, kiedy będą załatwiane dokumenty?');
+        }
+
+        if (newErrors.length > 0) {
+            setErrors(newErrors);
+            return;
+        }
         try {
             const docRef = formId ? doc(db, 'forms', formId) : doc(collection(db, 'forms'));
             await setDoc(docRef, formData, { merge: true });
             localStorage.setItem('formData', JSON.stringify(formData));
-            await router.push('/details');
+            await router.push('/formularz-drugi');
         } catch (error) {
             console.error('Błąd zapisu formularza: ', error);
         }
     };
-
+    useEffect(() => {
+        if (errors.length > 0 && errorContainerRef.current) {
+            errorContainerRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [errors]);
     const handleSaveAndNavigate = async (step) => {
+        const newErrors = [];
+
+        if (!formData.documents) {
+            newErrors.push('Proszę określić, kiedy będą załatwiane dokumenty?');
+        }
+
+        if (newErrors.length > 0) {
+            setErrors(newErrors);
+            return;
+        }
         try {
             const docRef = formId ? doc(db, 'forms', formId) : doc(collection(db, 'forms'));
             await setDoc(docRef, formData, { merge: true });
@@ -83,7 +127,7 @@ const Form = () => {
         <div className="form-container">
             <div className="navigation-buttons">
                 <button className="nav-button" onClick={() => router.back()}>← Cofnij</button>
-                <button className="nav-button" onClick={() => handleSaveAndNavigate(currentStep === 'form' ? 'details' : currentStep === 'details' ? 'funeraldetails' : 'assortment')}>Dalej →</button>
+                <button className="nav-button" onClick={() => handleSaveAndNavigate(currentStep === 'formularz-pierwszy' ? 'formularz-drugi' : currentStep === 'formularz-drugi' ? 'formularz-trzeci' : 'assortyment')}>Dalej →</button>
             </div>
             <StepNavigation currentStep={currentStep} setCurrentStep={setCurrentStep} handleSaveAndNavigate={handleSaveAndNavigate} />
             <div className="form-container-main">
@@ -155,6 +199,7 @@ const Form = () => {
                                     onChange={handleChange}
                                     placeholder="Wprowadź kod pocztowy"
                                 />
+                                {postalCodeError && <p className="error-message">{postalCodeError}</p>}
                             </div>
                         )}
                     </div>
@@ -185,6 +230,13 @@ const Form = () => {
                             </label>
                         </div>
                     </div>
+                    {errors.length > 0 && (
+                        <div className="error-container" ref={errorContainerRef}>
+                            {errors.map((error, index) => (
+                                <p key={index} className="error-message">{error}</p>
+                            ))}
+                        </div>
+                    )}
                     <button type="submit" className="submit-button">Zapisz i przejdź do informacji o Osobie zmarłej</button>
                 </form>
             </div>

@@ -8,9 +8,11 @@
   @media (min-width: 768px) {
     padding: 20px;
   }
+
   h1 {
     margin: 10px 0;
   }
+
   .funeralHomeInfo {
     display: flex;
     justify-content: center;
@@ -84,11 +86,13 @@
       color: #155724;
       font-size: 1.2em;
       font-weight: bold;
+
       tr {
       }
     }
   }
 }
+
 .newBadge {
   position: absolute;
   top: 0;
@@ -100,16 +104,19 @@
   font-size: 0.9em;
   font-weight: bold;
 }
+
 .notification {
   padding: 1em;
   margin: 1em 0;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
+
 .reactionRequired {
   color: #ff0000;
   font-weight: bold;
 }
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -120,6 +127,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
+
+  .status-list {
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
 }
 
 .modal {
@@ -152,6 +167,7 @@
 .modal-actions button {
   margin-left: 10px;
 }
+
 .dashboardContainer {
   max-width: 1600px;
 }
@@ -211,13 +227,14 @@
 .orderTable option {
   white-space: normal;
 }
+
 .orderTable option {
   word-break: break-all; /* lub użyj 'break-word' */
 }
+
 .orderTable select {
   max-width: 150px; /* Zwiększenie szerokości */
 }
-
 
 
 .orderTable th,
@@ -236,6 +253,7 @@
 .orderTable tr {
   border-bottom: 1px solid #ddd;
   transition: background-color 0.3s ease;
+
   .name-row {
     width: 5%;
   }
@@ -280,7 +298,7 @@
   position: absolute;
   background-color: #f9f9f9;
   min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
   right: 0;
   top: 30px;
@@ -308,26 +326,31 @@
   line-height: 15px;
 
 }
+
 .message-success {
   display: flex;
   flex-direction: column;
   align-items: center;
+
   .message {
     margin: 50px;
     font-size: 2em;
   }
 }
+
 .message {
   color: green;
   font-weight: bold;
   font-size: 1em;
-  line-height: 15px;
+  line-height: 40px;
 }
+
 .communicateMessage {
   color: darkgoldenrod;
   font-weight: bold;
   line-height: 15px;
 }
+
 .orderDetailsContainer {
   padding: 20px;
   background: #fff;
@@ -387,4 +410,68 @@
   font-size: 0.75em;
   line-height: 20px;
   transition: width 0.4s ease;
+}
+
+.funeral-home-details-top {
+  margin: 10px 0;
+  font-size: 0.8em;
+}
+.funeral-home-details-settings {
+  display: flex;
+  justify-content: center;
+
+  .settings-button {
+    color: #0d47a1;
+  }
+}
+
+
+.change-password-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button {
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.confirm-button {
+  margin-right: 10px !important;
+}
+button:disabled {
+  background-color: #ccc;
+}
+
+.error-message {
+  color: red;
+  margin-bottom: 10px;
+}
+
+.success-message {
+  color: green;
+  margin-bottom: 10px;
 }

@@ -1,6 +1,5 @@
-// components/SupportModal.js
 import { useState } from 'react';
-import {db} from '../../firebase';
+import { db } from '../../firebase';
 import { collection, addDoc } from 'firebase/firestore';
 
 const SupportModal = ({ isOpen, onClose }) => {
@@ -8,20 +7,55 @@ const SupportModal = ({ isOpen, onClose }) => {
     const [lastName, setLastName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [preferredTime, setPreferredTime] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+
+    // Function to validate phone number with Polish country code +48
+    const validatePhoneNumber = (number) => {
+        const phoneRegex = /^\+48\d{9}$/; // Validates +48 followed by 9 digits
+        return phoneRegex.test(number);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Validate the phone number
+        if (!validatePhoneNumber(phoneNumber)) {
+            setErrorMessage('Numer telefonu musi zaczynać się od +48 i zawierać 9 cyfr.');
+            return;
+        }
+
         try {
+            // Zapisz dane w Firestore
             await addDoc(collection(db, 'wsparcie'), {
                 firstName,
                 lastName,
                 phoneNumber,
                 preferredTime,
             });
-            alert('Formularz został wysłany');
+
+            // Wyślij dane do serwera, aby wysłać e-mail
+            const response = await fetch('/api/send-support-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    firstName,
+                    lastName,
+                    phoneNumber,
+                    preferredTime,
+                }),
+            });
+
+            if (response.ok) {
+                alert('Formularz został wysłany oraz e-mail został wysłany');
+            } else {
+                alert('Wysłanie e-maila nie powiodło się.');
+            }
+
             onClose();
         } catch (e) {
-            console.error("Error adding document: ", e);
+            console.error('Błąd podczas dodawania dokumentu:', e);
         }
     };
 
@@ -29,7 +63,7 @@ const SupportModal = ({ isOpen, onClose }) => {
 
     return (
         <div className="modal-overlay-support">
-            <div className="modal-content">
+            <div className="modal-content-support">
                 <button className="close-button" onClick={onClose}>X</button>
                 <h2>Skontaktuj się z psychologiem</h2>
                 <form onSubmit={handleSubmit}>
@@ -60,6 +94,7 @@ const SupportModal = ({ isOpen, onClose }) => {
                             required
                         />
                     </label>
+                    {errorMessage && <p className="error-message">{errorMessage}</p>}
                     <label>
                         Preferowana pora kontaktu:
                         <select
@@ -79,6 +114,7 @@ const SupportModal = ({ isOpen, onClose }) => {
                 </form>
             </div>
         </div>
+
     );
 };
 

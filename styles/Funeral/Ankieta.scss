@@ -1,0 +1,117 @@
+/* Ankieta.module.css */
+
+/* Ogólny kontener */
+.ankieta-container {
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+/* Nagłówek */
+h1 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Stylizacja sekcji oceny */
+.rating-section h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.stars {
+  display: flex;
+  justify-content: center;
+}
+
+.star {
+  font-size: 40px;
+  color: #ccc;
+  cursor: pointer;
+  margin: 0 5px;
+}
+
+.star.filled {
+  color: #FFD700;
+}
+
+/* Sekcja imienia */
+.author-section {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.author-section label {
+  font-size: 16px;
+  color: #333;
+}
+
+.author-section input {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Sekcja opinii */
+.text-section {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.text-section label {
+  font-size: 16px;
+  color: #333;
+}
+
+.text-section textarea {
+  width: 100%;
+  height: 100px;
+  padding: 10px;
+  font-size: 14px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: vertical;
+}
+
+/* Przyciski */
+.submit-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+/* Mobile first */
+@media (max-width: 768px) {
+  .ankieta-container {
+    padding: 15px;
+  }
+
+  h1 {
+    font-size: 22px;
+  }
+
+  .star {
+    font-size: 36px;
+  }
+
+  .submit-button {
+    width: 100%;
+  }
+}

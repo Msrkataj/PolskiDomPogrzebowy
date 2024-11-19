@@ -1,12 +1,13 @@
-import React, {useEffect, useState} from 'react';
-import {db} from '../../../firebase';
-import {doc, getDoc, collection, query, where, getDocs} from 'firebase/firestore';
-import {getStorage, ref, getDownloadURL} from 'firebase/storage';
+import React, { useEffect, useState } from 'react';
+import { db } from '../../../firebase';
+import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import Link from "next/link";
 import Image from 'next/image';
 
-const SelectedFuneralHome = (success) => {
+const SelectedFuneralHome = ({ success, handleOpenChat }) => {
     const [funeralHome, setFuneralHome] = useState(null);
+
     const fetchLogoURL = async (funeralHomeName) => {
         try {
             const storage = getStorage();
@@ -17,6 +18,14 @@ const SelectedFuneralHome = (success) => {
             console.error('Błąd pobierania URL do logo: ', error);
             return null;
         }
+    };
+
+    const formatOpeningHours = (openingHours) => {
+        return openingHours.map((hours, index) => (
+            <p key={index}>
+                {hours.dayFrom} - {hours.dayTo}: {hours.from} - {hours.to}
+            </p>
+        ));
     };
 
     useEffect(() => {
@@ -34,7 +43,7 @@ const SelectedFuneralHome = (success) => {
                             if (!querySnapshot.empty) {
                                 const funeralHomeData = querySnapshot.docs[0].data();
                                 const logoURL = await fetchLogoURL(formData.funeralHomeName);
-                                setFuneralHome({...funeralHomeData, logoURL});
+                                setFuneralHome({ ...funeralHomeData, logoURL });
                             } else {
                                 console.error('Dom pogrzebowy nie znaleziony');
                             }
@@ -59,52 +68,54 @@ const SelectedFuneralHome = (success) => {
 
     return (
         <div className="funeral">
-            {success.success === false ? (
+            {success === false ? (
                 <div className="funeral-home-container">
                     <div className="funeral-home-card">
                         <div className="funeral-home-info">
                             <Image
-                                src={funeralHome.logoURL}  // Zakładając, że logoURL to prawidłowy URL do obrazu
+                                src={funeralHome.logoURL}
                                 alt="Logo"
                                 className="funeral-home-logo"
-                                width={100}  // Ustaw szerokość obrazu
-                                height={100}  // Ustaw wysokość obrazu
-                                style={{ objectFit: 'cover' }}  // Opcjonalnie dodaj styl dopasowania obrazu
+                                width={100}
+                                height={100}
+                                style={{ objectFit: 'cover' }}
                             />
                             <div className="funeral-home-details">
                                 <h2>{funeralHome.funeralHomeName}</h2>
                                 <p>Ocena: {funeralHome.rating} ★</p>
-                                <p>Adres: {funeralHome.city} {funeralHome.street}</p>
-                                <p>Godziny otwarcia: {funeralHome.hours}</p>
+                                <p>Adres: ul. {funeralHome.street} {funeralHome.postalCode} {funeralHome.city}  </p>
+                                <p>Godziny otwarcia:</p>
+                                {formatOpeningHours(funeralHome.openingHours)} {/* Wyświetlamy godziny otwarcia */}
                                 <p>Email: {funeralHome.email}</p>
                                 <p>Telefon: {funeralHome.phone}</p>
                             </div>
                         </div>
-                        <Link type="submit" href="/search">
+                        <Link href="/szukaj">
                             <button>Zmień</button>
                         </Link>
                     </div>
                     <div className="contact-consultant">
                         <p>Masz pytania? Napisz do konsultanta na żywo</p>
-                        <button className="contact-button">Skontaktuj się</button>
+                        <button className="contact-button" onClick={handleOpenChat}>Skontaktuj się</button>
                     </div>
                 </div>
             ) : (
                 <div className="funeral-home-card">
                     <div className="funeral-home-info">
                         <Image
-                            src={funeralHome.logoURL} // Użyj dynamicznego URL-a do obrazu
-                            alt="Logo"  // Alternatywny tekst dla obrazu
-                            className="funeral-home-logo"  // Klasa CSS dla stylizacji
-                            width={100}  // Ustaw szerokość obrazu (dostosuj do swoich potrzeb)
-                            height={100}  // Ustaw wysokość obrazu (dostosuj do swoich potrzeb)
-                            style={{ objectFit: 'contain' }}  // Stylizowanie obrazu
+                            src={funeralHome.logoURL}
+                            alt="Logo"
+                            className="funeral-home-logo"
+                            width={100}
+                            height={100}
+                            style={{ objectFit: 'contain' }}
                         />
                         <div className="funeral-home-details">
-                            <h2>{funeralHome.name}</h2>
+                            <h2>{funeralHome.funeralHomeName}</h2>
                             <p>Ocena: {funeralHome.rating} ★</p>
-                            <p>Adres: {funeralHome.address}</p>
-                            <p>Godziny otwarcia: {funeralHome.hours}</p>
+                            <p>Adres: ul. {funeralHome.street}, {funeralHome.postalCode} {funeralHome.city}  </p>
+                            <p>Godziny otwarcia:</p>
+                            {formatOpeningHours(funeralHome.openingHours)} {/* Wyświetlamy godziny otwarcia */}
                             <p>Email: {funeralHome.email}</p>
                             <p>Telefon: {funeralHome.phone}</p>
                         </div>

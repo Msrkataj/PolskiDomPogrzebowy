@@ -1,20 +1,7 @@
-.how-it-works-container {
-  background-color: #fff;
-  padding: 20px;
-  background-image: url("../public/assets/images/chessboard.webp");
-  background-size: cover;
-  background-repeat: repeat-y;
-  font-family: 'Avenir', sans-serif;
-
-  @media (min-width: 768px) {
-    padding: 40px 20px;
-  }
-}
+@import '1settings/_variables';
+@import '1settings/_colors';
 
 .how-it-works-section {
-  max-width: 1200px;
-  margin: 0 auto;
-  text-align: center;
   p:nth-child(1) {
     position: relative;
 
@@ -25,28 +12,13 @@
       bottom: -10px;
       width: 10%;
       height: 2px;
-      background-color: $color-gold;
+      background-color: #BBAD0E;
       transform: translateX(-50%);
     }
   }
-  h2 {
-    font-size: 2em;
-    margin-bottom: 10px;
-    display: inline-block;
-    padding-top: 5px;
-    font-family: "Bookman Old Style";
-  }
-
-  p {
-    font-size: 1.4em;
-    margin: 30px 0;
-    line-height: 1.5;
-  }
 
   .steps-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
+
     gap: 20px;
   }
 
@@ -55,17 +27,6 @@
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s, box-shadow 0.3s;
-    text-align: left;
-    width: calc(100% - 40px);
-    overflow: visible;
-    z-index: 0;
-    margin: 10px;
-    @media (min-width: 768px) {
-      margin: 50px;
-    }
     &:hover {
       transform: translateY(-10px);
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
@@ -87,20 +48,11 @@
       min-width: 100px;
       z-index: 100;
     }
-    .image-wrapper {
-      position: relative;
-      width: 100%;
-      height: 150px;
-      margin-bottom: 20px;
-      display: flex;
-      justify-content: center;
-    }
-
     img {
       object-fit: contain;
       object-position: center;
     }
-    h4 {
+    h3 {
       font-size: 1.3em;
       margin-top: 30px;
       margin-bottom: 10px;
@@ -113,11 +65,6 @@
       margin-bottom: 20px;
     }
 
-    .foto {
-      position: relative;
-      width: 50%;
-      height: 100px;
-    }
 
     @media (min-width: 768px) {
       width: calc(50% - 40px);
@@ -131,22 +78,262 @@
   .action-button {
     margin-top: 30px;
     a {
-      background: black;
-      color: white;
-      padding: 10px 10px;
-      border: none;
-      border-radius: 5px;
-      font-size: 1.1em;
       cursor: pointer;
       transition: transform 0.3s;
       &:hover {
         color: black;
         transform: scale(3);
-        background-color: $color-gold;
+        background-color: #BBAD0E;
       }
       @media (min-width: 500px) {
         padding: 10px 30px;
         font-size: 1.5em;
+      }
+    }
+  }
+}
+
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  @include flex-center;
+}
+
+.modal-content {
+  background: white;
+  @include padding-20;
+  @include border-radius;
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.support-component {
+  @include flex-center;
+  text-align: center;
+  flex-direction: column;
+  background-image: url("../public/assets/images/chessboard.webp");
+
+  @media (min-width: 768px) {
+    @include padding-20;
+  }
+
+  h2 {
+    margin-bottom: 20px;
+    padding-top: 20px;
+    font-size: 2em;
+    color: #4a4a4a;
+    font-family: "Bookman Old Style";
+    border-top: 1px solid $color-gold;
+  }
+
+  .support-items {
+    @include flex-center;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 1000px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    font-family: 'Avenir', sans-serif;
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+    }
+  }
+
+  .support-item {
+    @include flex-center;
+    background-image: url("../public/assets/images/wzor.png");
+    width: 80vw;
+    height: 150px;
+    transition: all 0.5s ease-in-out;
+
+    &:hover {
+      transform: scale(1.2);
+      border-bottom: 1px solid gold;
+    }
+
+    @media (min-width: 768px) {
+      width: 350px;
+    }
+
+    p {
+      margin-top: 5px;
+      color: black;
+      font-size: 1em;
+    }
+  }
+}
+
+.contact-call,
+.start-yourself {
+  @include padding-20;
+  @include box-shadow;
+  margin: 30px 0;
+  border-radius: 100px;
+  background: white;
+  font-size: 1rem;
+
+  h3 {
+    color: $color-main2;
+    padding-bottom: 10px;
+    font-size: 2rem;
+  }
+
+  @media (min-width: 768px) {
+    font-size: 1.2rem;
+  }
+
+  a {
+    @include flex-center;
+    color: #000;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 2em;
+  }
+}
+
+.information {
+  @include box-shadow;
+  @include padding-20;
+  @include border-radius;
+  max-width: 1600px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+
+  @media (min-width: 768px) {
+    flex-wrap: nowrap;
+    width: 80vw;
+  }
+
+  a {
+    color: #000;
+    font-weight: bold;
+    font-size: 1.8rem;
+    text-align: center;
+  }
+}
+
+.search-component {
+  @include padding-20;
+  @include box-shadow;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+
+  @media (max-width: 730px) {
+    padding: 0;
+  }
+
+  .video-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -100;
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.3;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 50px;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.5) 100%);
+    }
+  }
+
+  .intro-text {
+    font-size: 1.2em;
+    margin: 20px;
+    line-height: 2;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 5px;
+    display: inline-block;
+
+    @media (min-width: 768px) {
+      font-size: 2rem;
+    }
+  }
+
+  .search-box {
+    font-family: 'Avenir', sans-serif;
+    padding: 350px  10px 0 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    p {
+      font-size: 2rem;
+      padding: 10px;
+      font-weight: bold;
+
+      @media (min-width: 768px) {
+        font-size: 3rem;
+      }
+    }
+
+    input {
+      padding: 10px 50px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin: 10px;
+      text-align: center;
+      font-size: 0.9em;
+      font-weight: normal;
+
+      @media (min-width: 768px) {
+        padding: 20px 10px;
+        width: 350px;
+        margin: 20px;
+        font-size: 0.9em;
+        //background-color: steelblue;
+
+      }
+    }
+
+    button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: black;
+      color: white;
+      cursor: pointer;
+      font-size: 1.2em;
+
+      &:hover {
+        background-color: #333;
+      }
+
+      @media (min-width: 768px) {
+        font-size: 1.5rem;
       }
     }
   }

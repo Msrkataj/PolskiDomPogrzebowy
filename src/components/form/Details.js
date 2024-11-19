@@ -57,7 +57,7 @@ const DeceasedInfoForm = () => {
         try {
             await setDoc(doc(db, 'forms', id), formData, { merge: true });
             alert('Formularz został zapisany.');
-            await router.push('/detailsSecond'); // Przejście do kolejnego etapu
+            await router.push('/formularz-drugi'); // Przejście do kolejnego etapu
         } catch (error) {
             console.error('Błąd zapisu formularza: ', error);
         }

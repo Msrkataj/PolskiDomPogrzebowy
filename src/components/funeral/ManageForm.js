@@ -3,6 +3,7 @@ import {useRouter} from 'next/router';
 import {doc, getDoc, updateDoc} from 'firebase/firestore';
 import Link from 'next/link';
 import {db} from '../../../firebase';
+import AuthGuardFuneral from "@/components/panel/AuthGuardFuneral";
 
 const ManageForm = () => {
     const router = useRouter();
@@ -432,6 +433,58 @@ const ManageForm = () => {
                             )}
                         </div>
                         <div className="form-field">
+                            <label htmlFor="graveCemetery"><strong>Cmentarz i numer kwatery</strong></label>
+                            {isEditing ? (
+                                <input
+                                    type="text"
+                                    name="graveCemetery"
+                                    value={editableData.graveCemetery}
+                                    onChange={handleInputChange}
+                                />
+                            ) : (
+                                <p>{formData.graveCemetery}</p>
+                            )}
+                        </div>
+                        <div className="form-field">
+                            <label htmlFor="gravePersonName"><strong>Imię i nazwisko na dochówku</strong></label>
+                            {isEditing ? (
+                                <input
+                                    type="text"
+                                    name="gravePersonName"
+                                    value={editableData.gravePersonName}
+                                    onChange={handleInputChange}
+                                />
+                            ) : (
+                                <p>{formData.gravePersonName}</p>
+                            )}
+                        </div>
+                        <div className="form-field">
+                            <label htmlFor="graveDeathDate"><strong>Data śmierci osoby na nagrobku</strong></label>
+                            {isEditing ? (
+                                <input
+                                    type="text"
+                                    name="graveDeathDate"
+                                    value={editableData.graveDeathDate}
+                                    onChange={handleInputChange}
+                                />
+                            ) : (
+                                <p>{formData.graveDeathDate}</p>
+                            )}
+                        </div>
+                        <div className="form-field">
+                            <label htmlFor="graveDetails"><strong>Ewentualne dodatkowe szczegóły dochówku</strong></label>
+                            {isEditing ? (
+                                <input
+                                    type="text"
+                                    name="graveDetails"
+                                    value={editableData.graveDetails}
+                                    onChange={handleInputChange}
+                                />
+                            ) : (
+                                <p>{formData.graveDetails}</p>
+                            )}
+                        </div>
+                        <div className="form-field">
                             <label htmlFor="clothingOption"><strong>Ubiór zmarłego:</strong></label>
                             {isEditing ? (
                                 <input
@@ -479,5 +532,10 @@ const ManageForm = () => {
     )
         ;
 };
+const DashboardWithAuth = () => (
+    <AuthGuardFuneral>
+        <ManageForm/>
+    </AuthGuardFuneral>
+);
 
-export default ManageForm;
+export default DashboardWithAuth;

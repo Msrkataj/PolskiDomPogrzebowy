@@ -32,7 +32,7 @@ const SearchResults = () => {
             <div className="results-content">
                 <span>
                     Na podstawie Twojej lokalizacji, dobraliśmy dla Ciebie najbardziej odpowiedni dom pogrzebowy,
-                    z którym mamy podpisaną umowę. Dzięki temu masz pewność, że otrzymasz najwyższej jakości usługi.
+                    z którym mamy podpisaną umowę.<br/> Dzięki temu masz pewność, że otrzymasz najwyższej jakości usługi.
                     <h3>Następnie będziesz prowadzony krok po kroku przez formularz...</h3>
                 </span>
                 <div className="address-input">

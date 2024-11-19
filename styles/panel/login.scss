@@ -290,7 +290,7 @@ $color-shadow: rgba(0, 0, 0, 0.1);
 
             &.in-progress {
               font-size: 1.3em;
-              color: $color-warning;
+              color: $color-secondary;;
             }
           }
         }
@@ -535,6 +535,20 @@ $color-shadow: rgba(0, 0, 0, 0.1);
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
+    }
+  }
+}
+.reset-password-container {
+  @include flex-center();
+  flex-direction: column;
+  form {
+    @include flex-center();
+    flex-direction: column;
+  }
+  .reset-password-container-back {
+    margin-top: 20px;
+    a {
+      color: white;
     }
   }
 }

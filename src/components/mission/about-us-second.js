@@ -3,7 +3,7 @@ import Image from 'next/image';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEnvelope} from "@fortawesome/free-solid-svg-icons";
 
-const NaszaMisjaSecond = () => {
+const NaszaMisjaSecond = ({handleOpenChat}) => {
     const missionHistoryRef = useRef(null);
     const missionTeamRef = useRef(null);
     const missionContactRef = useRef(null);
@@ -46,7 +46,7 @@ const NaszaMisjaSecond = () => {
                 <section id="nasza-historia" className="mission-history" ref={missionHistoryRef}>
                     <h1 className="mission-history-title">Nasza Historia</h1>
                     <p className="mission-history-description">
-                        DomPogrzebowy24.pl powstał z potrzeby stworzenia miejsca, gdzie rodziny mogą uzyskać pełne wsparcie w trudnych chwilach.
+                        Polskidompogrzebowy.pl powstał z potrzeby stworzenia miejsca, gdzie rodziny mogą uzyskać pełne wsparcie w trudnych chwilach.
                         Założyliśmy naszą platformę z myślą o ludziach, którzy chcą w spokoju i godności pożegnać swoich bliskich, korzystając z najlepszych dostępnych usług.
                     </p>
                 </section>
@@ -60,7 +60,7 @@ const NaszaMisjaSecond = () => {
                         </div>
                         <div className="mission-team-main-elemets">
                             <h2>Współpraca z Zakładami Pogrzebowymi</h2>
-                            <p>DomPogrzebowy24.pl współpracuje z wieloma zakładami pogrzebowymi na terenie całego kraju.
+                            <p>Polskidompogrzebowy współpracuje z wieloma zakładami pogrzebowymi na terenie całego kraju.
                                 Dzięki temu możemy zaoferować naszym klientom szeroki wybór usług i asortymentu,
                                 dostosowanych do ich indywidualnych potrzeb.
                                 Naszym partnerom zapewniamy transparentność i rzetelność we współpracy.</p>
@@ -84,7 +84,7 @@ const NaszaMisjaSecond = () => {
                                 <Image src="/assets/icons/phone.png" alt="Telefon" width={50} height={50}/>
                                 <p>+48 600 000 000</p>
                             </div>
-                            <a href="/chat" className="contact-item">
+                            <a className="contact-item" onClick={handleOpenChat}>
                                 <Image src="/assets/icons/consultant.png" alt="Czat" width={50} height={50}/>
                                 <p>Czat na żywo</p>
                             </a>

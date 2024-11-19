@@ -1,0 +1,70 @@
+.modal-document {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 10000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.modal-document .modal-content {
+  padding: 20px;
+  border-radius: 5px;
+  width: 90%;
+  max-width: 700px;
+  font-family: "Times New Roman", Times, serif;
+}
+.modal-document .modal-content h2 {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+.modal-document .modal-content h3 {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 20px;
+  font-size: 1.5em;
+}
+.modal-document .modal-content p {
+  margin-bottom: 10px;
+}
+.modal-document .modal-content input {
+  width: 80%;
+  padding: 5px;
+  margin-bottom: 20px;
+  background: transparent;
+  border: 1px solid black;
+  font-family: "Times New Roman", Times, serif;
+}
+.modal-document button {
+  padding: 10px 20px;
+  margin-top: 10px;
+  border: none;
+  background-color: #007bff;
+  cursor: pointer;
+}
+.modal-document .button-pdf {
+  padding: 10px 20px;
+  margin-top: 10px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+.modal-document .button-pdf a {
+  color: white;
+}
+.modal-document .button-pdf a :hover {
+  background-color: black;
+}
+.modal-document .button-pdf :hover {
+  background-color: #0056b3;
+}
+.modal-document button:hover {
+  background-color: #0056b3;
+}
+
+/*# sourceMappingURL=Pelnomocnictwo.scss.css.map */

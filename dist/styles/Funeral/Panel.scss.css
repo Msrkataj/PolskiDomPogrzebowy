@@ -1,0 +1,457 @@
+@charset "UTF-8";
+.dashboardContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 5px;
+  background-color: #fff;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+@media (min-width: 768px) {
+  .dashboardContainer {
+    padding: 20px;
+  }
+}
+.dashboardContainer h1 {
+  margin: 10px 0;
+}
+.dashboardContainer .funeralHomeInfo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.dashboardContainer .funeralHomeInfo .funeralHomeLogo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-right: 20px;
+}
+.dashboardContainer .funeralHomeInfo .funeralHomeDetails h2 {
+  margin: 0;
+  font-size: 1.5em;
+  color: #333;
+}
+.dashboardContainer .dashboardButtons {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.dashboardContainer .dashboardButtons button {
+  padding: 10px 20px;
+  font-size: 1.1em;
+  color: #fff;
+  background-color: #f0ad4e;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.dashboardContainer .dashboardButtons button:hover {
+  background-color: #ec971f;
+}
+.dashboardContainer .notification {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #e7e7e7;
+  color: #666;
+}
+.dashboardContainer .notification:last-child {
+  border-bottom: none;
+}
+.dashboardContainer .notification.highlight {
+  background-color: #d4edda;
+  color: #155724;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+.dashboardContainer .notification.require-action {
+  background-color: #f8d7da;
+  color: #721c24;
+  font-weight: bold;
+}
+.dashboardContainer .notification.new-order {
+  background-color: #d4edda;
+  color: #155724;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+.newBadge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #28a745;
+  color: white;
+  padding: 0.5em;
+  border-radius: 5px;
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+.notification {
+  padding: 1em;
+  margin: 1em 0;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.reactionRequired {
+  color: #ff0000;
+  font-weight: bold;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.modal-overlay .status-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal h2 {
+  margin-top: 0;
+}
+
+.modal .services {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.modal .services div {
+  margin-bottom: 10px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modal-actions button {
+  margin-left: 10px;
+}
+
+.dashboardContainer {
+  max-width: 1600px;
+}
+
+.dashboardContainer h1 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.orderTableContainer {
+  overflow-x: auto;
+  background-color: #fff;
+  padding: 0;
+  border-radius: 10px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+}
+@media (min-width: 768px) {
+  .orderTableContainer {
+    padding: 20px;
+  }
+}
+
+.addStatusButton {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 10px 20px;
+  font-size: 14px;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.addStatusButton:hover {
+  background-color: #0056b3;
+}
+
+.orderTable {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.orderTable select {
+  white-space: normal;
+  max-width: 100px; /* Dodanie maksymalnej szerokości */
+  height: 40px;
+  display: inline-block;
+  overflow-wrap: break-word; /* Dodaje zawijanie długich słów */
+}
+
+.orderTable option {
+  white-space: normal;
+}
+
+.orderTable option {
+  word-break: break-all; /* lub użyj 'break-word' */
+}
+
+.orderTable select {
+  max-width: 150px; /* Zwiększenie szerokości */
+}
+
+.orderTable th,
+.orderTable td {
+  padding: 5px 6px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.orderTable th {
+  background-color: #007bff;
+  color: #fff;
+  font-weight: bold;
+}
+
+.orderTable tr {
+  border-bottom: 1px solid #ddd;
+  transition: background-color 0.3s ease;
+}
+.orderTable tr .name-row {
+  width: 5%;
+}
+
+.orderTable tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.orderTable tr:hover {
+  background-color: #f1f1f1;
+}
+
+.orderTable .selected {
+  background-color: #e0f7fa;
+}
+
+/* Stylowanie dla przycisków */
+.addStatusButton {
+  margin-bottom: 10px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.addStatusButton:hover {
+  background-color: #0056b3;
+}
+
+/* Stylowanie dla DropdownMenu */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdownContent {
+  display: block;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  right: 0;
+  top: 30px;
+}
+
+.dropdownContent button {
+  background-color: white;
+  color: black;
+  padding: 12px 16px;
+  text-align: left;
+  border: none;
+  display: block;
+  width: 100%;
+  cursor: pointer;
+}
+
+.dropdownContent button:hover {
+  background-color: #f1f1f1;
+}
+
+.errorMessage {
+  color: red;
+  font-weight: bold;
+  font-size: 1em;
+  line-height: 15px;
+}
+
+.message-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.message-success .message {
+  margin: 50px;
+  font-size: 2em;
+}
+
+.message {
+  color: green;
+  font-weight: bold;
+  font-size: 1em;
+  line-height: 15px;
+}
+
+.communicateMessage {
+  color: darkgoldenrod;
+  font-weight: bold;
+  line-height: 15px;
+}
+
+.orderDetailsContainer {
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 20px auto;
+  max-width: 800px;
+}
+
+.orderDetailsContainer h1 {
+  margin-bottom: 20px;
+}
+
+.orderDetailsContainer p {
+  margin-bottom: 10px;
+}
+
+.shortenedMessage {
+  cursor: pointer;
+  display: inline-block;
+  max-width: 200px; /* Zmniejsz szerokość jeśli potrzeba */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-bottom: 1px dotted #000; /* Opcjonalne podkreślenie */
+  font-size: 1em;
+}
+
+.shortenedMessage:hover::after {
+  content: attr(title); /* Wyświetla tooltip */
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  position: absolute;
+  white-space: pre-wrap;
+  z-index: 1000;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  transform: translateY(100%);
+}
+
+.progress-bar {
+  width: 100px;
+  height: 20px;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.progress {
+  height: 100%;
+  background-color: green;
+  border-radius: 10px;
+  text-align: center;
+  color: white;
+  font-size: 0.75em;
+  line-height: 20px;
+  transition: width 0.4s ease;
+}
+
+.funeral-home-details-top {
+  margin: 10px 0;
+  font-size: 0.8em;
+}
+
+.funeral-home-details-settings {
+  display: flex;
+  justify-content: center;
+}
+.funeral-home-details-settings .settings-button {
+  color: #0d47a1;
+}
+
+.change-password-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button {
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:disabled {
+  background-color: #ccc;
+}
+
+.error-message {
+  color: red;
+  margin-bottom: 10px;
+}
+
+.success-message {
+  color: green;
+  margin-bottom: 10px;
+}
+
+/*# sourceMappingURL=Panel.scss.css.map */

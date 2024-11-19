@@ -4,6 +4,7 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import bcrypt from 'bcryptjs';
 import { useRouter } from 'next/router';
 import Link from "next/link";
+import { setCookie } from 'nookies';
 
 const ClientLogin = () => {
     const [email, setEmail] = useState('');
@@ -77,13 +78,13 @@ const ClientLogin = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
-                    <Link href={"/form"} className="forgot-password">Zapomniałeś hasła?</Link>
+                    <Link href={"/zapomniane-haslo-uzytkownik"} className="forgot-password">Zapomniałeś hasła?</Link>
                 </div>
                 <div className="actions">
                     <button type="submit" className="login-button">Zaloguj się</button>
                 </div>
                 <div className="links">
-                    <Link href="/search" className="register-link">Jeśli chcesz zalożyć konto,<br/>wyślij zgłoszenie</Link>
+                    <Link href="/szukaj" className="register-link">Jeśli chcesz zalożyć konto,<br/>wyślij zgłoszenie</Link>
                 </div>
             </form>
             <div className="funeral-home-box">

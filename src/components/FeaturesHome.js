@@ -27,7 +27,7 @@ const FeaturesSection = () => {
         <div className="container">
             <section id="kim-jestesmy" className="features-section">
                 <h2>Kim jesteśmy i co oferujemy?</h2>
-                <div className="features-container">
+                <div className="features-container flex-center">
                     {features.map((feature, index) => (
                         <div key={index} className="feature-card">
                             <div className="feature-image">
@@ -35,11 +35,9 @@ const FeaturesSection = () => {
                                     src={feature.icon}
                                     alt={feature.title}
                                     fill
-                                    sizes="(max-width: 768px) 100vw,
-                                       (max-width: 1200px) 50vw,
-                                       33vw"
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                     loading={"lazy"}
-                                    style={{objectFit: "contain"}}
+                                    style={{ objectFit: "contain" }}
                                 />
                             </div>
                             <h3>{feature.title}</h3>

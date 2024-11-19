@@ -49,14 +49,12 @@ const HowItWorks = () => {
             <section className="how-it-works-section">
                 <p>Jak to działa?</p>
                 <h2>Wsparcie na każdym etapie organizacji pogrzebu</h2>
-                <p>Dzięki naszemu  systemowi, dobierzemy dla Ciebie odpowiedni dom pogrzebowy w Twojej okolicy,
-                    współpracujący z nami na podstawie zaufanych umów.
-                </p>
+                <p>Dzięki naszemu systemowi, dobierzemy dla Ciebie odpowiedni dom pogrzebowy w Twojej okolicy...</p>
                 <div className="steps-grid">
                     {steps.map((item, index) => (
                         <div key={index} className="step-card">
                             <div className="step-header">{item.step}</div>
-                            <h4>{item.title}</h4>
+                            <h3>{item.title}</h3>
                             <p>{item.description}</p>
                             <div className="image-wrapper">
                                 <Image
@@ -65,14 +63,13 @@ const HowItWorks = () => {
                                     width={150}
                                     height={150}
                                     style={{ objectFit: 'contain' }}
-                                    loading={"lazy"}
-                                />
+                                    loading="lazy"                                />
                             </div>
                         </div>
                     ))}
                 </div>
                 <div className="action-button">
-                    <Link href={"/form"} className="change-button">Przekonaj się jakie to łatwe</Link>
+                    <Link href={"/szukaj"} className="change-button">Przekonaj się jakie to łatwe</Link>
                 </div>
             </section>
         </div>

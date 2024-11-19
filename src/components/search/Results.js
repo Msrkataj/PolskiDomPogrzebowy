@@ -22,7 +22,6 @@ const options = {
 
 const FuneralHomeResults = () => {
     const [funeralHomes, setFuneralHomes] = useState([]);
-    const [selectedImage, setSelectedImage] = useState('');
     const [selectedCoordinates, setSelectedCoordinates] = useState(null);
     const [selectedFuneralHome, setSelectedFuneralHome] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -73,36 +72,34 @@ const FuneralHomeResults = () => {
         const fetchData = async () => {
             try {
                 const querySnapshot = await getDocs(collection(db, 'domyPogrzebowe'));
-                const homesData = querySnapshot.docs.map(doc => doc.data());
+                const homesData = querySnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
 
                 // Filtracja domów pogrzebowych, które mają zarówno funeralHomeName, jak i city
                 const validHomesData = homesData.filter(home => home.funeralHomeName && home.city);
 
                 const dataWithUrls = await Promise.all(validHomesData.map(async home => {
-                    try {
-                        const logoUrl = await getDownloadURL(ref(storage, `${home.funeralHomeName}/logo/logo.png`));
-                        const mainImageUrl = await getDownloadURL(ref(storage, `${home.funeralHomeName}/images/main.webp`));
-                        const hallImageUrl = await getDownloadURL(ref(storage, `${home.funeralHomeName}/images/hall.webp`));
-                        const carImageUrl = await getDownloadURL(ref(storage, `${home.funeralHomeName}/images/car.webp`));
+                    const basePath = `${home.funeralHomeName}`;
+                    const logoUrl = await getImageUrl(`${basePath}/logo/logo.png`) || '/default-logo.png';
+                    const mainImageUrl = await getImageUrl(`${basePath}/images/main.webp`) || '/default-image.webp';
+                    const hallImageUrl = await getImageUrl(`${basePath}/images/hall.webp`) || '/default-image.webp';
+                    const carImageUrl = await getImageUrl(`${basePath}/images/car.webp`) || '/default-image.webp';
 
-                        return {
-                            ...home,
-                            logoUrl,
-                            images: {
-                                main: mainImageUrl,
-                                hall: hallImageUrl,
-                                car: carImageUrl
-                            },
-                            reviews: home.reviews || []
-                        };
-                    } catch (error) {
-                        console.error(`Error fetching images for ${home.funeralHomeName}: `, error);
-                        return {
-                            ...home,
-                            reviews: home.reviews || []
-                        };
-                    }
+                    return {
+                        ...home,
+                        logoUrl,
+                        images: {
+                            main: mainImageUrl,
+                            hall: hallImageUrl,
+                            car: carImageUrl
+                        },
+                        reviews: home.reviews || [],
+                        selectedImage: mainImageUrl // Ustawiamy selectedImage na mainImageUrl
+                    };
                 }));
+
                 const userLocation = localStorage.getItem('location') || 'Warszawa';
                 const userCoordinates = await fetchCoordinates(userLocation);
 
@@ -137,11 +134,29 @@ const FuneralHomeResults = () => {
 
         fetchData();
     }, []);
-
-    const handleImageSelection = (image) => {
-        const imageUrl = image.startsWith('http') ? image : `https://${image}`;
-        setSelectedImage(imageUrl);
+    const getImageUrl = async (path) => {
+        try {
+            return await getDownloadURL(ref(storage, path));
+        } catch (error) {
+            if (error.code !== 'storage/object-not-found') {
+                console.error(`Error fetching image at path ${path}:`, error);
+            }
+            return null;
+        }
     };
+
+    const handleImageSelection = (homeId, imageUrl) => {
+        setFuneralHomes(prevHomes => prevHomes.map(home => {
+            if (home.id === homeId) {
+                return {
+                    ...home,
+                    selectedImage: imageUrl
+                };
+            }
+            return home;
+        }));
+    };
+
 
     const renderServices = (services = []) => {
         return services.map((service, index) => (
@@ -188,6 +203,7 @@ const FuneralHomeResults = () => {
                                     height={50}
                                     style={{ objectFit: 'contain' }}
                                     sizes="200px"
+                                    loading="lazy"
                                 />
                                 <div className="home-details-name-title">
                                     <h3>{home.funeralHomeName}</h3>
@@ -323,7 +339,13 @@ const FuneralHomeResults = () => {
                                 <div className="reviews-main">
                                     {home.reviews && home.reviews.length > 0 ? home.reviews.map((review, i) => (
                                         <blockquote key={i} className="funeral-home-text reviews-main-text">
-                                            <p>{review.date}</p>&quot;{review.text}&quot; - <cite>{review.author}</cite>
+                                            <p>{review.date}</p>
+                                            <div>
+                                                &quot;{review.text}&quot; - <cite>{review.author}</cite>
+                                            </div>
+                                            <div>
+                                                <StarRating rating={review.rating}/>
+                                            </div>
                                         </blockquote>
                                     )) : <p>Brak opinii.</p>}
                                 </div>
@@ -345,17 +367,27 @@ const FuneralHomeResults = () => {
                         <div className="home-images">
                             <div className="selected-image">
                                 <Image
-                                    src={selectedImage || (home.images && home.images.main ? home.images.main : '/default-image.webp')}
+                                    src={home.selectedImage || '/default-image.webp'}
                                     alt="Selected"
                                     fill
-                                    style={{ objectFit: 'cover' }}
+                                    style={{objectFit: 'cover'}}
                                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                    loading="lazy"
                                 />
                             </div>
                             <div className="image-selector">
-                                <button onClick={() => handleImageSelection(home.images?.main || '/default-image.webp')}>Zdjęcie zakładu</button>
-                                <button onClick={() => handleImageSelection(home.images?.hall || '/default-image.webp')}>Zdjęcie sali pożegnań</button>
-                                <button onClick={() => handleImageSelection(home.images?.car || '/default-image.webp')}>Zdjęcie karawanu</button>
+                                <button
+                                    onClick={() => handleImageSelection(home.id, home.images?.main || '/default-image.webp')}>Zdjęcie
+                                    zakładu
+                                </button>
+                                <button
+                                    onClick={() => handleImageSelection(home.id, home.images?.hall || '/default-image.webp')}>Zdjęcie
+                                    sali pożegnań
+                                </button>
+                                <button
+                                    onClick={() => handleImageSelection(home.id, home.images?.car || '/default-image.webp')}>Zdjęcie
+                                    karawanu
+                                </button>
                             </div>
                             <div className="map">
                                 {selectedCoordinates && (
@@ -386,5 +418,5 @@ const FuneralHomeResults = () => {
         </>
     );
 };
-export default dynamic (() => Promise.resolve(FuneralHomeResults), {ssr: false})
+export default dynamic(() => Promise.resolve(FuneralHomeResults), {ssr: false})
 

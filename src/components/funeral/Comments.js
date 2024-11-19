@@ -31,11 +31,11 @@ const Uwagi = ({ formId, formDate }) => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     const requiredFields = [
-                        'address', 'authorizedPerson', 'authorizedPerson.name', 'authorizedPerson.pesel',
-                        'birthDate', 'burialOption', 'certificateNumber', 'city', 'clothingOption',
+                        'authorizedPerson.name', 'authorizedPerson.pesel',
+                        'birthDate', 'burialOption', 'city', 'clothingOption',
                         'deathDate', 'documents', 'email', 'formType', 'funeralHomeName', 'insurance',
-                        'location', 'name', 'pensionCertificate', 'pensionDetails', 'pesel', 'phone',
-                        'religiousCeremony', 'street', 'surname', 'who', 'worked'
+                        'location', 'name', 'pensionCertificate', 'pesel', 'phone', 'graveCemetery',
+                        'religiousCeremony', 'street', 'surname', 'who'
                     ];
 
                     const missingFields = requiredFields.filter(field => {
@@ -97,18 +97,6 @@ const Uwagi = ({ formId, formDate }) => {
             {message && <p className="message">{message}</p>}
             {communicate && <p className="communicateMessage">{communicate}</p>}
         </>
-    //     <div className="uwagi-container">
-    //         <div
-    //             className="shortenedMessage"
-    //             title={combinedMessages} // Tooltip z pełnymi uwagami
-    //             style={{ cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
-    //         >
-    //             {documentError && <span className="errorMessage">{getShortenedText(documentError)}</span>}
-    //             {dataError && <span className="errorMessage">{getShortenedText(dataError)}</span>}
-    //             {message && <span className="message">{getShortenedText(message)}</span>}
-    //             {communicate && <span className="communicateMessage">{getShortenedText(communicate)}</span>}
-    //         </div>
-    //     </div>
     );
 };
 

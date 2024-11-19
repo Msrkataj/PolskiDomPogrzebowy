@@ -128,3 +128,117 @@
     background-color: darkgoldenrod;
   }
 }
+
+.modal-overlay-support {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  .modal-content-support {
+    background-color: #f9f9f9;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    position: relative;
+    text-align: center;
+    max-height: 90vh; /* Ensure the modal does not exceed the viewport height */
+    overflow-y: auto;
+  }
+
+  .close-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: #333;
+    font-size: 1.5em;
+    cursor: pointer;
+    &:hover {
+      color: #0056b3;
+    }
+  }
+
+  .modal-content-support h2 {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  .modal-content-support form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .modal-content-support label {
+    width: 100%;
+    text-align: left;
+    font-size: 1.1em;
+    color: #333;
+    margin-bottom: 10px;
+  }
+
+  .modal-content-support input,
+  .modal-content-support select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    color: #333;
+  }
+
+  .modal-content-support button {
+    background-color: royalblue;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+  }
+
+  .modal-content-support button:hover {
+    background-color: darkblue;
+  }
+
+  .modal-content-support .error-message {
+    color: red;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+  }
+
+  /* Media queries for mobile */
+  @media (max-width: 768px) {
+    .modal-content-support {
+      padding: 20px;
+      max-width: 95%;
+    }
+
+    .modal-content-support h2 {
+      font-size: 1.5em;
+    }
+
+    .modal-content-support input,
+    .modal-content-support select {
+      font-size: 0.9em;
+    }
+
+    .modal-content-support button {
+      padding: 10px 20px;
+    }
+  }
+}
+

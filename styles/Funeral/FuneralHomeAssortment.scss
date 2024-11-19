@@ -1,13 +1,11 @@
 .container {
-
   .filter-bar {
     margin-bottom: 20px;
     display: flex;
     justify-content: flex-end;
+
     select {
       appearance: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
       background-color: #f8f8f8;
       border: 1px solid #ccc;
       border-radius: 5px;
@@ -43,13 +41,13 @@
         margin-bottom: 10px;
       }
     }
-
   }
 
   .assortment-table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
+    table-layout: auto; /* Domyślna szerokość kolumn */
 
     thead {
       background-color: #f8f8f8;
@@ -59,6 +57,7 @@
         font-size: 14px;
         text-align: left;
         border-bottom: 1px solid #ddd;
+        white-space: nowrap; /* Zapobiega zawijaniu tekstu */
       }
     }
 
@@ -91,7 +90,8 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 1.2em;
+            margin: 10px 0;
 
             &:hover {
               background-color: #0056b3;
@@ -150,29 +150,8 @@
     overflow-x: auto;
     white-space: nowrap;
 
-    thead {
-      display: block;
 
-      th {
-        display: inline-block;
-        min-width: 120px;
-      }
-    }
 
-    tbody {
-      display: block;
-
-      tr {
-        vertical-align: top;
-        width: 100%;
-        box-sizing: border-box;
-      }
-
-      td {
-        display: inline-block;
-        min-width: 120px;
-      }
-    }
   }
 
   .add-button {
@@ -194,7 +173,9 @@
   z-index: 1000;
   overflow: hidden;
 }
-
+.modal-content-funeral-text {
+ height: 200px;
+}
 .modal-content-funeral, .modal-content-add {
   background: #f9f9f9;
   padding: 30px;
@@ -234,7 +215,25 @@
   border-radius: 8px;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: border-color 0.2s ease-in-out;
+  font-family: Avenir;
 }
+.modal-content-funeral textarea {
+  width: 100%; /* Szerokość pola */
+  padding: 50px 0 100px 10px; /* Padding, taki sam jak w inputach */
+  font-size: 16px;
+  border: 1px solid #ccc; /* Border, taki sam jak w inputach */
+  border-radius: 8px; /* Border-radius, taki sam jak w inputach */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Box-shadow, taki sam jak w inputach */
+  resize: vertical; /* Możliwość zmiany wysokości */
+  transition: border-color 0.2s ease-in-out; /* Płynne przejście przy focus */
+  font-family: Avenir; /* Dopasowanie czcionki */
+}
+
+.modal-content-funeral textarea:focus {
+  border-color: #007bff; /* Kolor borderu przy focus */
+  outline: none; /* Usunięcie domyślnego obrysu */
+}
+
 
 .modal-content-funeral input[type="text"]:focus, .modal-content-funeral input[type="number"]:focus,
 .modal-content-funeral select:focus, .modal-content-add input[type="text"]:focus, .modal-content-add input[type="number"]:focus,
@@ -292,7 +291,24 @@
   display: flex;
   gap: 10px;
 }
-
+.button-clock-open {
+  width: 100%;
+  margin: 10px 0;
+  @include flex-center();
+}
+.button-edit-funeral {
+  width: 100%;
+  margin: 50px 0;
+  @include flex-center();
+  button {
+    background-color: #0056b3;
+    padding: 20px 40px;
+    margin: 0 20px;
+    a {
+      color: white;
+    }
+  }
+}
 .modal-content-funeral ul li, .modal-content-add ul li {
   position: relative;
   display: inline-block;

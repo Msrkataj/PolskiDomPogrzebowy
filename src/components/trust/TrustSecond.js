@@ -86,7 +86,7 @@ const TrustedFuneralHomes = () => {
                 <h2 className="review-title" >Dołącz do nas</h2>
                 <p className="review-description">Jeśli chcesz dołączyć do grona naszych zaufanych partnerów i zapewnić swoim klientom najwyższą jakość obsługi, skontaktuj się z nami</p>
                 <button>
-                    <Link href="/join">
+                    <Link href="/dolacz-formularz">
                         Złóż wniosek
                     </Link>
                 </button>

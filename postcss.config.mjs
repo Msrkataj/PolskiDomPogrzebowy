@@ -2,6 +2,9 @@
 const config = {
   plugins: {
     tailwindcss: {},
+    cssnano: {
+      preset: 'default',
+    },
   },
 };
 

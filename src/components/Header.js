@@ -1,28 +1,62 @@
+// HeaderMenu.js
+
 import React, { useState, useEffect } from "react";
 import Link from 'next/link';
 import data from '../data/data.json';
 import Image from "next/image";
 import { useRouter } from 'next/router';
-import dynamic from "next/dynamic";
+import { collection, getDocs, onSnapshot, query, where } from 'firebase/firestore';
+import { db } from '../../firebase';
+import { parseCookies } from 'nookies';
 
 const HeaderMenu = () => {
     const [active, setActive] = useState(false);
     const [loggedInUser, setLoggedInUser] = useState(null);
     const [userRole, setUserRole] = useState(null);
-    const [isClient, setIsClient] = useState(false); // Track client-side rendering
+    const [hasNewChatMessage, setHasNewChatMessage] = useState(false);
+    const [funeralHomeData, setFuneralHomeData] = useState(null);
     const router = useRouter();
 
     useEffect(() => {
-        // Set flag to indicate that we are on the client side
-        setIsClient(true);
+        let unsubscribe; // Funkcja do zakończenia nasłuchiwania
 
-        // Fetch user details from localStorage only on client-side
-        const role = localStorage.getItem('userRole');
-        const email = localStorage.getItem('userEmail');
-        if (role && email) {
-            setUserRole(role);
-            setLoggedInUser(email);
+        if (typeof window !== 'undefined') {
+            const role = localStorage.getItem('userRole');
+            const email = localStorage.getItem('userEmail');
+            if (role && email) {
+                setUserRole(role);
+                setLoggedInUser(email);
+
+                // Nasłuchiwanie wiadomości dla ról admin i funeralHome
+                if (role === 'admin' || role === 'funeralHome') {
+                    const chatQuery = query(collection(db, 'chat'), where('unread', '==', true));
+
+                    unsubscribe = onSnapshot(chatQuery, (snapshot) => {
+                        setHasNewChatMessage(!snapshot.empty);
+                    });
+                }
+
+                // Pobieranie danych domu pogrzebowego dla funeralHome
+                if (role === 'funeralHome') {
+                    const fetchFuneralHomeData = async () => {
+                        const funeralHomeQuery = query(collection(db, 'domyPogrzebowe'), where('email', '==', email));
+                        const funeralHomeSnapshot = await getDocs(funeralHomeQuery);
+                        if (!funeralHomeSnapshot.empty) {
+                            const funeralHomeData = funeralHomeSnapshot.docs[0].data();
+                            setFuneralHomeData(funeralHomeData);
+                        }
+                    };
+                    fetchFuneralHomeData();
+                }
+            }
         }
+
+        // Funkcja czyszcząca
+        return () => {
+            if (unsubscribe) {
+                unsubscribe();
+            }
+        };
     }, []);
 
     const toggleMenu = () => {
@@ -37,16 +71,12 @@ const HeaderMenu = () => {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('userRole');
-        localStorage.removeItem('userEmail');
-        localStorage.removeItem('userId');
-        localStorage.removeItem('formId');
-        localStorage.removeItem('email');
-        localStorage.removeItem('formData');
-        localStorage.removeItem('loginTime');
-        setLoggedInUser(null);
-        setUserRole(null);
-        router.push('/');
+        if (typeof window !== 'undefined') {
+            localStorage.clear();
+            setLoggedInUser(null);
+            setUserRole(null);
+            router.push('/');
+        }
     };
 
     const getPanelLink = () => {
@@ -62,73 +92,77 @@ const HeaderMenu = () => {
         }
     };
 
-    const getMenuItems = () => {
-        if (userRole === 'funeralHome') {
-            return data.FuneralmenuItems;
+    const getMenuData = () => {
+        if (userRole === 'funeralHome' && funeralHomeData) {
+            // Sprawdzamy, czy profil jest kompletny
+            if (funeralHomeData.profileCompleted && funeralHomeData.profileCompleted2 && funeralHomeData.profileCompleted3) {
+                return {
+                    items: data.FuneralmenuItems, // Jeśli profil jest kompletny
+                    mobileItems: data.FuneralmenuMobileItems,
+                };
+            } else {
+                return {
+                    items: data.FuneralmenuItemsFirst, // Jeśli profil nie jest kompletny
+                    mobileItems: data.FuneralmenuMobileItemsFirst,
+                };
+            }
         } else if (userRole === 'admin') {
-            return data.AdminmenuItems;
+            return {
+                items: data.AdminmenuItems,
+                mobileItems: data.AdminmenuMobileItems,
+            };
         } else {
-            return data.menuItems;
+            return {
+                items: data.menuItems,
+                mobileItems: data.menuMobileItems,
+            };
         }
     };
 
-    const getMenuMobileItems = () => {
-        if (userRole === 'funeralHome') {
-            return data.FuneralmenuMobileItems;
-        } else if (userRole === 'admin') {
-            return data.AdminmenuMobileItems;
-        } else {
-            return data.menuMobileItems;
-        }
-    };
-
-    const menuItems = getMenuItems();
-    const menuMobileItems = getMenuMobileItems();
-    console.log(menuItems[0].img)
-    console.log(data.menuItems[0].img)
+    const { items: menuItems, mobileItems: menuMobileItems } = getMenuData();
 
     return (
-        <div className={loggedInUser && userRole !== 'funeralHome' && userRole !== 'admin' ? "header" : "header header-mobile"}>
+        <header className="header">
             <div className="header-top">
                 <div className="logo-container">
-                    <Link href="/">
-                        <div style={{position: "relative", width: "300px", height: "50px"}}>
+                    <Link href="/" className="logo-container-img">
+                        <div className="logo-image">
                             <Image
                                 src="/assets/logo.webp"
                                 alt="Polskidompogrzebowy.pl"
                                 fill
                                 sizes="(max-width: 768px) 205vw, 300px"
                                 priority
-                                style={{objectFit: "contain"}}
+                                style={{ objectFit: "contain" }}
                             />
                         </div>
                     </Link>
                 </div>
-                <div className={loggedInUser ? "login-panel-main" : "login-panel"}>
+                <div className="login-panel login-panel-desktop">
                     {loggedInUser ? (
-                        <div className="login-panel login-panel-logout">
+                        <div className="login-panel-logout">
                             <span className="login-text">Witaj, {loggedInUser}</span>
-                            {userRole !== 'funeralHome' && userRole !== 'admin' ? (
+                            {userRole !== 'funeralHome' && userRole !== 'admin' && (
                                 <Link href={getPanelLink()}>
-                                    <span className="login-text">Twój panel</span>
+                                    <button className="login-text">Twój panel</button>
                                 </Link>
-                            ) : null}
+                            )}
                             <button className="logout-button" onClick={handleLogout}>Wyloguj</button>
                         </div>
                     ) : (
                         <Link href="/login">
-                            <span className="login-text">Zaloguj się</span>
+                            <button className="button-login">Zaloguj się</button>
                         </Link>
                     )}
                 </div>
             </div>
             <div className="nav-container">
-                <div onClick={toggleMenu}>
+                <div className="hamburger-menu" onClick={toggleMenu}>
                     <div className={active ? "activeHamburger" : "hamburger"} />
                 </div>
-                <div className="nav">
+                <nav className="nav">
                     <ul>
-                        {isClient && menuItems.map((item, index) => (
+                        {menuItems && menuItems.map((item, index) => (
                             <li key={index}>
                                 <div className="nav-image">
                                     <Image
@@ -137,44 +171,80 @@ const HeaderMenu = () => {
                                         width={32}
                                         height={32}
                                         style={{ objectFit: 'contain' }}
-                                        loading={"lazy"}
+                                        loading="lazy"
                                     />
                                 </div>
                                 <Link href={item.href}>
                                     {item.name}
+                                    {item.name === 'Czat' && hasNewChatMessage && (
+                                        <span className="unread-indicator">❗</span>
+                                    )}
                                 </Link>
                             </li>
                         ))}
                     </ul>
-                </div>
-                <div className={active ? "activeSidenav" : "sidenav"}>
-                    <ul className="ul">
-                        {isClient && menuMobileItems.map((item, index) => (
+                </nav>
+                <aside className={`sidenav ${active ? "active" : ""}`}>
+                    <ul>
+                        {menuMobileItems && menuMobileItems.map((item, index) => (
                             <li key={index} onClick={toggleMenu}>
-                                <span className="nav-image">
+                                <div className="nav-image">
                                     <Image
                                         src={item.img}
                                         alt={item.name}
                                         width={32}
                                         height={32}
                                         style={{ objectFit: 'contain' }}
-                                        loading={"lazy"}
+                                        loading="lazy"
                                     />
-                                </span>
+                                </div>
                                 <Link href={item.href}>
                                     {item.name}
+                                    {item.name === 'Czat' && hasNewChatMessage && (
+                                        <span className="unread-indicator">❗</span>
+                                    )}
                                 </Link>
                             </li>
                         ))}
                     </ul>
-                    <span className="login-panel-mobile-info">
+                    <div className="login-panel login-panel-mobile">
+                        {loggedInUser ? (
+                            <div className="login-panel-logout ">
+                                <span className="login-text">Witaj, {loggedInUser}</span>
+                                {userRole !== 'funeralHome' && userRole !== 'admin' && (
+                                    <Link href={getPanelLink()}>
+                                        <button className="login-text">Przejdź do Twojego panelu</button>
+                                    </Link>
+                                )}
+                                <button className="logout-button" onClick={handleLogout}>Wyloguj</button>
+                            </div>
+                        ) : (
+                            <Link href="/login">
+                                <button className="login-text">Zaloguj się</button>
+                            </Link>
+                        )}
+                    </div>
+                    <div className="login-panel-mobile-info">
                         <p>Telefon kontaktowy</p>
                         <p className="phone-number">600 000 000</p>
-                    </span>
-                </div>
+                    </div>
+                </aside>
             </div>
-        </div>
+        </header>
     );
 };
-export default dynamic (() => Promise.resolve(HeaderMenu), {ssr: false})
 
+export async function getServerSideProps(context) {
+    const cookies = parseCookies(context);
+    const loggedInUser = cookies.userEmail || null;
+    const userRole = cookies.userRole || null;
+
+    return {
+        props: {
+            loggedInUser,
+            userRole,
+        },
+    };
+}
+
+export default HeaderMenu;

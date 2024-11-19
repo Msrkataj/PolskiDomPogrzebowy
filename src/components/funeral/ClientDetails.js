@@ -6,7 +6,8 @@ import { db } from '../../../firebase';
 import Link from "next/link";
 import Notifications from './Notifications';
 import useFetchFuneralHomeData from "@/components/funeral/FetchFuneralHomeData";
-import AlertMessage from "@/components/common/AlertMessage"; // Import nowego komponentu
+import AlertMessage from "@/components/common/AlertMessage";
+import AuthGuardFuneral from "@/components/panel/AuthGuardFuneral"; // Import nowego komponentu
 
 const ClientDetails = () => {
     const funeralHome = useFetchFuneralHomeData();
@@ -29,7 +30,7 @@ const ClientDetails = () => {
         pelnomocnictwozp: 'Pełnomocnictwo ZP',
         wniosekkremacji: 'Wniosek do kremacji',
         zusupowaznienie: 'ZUS-UPOWAŻNIENIE',
-        zaswiadczenieer: 'Zaświadczenie ER',
+        zaswiadczenieer: 'Zaświadczenie E-R',
         aktzgonuusc: 'Akt zgonu USC',
         szpitalkoszalin: 'Szpital Koszalin odbiór ciała',
         upowaznieniekrus: 'Upoważnienie KRUS',
@@ -191,20 +192,21 @@ const ClientDetails = () => {
 
                     <h2>Pierwsze informacje</h2>
                     {displayInfo("Lokalizacja (PESEL)", clientData.location)}
-                    {displayInfo("Adres zgonu", clientData.address)}
+                    {displayInfo("Adres zgonu", `${clientData.city} ul. ${clientData.street}, ${clientData.postalCode}`)}
                     {displayInfo("Kiedy będą załatwiane dokumenty", clientData.documents)}
+                    {displayInfo("Rodzaj ubrania", clientData.clothingOption)}
+                    {displayInfo("Opcja pochówku", clientData.burialOption)}
 
                     <h2>Informacje o osobie zmarłej</h2>
                     {displayInfo("Imię i nazwisko", `${clientData.name} ${clientData.surname}`)}
                     {displayInfo("Data urodzenia", clientData.birthDate)}
                     {displayInfo("Data śmierci", clientData.deathDate)}
-                    {displayInfo("Czy osoba podlegała ubezpieczeniu emerytalno-rentowemu", clientData.worked)}
-                    {displayInfo("Czy osoba pracowała", clientData.worked)}
+                    {displayInfo("Czy osoba podlegała ubezpieczeniu emerytalno-rentowemu", clientData.pensionCertificate)}
                     {displayInfo("PESEL", clientData.pesel)}
                     {displayInfo("Czy osoba zmarła była ubezpieczona w", clientData.insurance)}
                     {displayInfo("Brak świadczeń", clientData.pensionCertificate)}
-                    {displayInfo("Szczegóły składki", clientData.pensionDetails)}
-                    {displayInfo("Kto sporządza akt zgonu", clientData.who)}
+                    {/*{displayInfo("Szczegóły składki", clientData.pensionDetails)}*/}
+                    {displayInfo("Kto sporządza akt zgonu", clientData.who === 'funeral' ? 'Dom pogrzebowy' : 'Rodzina')}
                 </div>
             ) : (
                 <p>Brak danych klienta.</p>
@@ -220,7 +222,7 @@ const ClientDetails = () => {
                                 Dokument dostępny
                                 {documentInfo && (
                                     <Link href={documentInfo.url} download={documentInfo.name} target="_blank"
-                                       rel="noopener noreferrer" className="download-link">
+                                          rel="noopener noreferrer" className="download-link">
                                         Pobierz
                                     </Link>
                                 )}
@@ -234,4 +236,10 @@ const ClientDetails = () => {
     );
 };
 
-export default ClientDetails;
+const DashboardWithAuth = () => (
+    <AuthGuardFuneral>
+        <ClientDetails/>
+    </AuthGuardFuneral>
+);
+
+export default DashboardWithAuth;

@@ -20,7 +20,7 @@ const Benefits = () => {
     return (
         <section className="benefits-section">
             <h2 id="asortyment">Szeroki wybór asortymentu pogrzebowego</h2>
-            <div className="benefits-container">
+            <div className="benefits-container flex-center">
                 {benefits.map((benefit, index) => (
                     <div key={index} className="benefit-card">
                         <h3>{benefit.title}</h3>

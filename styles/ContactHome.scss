@@ -1,49 +1,32 @@
-.container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 20px;
-}
-.contact-title {
-  font-size: 2em;
-  margin-bottom: 10px;
+@import '1settings/_variables';
+@import '1settings/_colors';
+.contact-home {
   text-align: center;
-  margin: 20px 0;
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: -15px;
-    width: 10%;
-    height: 2px;
-    background-color: $color-gold;
-    transform: translateX(-50%);
-  }
+  .polska-map-section {
+    @include flex-center();
+    background-image: none;
+    flex-direction: column;
+    @media (min-width: 768px) {
+      flex-direction: row;
+    }
+    .map {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      margin-bottom: 20px;
+    }
 }
-.polska-map-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-
-  .map {
-    position: relative;
-    width: 100%;
-    height: 300px;
-    margin-bottom: 20px;
-  }
 
 
-  .contact-info {
+
+  .contact-info-main {
+    @include flex-center;
     max-width: 600px;
     margin: 20px 0;
     background-color: white;
     padding: 0;
-    display: flex;
-    align-items: flex-start;
     font-family: 'Avenir', sans-serif;
-
+    flex-direction: column;
     p {
       font-weight: normal;
     }
@@ -52,7 +35,6 @@
       margin-bottom: 20px;
       text-align: left;
       border-top: 1px solid grey;
-      padding-top: 10px;
       font-size: 1.3em;
       padding: 20px;
       @media (min-width: 768px) {
@@ -64,6 +46,9 @@
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
       max-width: 600px;
       text-align: left;
+      @media (min-width: 768px) {
+        display: flex;
+      }
     }
 
     h3 {
@@ -75,9 +60,9 @@
       &::after {
         content: '';
         position: absolute;
-        left: 9%;
+        left: 50%;
         top: 10px;
-        width: 10%;
+        width: 20%;
         height: 1px;
         background-color: $color-gold;
         transform: translateX(-50%);
@@ -88,11 +73,6 @@
     }
 
     .contact-methods-main {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-around;
 
       .contact-item {
         display: flex;
@@ -108,10 +88,8 @@
         a {
           text-decoration: none;
           color: black;
-          display: flex;
-          flex-direction: row;
           justify-content: end;
-          align-items: center;
+          @include flex-center;
 
           i {
             font-size: 32px;
@@ -128,8 +106,7 @@
           }
 
           span {
-            font-size: 0.9em;
-            color: grey;
+            color: black;
           }
 
           &:hover {
@@ -137,17 +114,7 @@
           }
         }
         div {
-          text-decoration: none;
-          color: black;
-          display: flex;
-          flex-direction: row;
-          justify-content: end;
-          align-items: center;
-
-          i {
-            font-size: 32px;
-            margin-bottom: 5px;
-          }
+          @include flex-center;
 
           p {
             margin: 5px 20px;
@@ -158,30 +125,138 @@
             }
           }
 
-          span {
-            font-size: 0.9em;
-            color: grey;
-          }
+
 
           &:hover {
             color: $color-main2;
           }
         }
         .contact-item-details {
-          display: flex;
+          @include flex-center;
           flex-direction: column;
-          align-items: center;
         }
       }
     }
   }
+}
+.benefits-container {
+  .benefit-card {
+    height: auto;
+    flex-direction: column;
+  }
+}
+.features-section {
+  text-align: center;
+  font-family: 'Avenir', sans-serif;
+  .features-container {
+    .feature-card {
+      line-height: 2;
+      h3 {
+        margin-top: 25px;
+        font-size: 1.2em;
+      }
+      .feature-image {
+        position: relative;
+        width: 100%;
+        height: 150px;
+      }
+    }
+  }
+}
+.ceremony-section {
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 50px;
+  font-family: 'Avenir', sans-serif;
 
+  .content-wrapper {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    width: 100%;
+  }
+
+  .ceremony-text {
+    max-width: 600px;
+    margin-bottom: 20px;
+
+    h2 {
+      font-size: 2em;
+      margin: 20px 0;
+      font-family: "Bookman Old Style";
+    }
+
+    p {
+      font-size: 1.2em;
+      line-height: 1.5;
+      transition: transform 0.3s;
+    }
+
+    .info-options {
+      margin-top: 20px;
+
+      .info-option {
+        border-bottom: 1px solid #ddd;
+        padding: 10px 0;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.3s;
+        position: relative;
+
+        &:hover {
+          background-color: #f0f0f0;
+        }
+
+        h3 {
+          font-size: 1.5em;
+          font-weight: bold;
+          margin: 0;
+        }
+        .plus {
+          position: absolute;
+          top: 15px;
+          right: 10px;
+          font-size: 2em;
+          transform: translateY(-50%);
+          transition: transform 0.3s;
+        }
+        &.active .plus {
+          transform: rotate(45deg);
+        }
+      }
+    }
+  }
+  .ceremony-image {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    overflow: hidden;
+    background-color: #f0f0f0;
+    transition: transform 0.3s;
+    img {
+      position: absolute;
+      right: 0;
+      top: 0;
+      height: 100%;
+      object-fit: cover;
+      object-position: right;
+      transition: transform 0.5s ease, box-shadow 0.5s ease;
+
+      &:hover {
+        transform: scale(1.1);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+      }
+    }
+  }
   @media (min-width: 768px) {
-    flex-direction: row;
-    justify-content: space-between;
-
-    .map, .contact-info {
-      max-width: 50%;
+    .content-wrapper {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      .ceremony-text {
+        max-width: 50%;
+        text-align: left;
+        margin-left: 50px;
+      }
     }
   }
 }

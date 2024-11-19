@@ -7,7 +7,7 @@ import { faFacebookF, faInstagram } from '@fortawesome/free-brands-svg-icons';
 import Image from "next/image";
 import consultantIcon from '../../../public/assets/icons/consultant.png';
 import Link from "next/link";
-const Contact = () => {
+const Contact = ({handleOpenChat}) => {
     const [formData, setFormData] = useState({
         fullName: '',
         email: '',
@@ -25,22 +25,39 @@ const Contact = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            // Wyślij dane do Firestore
             await addDoc(collection(db, 'contactMessages'), {
                 ...formData,
                 timestamp: Timestamp.now()
             });
-            setIsSubmitted(true);
-            setFormData({
-                fullName: '',
-                email: '',
-                phone: '',
-                subject: '',
-                message: ''
+
+            // Wyślij dane na e-mail przez API route
+            const response = await fetch('/api/contact-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
             });
+
+            if (response.ok) {
+                setIsSubmitted(true);
+                setFormData({
+                    fullName: '',
+                    email: '',
+                    phone: '',
+                    subject: '',
+                    message: ''
+                });
+            } else {
+                console.error('Błąd podczas wysyłania wiadomości e-mail');
+            }
         } catch (error) {
-            console.error('Error adding document: ', error);
+            console.error('Błąd podczas dodawania dokumentu: ', error);
         }
     };
+
+
 
     return (
         <div id="" className="contact">
@@ -57,7 +74,7 @@ const Contact = () => {
                             <FontAwesomeIcon icon={faMapMarkerAlt} className="contact__icon"/>
                             <div>
                                 <p className="contact__item-title">Adres główny biura:</p>
-                                <p className="contact__item-content">Dom Pogrzebowy 24<br/>ul. Przykładowa 123<br/>00-001
+                                <p className="contact__item-content">Polskidompogrzebowy24.pl<br/>ul. Przykładowa 123<br/>00-001
                                     Warszawa</p>
                             </div>
                         </div>
@@ -73,7 +90,7 @@ const Contact = () => {
                             <FontAwesomeIcon icon={faEnvelope} className="contact__icon"/>
                             <div>
                                 <p className="contact__item-title">E-mail:</p>
-                                <p className="contact__item-content">kontakt@dompogrzebowy24.pl</p>
+                                <p className="contact__item-content">kontakt@Polskidompogrzebowy24.pl</p>
                             </div>
                         </div>
                         <div className="contact__item">
@@ -168,7 +185,7 @@ const Contact = () => {
                         porozmawiaj z naszym konsultantem w czasie rzeczywistym.</p>
                     <div className="contact-chat-main">
                         <div className="option-select">
-                            <a>
+                            <a onClick={handleOpenChat}>
                                 <Image src={consultantIcon} alt="Consultant" width={32} height={32}/>
                                 <p>Rozpocznij czat</p>
                             </a>

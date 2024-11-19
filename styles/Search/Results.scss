@@ -15,7 +15,7 @@
   display: flex;
   margin-top: 10px;
   align-items: center;
-  color: $color-gold;
+  color: #BBAD0E;
 
   p {
     padding: 0 5px 0 0;
@@ -194,6 +194,8 @@
 .reviews-main {
   max-height: 200px;
   overflow-y: auto;
+  p {
+  }
   &-text {
     justify-content: flex-start;
   }
@@ -267,7 +269,7 @@
 .image-selector button {
   background-color: white;
   color: black;
-  border: 1px solid $color-gold;
+  border: 1px solid #BBAD0E;
   border-radius: 0;
   cursor: pointer;
   transition: background-color 0.3s;
@@ -275,7 +277,7 @@
 }
 
 .image-selector button:hover {
-  background-color: $color-gold;
+  background-color: #BBAD0E;
   color: white;
 }
 

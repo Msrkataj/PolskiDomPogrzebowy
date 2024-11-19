@@ -8,23 +8,14 @@ import '@fortawesome/fontawesome-svg-core/styles.css';
 config.autoAddCss = false;
 
 function MyApp({ Component, pageProps }) {
-    const [username, setUsername] = useState('');
-
-    useEffect(() => {
-        const storedUsername = localStorage.getItem('username');
-        if (storedUsername) {
-            setUsername(storedUsername);
-        }
-    }, []);
 
     return (
         <>
-            <Head>
                 <link rel="icon" href="/favicon.ico" sizes="any"/>
                 <link rel="icon" type="image/webp" sizes="32x32" href="/favicon.webp"/>
                 <link rel="icon" type="image/webp" sizes="16x16" href="/favicon.webp"/>
                 <link rel="apple-touch-icon" href="/favicon.ico"/>
-                <link rel="manifest" href="/favicon.webp"/>
+                <link rel="manifest" href="/manifest.json"/>
                 <title>Polski Dom Pogrzebowy - Wyszukiwarka domów pogrzebowych i formalności online</title>
                 <meta
                     name="description"
@@ -41,8 +32,6 @@ function MyApp({ Component, pageProps }) {
                 <meta name="twitter:title" content="Polski Dom Pogrzebowy - Wyszukiwarka domów pogrzebowych" />
                 <meta name="twitter:description" content="Znajdź najbliższe domy pogrzebowe i załatw wszystkie formalności online. Polski Dom Pogrzebowy - Twój partner w trudnych chwilach." />
                 <meta name="twitter:image" content="https://polskidompogrzebowy24.pl/og-image.jpg" />
-            </Head>
-
             {/* Script Section for Google Maps */}
             <Script
                 src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}

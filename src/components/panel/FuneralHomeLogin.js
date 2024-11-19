@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../../../firebase';
-import { collection, query, where, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import { useRouter } from 'next/router';
 import bcrypt from 'bcryptjs';
 import Link from "next/link";
@@ -20,48 +20,37 @@ const FuneralHomeLogin = () => {
             const querySnapshot = await getDocs(q);
 
             if (querySnapshot.empty) {
-                console.log('Login failed: Email or password is incorrect');
                 alert('Email or password is incorrect');
                 setIsLoading(false);
                 return;
             }
 
-            querySnapshot.forEach(async (doc) => {
-                const data = doc.data();
+            for (const docSnap of querySnapshot.docs) {
+                const data = docSnap.data();
                 const isPasswordValid = await bcrypt.compare(password, data.password);
 
                 if (isPasswordValid) {
-                    console.log('Login successful');
+                    // Pobieramy `funeralHomeName` i zapisujemy w localStorage
+                    const funeralHomeName = data.funeralHomeName || ''; // Zakładamy, że `funeralHomeName` istnieje w danych
                     localStorage.setItem('userRole', 'funeralHome');
-                    localStorage.setItem('email', email);
+                    localStorage.setItem('funeralHomeName', funeralHomeName); // Zapisujemy nazwę domu pogrzebowego
                     localStorage.setItem('userEmail', email);
-                    localStorage.setItem('userId', doc.id);
+                    localStorage.setItem('userId', docSnap.id);
                     localStorage.setItem('loginTime', Date.now().toString());
-                    await checkFirstLogin(doc.id);
+
+                    // Sprawdź, czy profil jest kompletny
+                    await checkFirstLogin(docSnap.id);
                 } else {
-                    console.log('Login failed: Incorrect password');
                     alert('Email or password is incorrect');
                     setIsLoading(false);
                 }
-            });
+            }
         } catch (error) {
             console.error('Error logging in: ', error);
-            setIsLoading(false);
             alert('An error occurred while logging in. Please try again.');
+            setIsLoading(false);
         }
     };
-
-    useEffect(() => {
-        router.events.on('routeChangeComplete', () => {
-            console.log('Route change complete:', router.pathname);
-        });
-
-        return () => {
-            router.events.off('routeChangeComplete', () => {
-                console.log('Route change complete:', router.pathname);
-            });
-        };
-    }, [router]);
 
     const checkFirstLogin = async (userId) => {
         try {
@@ -70,8 +59,7 @@ const FuneralHomeLogin = () => {
 
             if (userDoc.exists()) {
                 const userData = userDoc.data();
-                console.log(userData);
-                if (!userData.ownerName || !userData.city || !userData.street) {
+                if (!userData.isProfileComplete) {
                     await router.push('/funeral/first');
                 } else {
                     await router.push('/funeral/panel');
@@ -83,10 +71,9 @@ const FuneralHomeLogin = () => {
             console.error('Error checking first login: ', error);
             await router.push('/login');
         } finally {
-            setIsLoading(false); // Upewnij się, że zawsze wywołasz to na końcu
+            setIsLoading(false);
         }
     };
-
 
     return (
         <div className="login-container">
@@ -109,15 +96,14 @@ const FuneralHomeLogin = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
-                    <Link href={"/form"} className="forgot-password">Zapomniałeś hasła?</Link>
+                    <Link href="/zapomniane-haslo" className="forgot-password">Zapomniałeś hasła?</Link>
                 </div>
                 {isLoading && <div className="spinner"></div>}
                 <div className="actions">
                     <button type="submit" className="login-button">Zaloguj się</button>
                 </div>
                 <div className="links">
-                    <Link href="/join" className="register-link">Jeszcze nie masz konta?<br/>
-                        Wyślij wniosek</Link>
+                    <Link href="/dolacz-formularz" className="register-link">Jeszcze nie masz konta?<br/>Wyślij wniosek</Link>
                 </div>
             </form>
             <div className="funeral-home-box">
@@ -128,4 +114,3 @@ const FuneralHomeLogin = () => {
 };
 
 export default FuneralHomeLogin;
-

@@ -1,13 +1,17 @@
+@import '../1settings/_variables';
+@import '../1settings/_colors';
 .join-container {
   margin: 0 auto;
   padding: 10px 5px;
   border-radius: 20px;
 
   @media (min-width: 768px) {
-    padding: 40px 20px;
   }
   .join__partner-section {
     background: none;
+  }
+  .benefits-section {
+    margin: 0;
   }
 }
 
@@ -171,5 +175,29 @@
   .benefits-section__title {
     font-size: 1.8em; /* Dalsze zmniejszenie rozmiaru tytułu na bardzo małych ekranach */
     margin-bottom: 30px;
+  }
+}
+.join-container-form {
+  margin-top: 50px;
+  font-size: 2em;
+  position: relative;
+  font-family: "Bookman Old Style";
+  a {
+    color: black;
+    &:hover {
+      color: $color-main;
+    }
+  }
+
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: -5px;
+    width: 50%;
+    height: 1px;
+    background-color: $color-gold;
+    transform: translateX(-50%);
   }
 }

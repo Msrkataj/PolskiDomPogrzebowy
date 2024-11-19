@@ -1,7 +1,11 @@
-import React, {useEffect, useMemo, useState} from 'react';
+// Dashboard.js
+
+import React, { useEffect, useMemo, useState } from 'react';
 import { db } from '../../../firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, onSnapshot } from 'firebase/firestore';
 import { useRouter } from 'next/router';
+import AuthGuardFuneral from "@/components/panel/AuthGuardFuneral";
+import AuthGuardClient from "@/components/panel/AuthGuardClient";
 
 const Dashboard = () => {
     const [notifications, setNotifications] = useState([]);
@@ -10,7 +14,7 @@ const Dashboard = () => {
     const [role, setRole] = useState(null);
     const router = useRouter();
 
-    const fieldTranslations =  useMemo(() => ({
+    const fieldTranslations = useMemo(() => ({
         formType: 'Typ formularza',
         insurance: 'Ubezpieczenie',
         documents: 'Dokumenty',
@@ -22,9 +26,10 @@ const Dashboard = () => {
         name: 'Imię',
         surname: 'Nazwisko',
         who: 'Osoba sporządzająca akt zgonu',
-        worked: 'Status zatrudnienia',
+        clothingOption: 'Kto dostarcza ubranie',
     }), []);
 
+    // 1. Ustaw rolę z localStorage
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const storedRole = localStorage.getItem('userRole');
@@ -32,6 +37,7 @@ const Dashboard = () => {
         }
     }, []);
 
+    // 2. Weryfikacja uwierzytelnienia
     useEffect(() => {
         if (role) {
             const userRole = localStorage.getItem('userRole');
@@ -47,6 +53,7 @@ const Dashboard = () => {
         }
     }, [role, router]);
 
+    // 3. Pobierz dane użytkownika i formularza
     useEffect(() => {
         const fetchUserData = async () => {
             if (typeof window !== 'undefined') {
@@ -55,6 +62,7 @@ const Dashboard = () => {
                 setEmail(userEmail);
 
                 try {
+                    // Pobierz dokument formularza użytkownika
                     const docRef = doc(db, 'forms', userId);
                     const docSnap = await getDoc(docRef);
 
@@ -62,7 +70,8 @@ const Dashboard = () => {
                         const data = docSnap.data();
                         const missingFields = [];
 
-                        ['formType', 'insurance', 'documents', 'deathDate', 'pensionCertificate', 'pensionDetails', 'pesel', 'religiousCeremony', 'name', 'surname', 'who', 'worked'].forEach((field) => {
+                        // Sprawdź, czy są brakujące pola w formularzu
+                        ['formType', 'insurance', 'documents', 'deathDate', 'pensionCertificate', 'pesel', 'religiousCeremony', 'name', 'surname', 'who', 'clothingOption'].forEach((field) => {
                             if (!data[field]) missingFields.push(fieldTranslations[field] || field);
                         });
 
@@ -70,17 +79,17 @@ const Dashboard = () => {
                             setIncompleteForms([{ ...data, missingFields, id: docSnap.id }]);
                         }
 
-                        const submissionDate = data.timestamp && typeof data.timestamp.toDate === 'function'
-                            ? data.timestamp.toDate().toLocaleString()
-                            : 'Brak daty';
-
-                        const formSentMessage = `Formularz został wysłany.`;
-
+                        // Dodaj powiadomienie o wysłaniu formularza, jeśli jeszcze nie istnieje
+                        const formSentMessage = 'Formularz został wysłany.';
                         const alreadyNotified = notifications.some(
                             (notification) => notification.message === formSentMessage
                         );
 
                         if (!alreadyNotified) {
+                            const submissionDate = data.timestamp && typeof data.timestamp.toDate === 'function'
+                                ? data.timestamp.toDate().toLocaleString()
+                                : 'Brak daty';
+
                             setNotifications(prevNotifications => [
                                 ...prevNotifications,
                                 {
@@ -88,32 +97,6 @@ const Dashboard = () => {
                                     message: formSentMessage,
                                     isFormSent: true,
                                 }
-                            ]);
-                        }
-
-                        if (data.notifications) {
-                            setNotifications(prevNotifications => [
-                                ...prevNotifications,
-                                ...data.notifications.map(notification => {
-                                    const timestamp = notification.timestamp;
-
-                                    const dateString = timestamp && typeof timestamp.toDate === 'function'
-                                        ? timestamp.toDate().toLocaleString()
-                                        : new Date(timestamp).toLocaleString();
-
-                                    const message = `${notification.message}`;
-                                    const notificationAlreadyExists = prevNotifications.some(
-                                        (n) => n.message === message && n.date === dateString
-                                    );
-                                    if (!notificationAlreadyExists) {
-                                        return {
-                                            date: dateString,
-                                            message: message,
-                                            isFormSent: false,
-                                        };
-                                    }
-                                    return null;
-                                }).filter(notification => notification !== null)
                             ]);
                         }
                     } else {
@@ -126,8 +109,55 @@ const Dashboard = () => {
         };
 
         fetchUserData();
-    }, [fieldTranslations, notifications]);
+    }, [fieldTranslations]); // Usuń 'notifications' z zależności
 
+    // 4. Nasłuchiwanie powiadomień z subkolekcji w czasie rzeczywistym
+    useEffect(() => {
+        const subscribeToNotifications = () => {
+            if (typeof window !== 'undefined') {
+                const userId = localStorage.getItem('userId');
+                if (!userId) return;
+
+                const docRef = doc(db, 'forms', userId);
+                const notificationsRef = collection(docRef, 'notifications');
+
+                const unsubscribe = onSnapshot(notificationsRef, (snapshot) => {
+                    const fetchedNotifications = snapshot.docs.map(doc => {
+                        const notificationData = doc.data();
+                        const timestamp = notificationData.timestamp;
+                        const dateString = timestamp && typeof timestamp.toDate === 'function'
+                            ? timestamp.toDate().toLocaleString()
+                            : new Date(timestamp).toLocaleString();
+
+                        return {
+                            date: dateString,
+                            message: notificationData.message,
+                            isFormSent: false,
+                        };
+                    });
+
+                    setNotifications(prevNotifications => {
+                        // Usuń powiadomienia z subkolekcji (isFormSent: false)
+                        const filteredPrev = prevNotifications.filter(n => n.isFormSent);
+                        // Dodaj nowe powiadomienia z subkolekcji
+                        return [...filteredPrev, ...fetchedNotifications];
+                    });
+                });
+
+                return unsubscribe;
+            }
+        };
+
+        const unsubscribe = subscribeToNotifications();
+
+        return () => {
+            if (unsubscribe) {
+                unsubscribe();
+            }
+        };
+    }, []);
+
+    // 5. Sortowanie powiadomień
     const sortedNotifications = notifications
         .filter(notification => !notification.isFormSent)
         .sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -170,4 +200,10 @@ const Dashboard = () => {
     );
 };
 
-export default Dashboard;
+const DashboardWithAuth = () => (
+    <AuthGuardClient>
+        <Dashboard />
+    </AuthGuardClient>
+);
+
+export default DashboardWithAuth;

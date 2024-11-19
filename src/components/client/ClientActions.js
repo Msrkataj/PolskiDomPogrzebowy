@@ -1,13 +1,16 @@
 import React from 'react';
 import { useRouter } from 'next/router';
+import Link from "next/link";
 
-const ClientActions = () => {
+const ClientActions = ({ handleOpenChat }) => {
     const router = useRouter();
 
     return (
         <div className="actions">
-            <button onClick={() => router.push('/new-submission')}>Nowe zgłoszenie</button>
-            <button onClick={() => router.push('/contact-consultant')}>Twój osobisty konsultant</button>
+            <button>
+                <Link href="/formularz-pierwszy" className="register-link">Nowe zgłoszenie</Link>
+            </button>
+            <button onClick={handleOpenChat}>Twój osobisty konsultant</button>
         </div>
     );
 };

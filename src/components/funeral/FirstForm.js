@@ -6,13 +6,18 @@ import { v4 as uuidv4 } from 'uuid';
 import useAuthMiddleware from "../../../middleware";
 import { useRouter } from "next/router";
 import Assortment from './AddAsortment';
+import AuthGuardFuneral from "@/components/panel/AuthGuardFuneral";
 
 const FuneralHomeServicesAndAssortment = () => {
     const [services, setServices] = useState([]);
-    const [products, setProducts] = useState([{ id: uuidv4(), name: '', category: 'coffins', price: '', availability: 'Dostępna od ręki', producent: '', text: '', build: '', type: 'Drewniana', files: [] }]);
+    const [products, setProducts] = useState([
+        { id: uuidv4(), name: '', category: 'coffins', price: '', availability: 'Dostępna od ręki', producent: '', text: '', build: '', type: 'Drewniana', files: [] }
+    ]);
+
     const [productCounter, setProductCounter] = useState(1);
     const roleChecked = useAuthMiddleware('funeralHome');
     const router = useRouter();
+    console.log(products, setProducts);
 
     const handleServiceChange = (service) => {
         if (services.includes(service)) {
@@ -34,7 +39,8 @@ const FuneralHomeServicesAndAssortment = () => {
             const userDocRef = doc(db, 'domyPogrzebowe', userId);
             const updatedData = {
                 services,
-                assortyment: products.map(({ id, files, type, ...product }) => ({
+                profileCompleted2: true,
+                assortment: products.map(({ id, files, type, ...product }) => ({
                     ...product,
                     type: getEnglishType(type),
                 })),
@@ -69,7 +75,11 @@ const FuneralHomeServicesAndAssortment = () => {
             case 'Drewniana':
                 return 'wooden';
             case 'Kamienna':
-                return 'stone';
+                return 'stolen';
+            case 'Ceramiczna':
+                return 'ceramic';
+            case 'Szklana':
+                return 'glass';
             default:
                 return type ? type.toLowerCase() : '';
         }
@@ -122,10 +132,17 @@ const FuneralHomeServicesAndAssortment = () => {
                     productCounter={productCounter}
                     setProductCounter={setProductCounter}
                 />
+
                 <button type="submit">Dalej</button>
             </form>
         </div>
     );
 };
 
-export default FuneralHomeServicesAndAssortment;
+const DashboardWithAuth = () => (
+    <AuthGuardFuneral>
+        <FuneralHomeServicesAndAssortment/>
+    </AuthGuardFuneral>
+);
+
+export default DashboardWithAuth;

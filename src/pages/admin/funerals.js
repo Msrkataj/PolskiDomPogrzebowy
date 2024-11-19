@@ -10,7 +10,9 @@ const FuneralsSite = () => {
                 <Header/>
             </header>
             <main>
-                <FuneralHomesTable/>
+                <div className="table-wrapper">
+                    <FuneralHomesTable/>
+                </div>
             </main>
             <footer>
                 <Footer/>

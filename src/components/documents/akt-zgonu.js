@@ -228,6 +228,59 @@ const ZleceniePelnomocnictwoForm = ({ isOpen, onClose }) => {
         spousePesel: '',
         extraCopies: '',
     });
+    const [errors, setErrors] = useState({});
+    const [generalError, setGeneralError] = useState('');
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const localFormId = localStorage.getItem('formId');
+            if (localFormId) {
+                const formRef = doc(db, 'forms', localFormId);
+                const formSnap = await getDoc(formRef);
+                if (formSnap.exists()) {
+                    setFormData(prev => ({ ...prev, ...formSnap.data() }));
+                }
+            }
+        };
+        fetchData();
+    }, []);
+
+    const validateForm = () => {
+        const newErrors = {};
+        const requiredFields = [
+            'location', 'date', 'authorizedPerson', 'representative', 'deathDate',
+            'deathTime', 'deathPlace', 'bodyFindDate', 'bodyFindTime', 'bodyFindPlace',
+            'firstName', 'lastName', 'maidenName', 'maritalStatus', 'birthDate',
+            'birthPlace', 'citizenship', 'pesel', 'education', 'fatherFirstName',
+            'fatherLastName', 'fatherMaidenName', 'motherFirstName', 'motherLastName',
+            'motherMaidenName', 'spouseFirstName', 'spouseLastName', 'spouseMaidenName',
+            'spousePesel', 'extraCopies'
+        ];
+
+        requiredFields.forEach(field => {
+            if (!formData[field]) {
+                newErrors[field] = 'To pole jest wymagane.';
+            }
+        });
+
+        // Walidacja PESEL
+        if (formData.pesel && !/^\d{11}$/.test(formData.pesel)) {
+            newErrors.pesel = 'PESEL musi mieć dokładnie 11 cyfr.';
+        }
+        if (formData.spousePesel && !/^\d{11}$/.test(formData.spousePesel)) {
+            newErrors.spousePesel = 'PESEL małżonka musi mieć dokładnie 11 cyfr.';
+        }
+
+        setErrors(newErrors);
+
+        if (Object.keys(newErrors).length > 0) {
+            setGeneralError('Wszystkie pola muszą być uzupełnione.');
+            return false;
+        }
+
+        setGeneralError('');
+        return true;
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -322,6 +375,7 @@ const ZleceniePelnomocnictwoForm = ({ isOpen, onClose }) => {
                 <form>
                     <p>Miejscowość:</p>
                     <input type="text" name="location" value={formData.location} onChange={handleChange} placeholder="Miejscowość" />
+                    {errors.location && <p className="error">{errors.location}</p>}
 
                     <p>Dnia:</p>
                     <input type="text" name="date" value={formData.date} onChange={handleChange} placeholder="Data" />
@@ -375,6 +429,7 @@ const ZleceniePelnomocnictwoForm = ({ isOpen, onClose }) => {
 
                     <p>Nr PESEL:</p>
                     <input type="text" name="pesel" value={formData.pesel} onChange={handleChange} placeholder="Nr PESEL" />
+                    {errors.pesel && <p className="error">{errors.pesel}</p>}
 
                     <p>Wykształcenie:</p>
                     <input type="text" name="education" value={formData.education} onChange={handleChange} placeholder="Wykształcenie" />
@@ -414,6 +469,7 @@ const ZleceniePelnomocnictwoForm = ({ isOpen, onClose }) => {
 
                     <p>Sporządzenie aktu i wydanie 1 odpisu zwolnione od opłaty skarbowej, opłata skarbowa za skrócony odpis aktu zgonu 22 zł, za pełnomocnictwo 17 zł.</p>
                     <p>Ustawa z dnia 16.11.2006 roku o opłacie skarbowej (Dz. U. z 2019 poz. 1000).</p>
+                    {generalError && <p className="error">{generalError}</p>}
 
                     <button type="button" onClick={handleGenerateAndUploadPDF}>Wyślij i wygeneruj PDF</button>
                     <button onClick={onClose}>Zamknij</button>

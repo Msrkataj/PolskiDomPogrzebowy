@@ -107,6 +107,21 @@
       background-color: #1a5277;
     }
   }
+  .button-removeProduct {
+    background-color: #5A5414;
+    width: 200px;
+    color: white;
+    margin: 10px 0;
+  }
+  .services {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    div {
+      margin: 40px;
+    }
+  }
 }
 
 // Stylizacja sekcji godzin otwarcia
@@ -273,8 +288,38 @@
     box-sizing: border-box; // Zapewnia, że padding i border są wliczane w szerokość
   }
 }
-
-
+.map-section {
+  flex-direction: column;
+  @include flex-center();
+  label {
+    display: flex;
+    font-size: 1.1em;
+    width: 120px;
+  }
+}
+.alarm, .correct {
+  color: red;
+  text-align: center;
+  font-size: 1.5em;
+}
+.correct {
+  color: green;
+}
+.button-completed {
+  @include flex-center();
+  background-color: #b7c444;
+  a {
+    color: black;
+    padding: 20px;
+    font-size: 1.5em;
+  }
+  &:hover {
+    background-color: #cccccc;
+    a {
+      color: black;
+    }
+  }
+}
 // Stylizacja sekcji zdjęć
 .imagesContainer {
   max-width: 800px;

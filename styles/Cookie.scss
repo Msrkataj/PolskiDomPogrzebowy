@@ -1,0 +1,98 @@
+.cookie-consent {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #ffffff;
+  padding: 15px 30px;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  h3 {
+    margin: 10px 0;
+    font-size: 1.2em;
+  }
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: #333;
+
+    a {
+      color: #0d47a1;
+      font-weight: bold;
+      text-decoration: underline;
+    }
+  }
+
+  button {
+    border: 1px solid #BBAD0E;
+    background-color: transparent;
+    color: black;
+    padding: 10px 25px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-top: 10px;
+
+    &:hover {
+      background-color: #005bb5;
+      color: white;
+    }
+  }
+}
+
+.legal-documents {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 0 20px;
+  font-family: Arial, sans-serif;
+  color: #333;
+
+  h1 {
+    font-size: 32px;
+    text-align: center;
+    margin-bottom: 40px;
+    color: #000;
+  }
+
+  h2 {
+    font-size: 28px;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    color: #000;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 10px;
+  }
+
+  h3 {
+    font-size: 22px;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    color: #000;
+  }
+
+  p {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 15px;
+  }
+
+  ul {
+    margin-left: 20px;
+    list-style-type: disc;
+
+    li {
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+  }
+
+  .privacy-policy,
+  .terms-of-service {
+    margin-bottom: 50px;
+  }
+}
+

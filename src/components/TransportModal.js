@@ -38,6 +38,26 @@ const TransportModal = ({ isOpen, onClose, funeralHome }) => {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
+        const newErrors = [];
+
+        // Walidacja numeru telefonu (przyjmując 9 cyfr, jak w Polsce)
+        const phonePattern = /^\d{3} \d{3} \d{3}$/;
+        if (phone && !phonePattern.test(phone)) {
+            newErrors.push('Numer telefonu musi być w formacie 000 000 000.');
+        }
+
+        // Walidacja e-maila
+        const emailPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+        if (email && !emailPattern.test(email)) {
+            newErrors.push('Proszę podać prawidłowy adres e-mail.');
+        }
+
+        // Wyświetlanie błędów i wstrzymanie zapisu, jeśli są błędy
+        if (newErrors.length > 0) {
+            alert(newErrors.join('\n'));
+            return;
+        }
+
         const localFormId = localStorage.getItem('formId');
         const formData = {
             funeralHomeName: funeralHome.funeralHomeName,
@@ -61,6 +81,7 @@ const TransportModal = ({ isOpen, onClose, funeralHome }) => {
         }
     };
 
+
     const handleCompleteFormNow = async () => {
         const localFormId = localStorage.getItem('formId');
         const formattedDate = format(new Date(), 'dd.MM.yyyy HH:mm');
@@ -80,7 +101,7 @@ const TransportModal = ({ isOpen, onClose, funeralHome }) => {
             localStorage.setItem('formData', JSON.stringify(formData));
 
             // Redirect to form page
-            router.push('/form');
+            router.push('/formularz-pierwszy');
         } catch (error) {
             console.error('Błąd zapisu formularza: ', error);
         }
@@ -106,9 +127,11 @@ const TransportModal = ({ isOpen, onClose, funeralHome }) => {
                             {/*    <p>{funeralHome.phone}</p>*/}
                             {/*</span>*/}
                             <p>{funeralHome.funeralHomeName}</p>
+                            <p>Zadzwoń tutaj i zgłoś!</p>
+                            <p>{funeralHome.phone}</p>
                         </div>
                         <div className="form-section-contact">
-                            <label htmlFor="phone">Podaj swój numer telefonu, dla ułatwienia kontaktu</label>
+                        <label htmlFor="phone">Podaj swój numer telefonu, dla ułatwienia kontaktu</label>
                             <input
                                 type="tel"
                                 id="phone"
@@ -116,34 +139,44 @@ const TransportModal = ({ isOpen, onClose, funeralHome }) => {
                                 onChange={(e) => setPhone(e.target.value)}
                                 placeholder="000 000 000"
                             />
+                            <label htmlFor="email">E-mail</label>
+                            <span>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="E-mail"
+                                />
+                            </span>
                             <button type="submit">Zgłoś</button>
                         </div>
                     </div>
                     <div className="form-section form-section-contact">
-                        <h3>Zapisz dane i wróć później, aby załatwić wszystkie formalności</h3>
-                        <label htmlFor="email">E-mail</label>
-                        <span>
-                            <input
-                                type="email"
-                                id="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="E-mail"
-                            />
-                        </span>
-                        <label htmlFor="password">Hasło</label>
-                        <span>
-                            <input
-                                type="password"
-                                id="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Hasło"
-                            />
-                        </span>
-                        <span>
-                            <button className="button-save" type="submit">Zapisz</button>
-                        </span>
+                        {/*<h3>Zapisz dane i wróć później, aby załatwić wszystkie formalności</h3>*/}
+                        {/*<label htmlFor="email">E-mail</label>*/}
+                        {/*<span>*/}
+                        {/*    <input*/}
+                        {/*        type="email"*/}
+                        {/*        id="email"*/}
+                        {/*        value={email}*/}
+                        {/*        onChange={(e) => setEmail(e.target.value)}*/}
+                        {/*        placeholder="E-mail"*/}
+                        {/*    />*/}
+                        {/*</span>*/}
+                        {/*<label htmlFor="password">Hasło</label>*/}
+                        {/*<span>*/}
+                        {/*    <input*/}
+                        {/*        type="password"*/}
+                        {/*        id="password"*/}
+                        {/*        value={password}*/}
+                        {/*        onChange={(e) => setPassword(e.target.value)}*/}
+                        {/*        placeholder="Hasło"*/}
+                        {/*    />*/}
+                        {/*</span>*/}
+                        {/*<span>*/}
+                        {/*    <button className="button-save" type="submit">Zapisz</button>*/}
+                        {/*</span>*/}
                         <button  className="form-section-contact-button-end" type="button" onClick={handleCompleteFormNow}>
                             <p>Chcę dokończyć wypełnianie formularza teraz</p>
                         </button>
@@ -154,5 +187,5 @@ const TransportModal = ({ isOpen, onClose, funeralHome }) => {
         </div>
     );
 };
+export default dynamic (() => Promise.resolve(TransportModal), {ssr: false})
 
-export default TransportModal;

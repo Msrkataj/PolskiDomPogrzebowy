@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { v4 as uuidv4 } from 'uuid';
 import Compressor from 'compressorjs';
 import imageCompression from 'browser-image-compression';
+import AuthGuardFuneral from "@/components/panel/AuthGuardFuneral";
 
 const FuneralHomeImages = () => {
     const [images, setImages] = useState({
@@ -109,7 +110,7 @@ const FuneralHomeImages = () => {
             const rating = userData.rating || 0;
             const reviews = userData.reviews || [{ message: "Example review", date: new Date().toISOString().split('T')[0] }];
 
-            await updateDoc(userDocRef, { images: imagePaths });
+            await updateDoc(userDocRef, { images: imagePaths, profileCompleted3: true });
             alert('Zdjęcia zostały zapisane.');
             router.push('/funeral/panel');
         } catch (error) {
@@ -154,5 +155,10 @@ const FuneralHomeImages = () => {
         </div>
     );
 };
+const DashboardWithAuth = () => (
+    <AuthGuardFuneral>
+        <FuneralHomeImages/>
+    </AuthGuardFuneral>
+);
 
-export default FuneralHomeImages;
+export default DashboardWithAuth;

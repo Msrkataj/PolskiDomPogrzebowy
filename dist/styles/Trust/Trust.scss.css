@@ -1,0 +1,312 @@
+@charset "UTF-8";
+.review-section {
+  margin: 0 auto;
+  padding: 10px 5px;
+  border-radius: 20px;
+}
+@media (min-width: 768px) {
+  .review-section {
+    padding: 40px 20px;
+  }
+}
+
+.review-title {
+  position: relative;
+  text-align: center;
+  font-size: 2.5em;
+  margin-bottom: 30px;
+  margin-top: 5px;
+  color: #333;
+  font-weight: bold;
+  letter-spacing: 1.2px;
+}
+@media (min-width: 768px) {
+  .review-title {
+    margin-bottom: 30px;
+  }
+}
+.review-title::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  width: 50px;
+  height: 4px;
+  background-color: #BBAD0E;
+  transform: translateX(-50%);
+  border-radius: 2px;
+}
+
+.review-description {
+  text-align: center;
+  font-size: 1.2em;
+  margin-bottom: 20px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.awssld__content {
+  background-color: transparent !important;
+}
+
+.in-slider {
+  width: 100%;
+}
+
+.awssld {
+  height: 400px !important;
+}
+@media (max-width: 768px) {
+  .awssld {
+    border-top: 0.5px solid grey;
+    border-bottom: 0.5px solid grey;
+  }
+}
+@media (max-width: 305px) {
+  .awssld {
+    height: 700px !important;
+  }
+}
+.awssld .funeral-home-group {
+  display: flex;
+}
+.awssld .funeral-home-group .funeral-home-card {
+  margin: 0 50px;
+}
+
+.aws-sld__content p {
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
+  transition: transform 0.45s cubic-bezier(0.15, 0.3, 0.15, 1), opacity 0.35s ease-out;
+}
+.aws-sld__content p:nth-child(2) {
+  transition-delay: 0.05s, 0.05s;
+}
+.aws-sld__content--exit p {
+  transition: transform 0.225s cubic-bezier(0.85, 0, 0.85, 0.7), opacity 0.4s ease-out;
+}
+.aws-sld__content--exit p:nth-child(2) {
+  transition-delay: 0.05s, 0.05s;
+}
+.aws-sld__content--moveLeft p {
+  transform: translate3d(-50px, 0, 0);
+  opacity: 0;
+}
+.aws-sld__content--moveRight p {
+  transform: translate3d(50px, 0, 0);
+  opacity: 0;
+}
+
+.review-card {
+  max-width: 100%;
+  margin: 0 auto 20px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  box-sizing: border-box;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+@media (min-width: 768px) {
+  .review-card {
+    max-width: 80%;
+  }
+}
+@media (max-width: 295px) {
+  .review-card .star-rating {
+    flex-wrap: wrap;
+  }
+}
+
+.review-card:hover {
+  transform: translateY(-5px); /* Slight lift on hover */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* More prominent shadow on hover */
+}
+
+.review-author {
+  font-weight: bold;
+  font-size: 1.2em;
+  color: #333; /* Darker text for the author's name */
+  margin-bottom: 5px;
+}
+
+.review-date {
+  font-size: 0.9em;
+  color: #777; /* Slightly lighter text for the date */
+  margin-bottom: 15px;
+}
+
+.review-text {
+  font-size: 1.2em;
+  line-height: 1.5; /* Improved readability */
+  color: #444;
+  margin-top: 10px;
+}
+@media (min-width: 768px) {
+  .review-text {
+    font-size: 1.5em;
+  }
+}
+
+.verified {
+  color: #28a745; /* Green for verified badge */
+  font-weight: bold;
+}
+
+.star-rating {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.star-rating p {
+  margin-right: 10px;
+  font-weight: bold;
+  color: #333;
+}
+
+.star-rating span {
+  font-size: 1.5em;
+  color: #FFD700; /* Gold color for stars */
+  margin-right: 5px;
+}
+
+.star-rating span.filled {
+  color: #FFD700; /* Filled stars in gold */
+}
+
+.star-rating {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.star-rating p {
+  margin-right: 10px;
+  font-weight: bold;
+  color: #333;
+}
+.star-rating span {
+  font-size: 1.8em;
+  color: #FFD700; /* Kolor złoty */
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+.star-rating span:hover {
+  transform: scale(1.3);
+}
+
+.share-opinion {
+  background-color: #fafafa;
+  padding: 40px;
+  border-radius: 15px;
+  margin: 0 auto;
+  margin-top: 80px;
+  max-width: 700px;
+}
+@media (min-width: 768px) {
+  .share-opinion {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  }
+}
+.share-opinion p {
+  font-size: 1.2em;
+  margin: 20px 0;
+  text-align: center;
+}
+.share-opinion .star-rating {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.share-opinion .star-rating p {
+  margin-right: 15px;
+  font-weight: bold;
+  color: #333;
+}
+.share-opinion .star-rating span {
+  font-size: 2em;
+  color: transparent;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  -webkit-text-stroke: 1px #333; /* White color with black outline */
+}
+.share-opinion .star-rating span.filled {
+  color: #FFD700; /* Yellow color when filled */
+  -webkit-text-stroke: 0;
+}
+.share-opinion .star-rating span:hover,
+.share-opinion .star-rating span.filled:hover {
+  color: #FFD700; /* Yellow color on hover */
+  -webkit-text-stroke: 0;
+  transform: scale(1.2);
+}
+.share-opinion h3 {
+  margin-bottom: 25px;
+  font-size: 2em;
+  text-align: center;
+  color: #333;
+}
+.share-opinion form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.share-opinion input,
+.share-opinion textarea {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1.1em;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.3s ease;
+  font-family: Avenir;
+}
+.share-opinion input:focus,
+.share-opinion textarea:focus {
+  border-color: #007bff;
+  outline: none;
+}
+.share-opinion button {
+  padding: 15px;
+  background-color: #007bff;
+  color: #fff;
+  font-size: 1.2em;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+.share-opinion button:hover {
+  background-color: #0056b3;
+  transform: translateY(-3px);
+}
+.share-opinion .success-message {
+  background-color: #4caf50;
+  color: white;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.1em;
+  animation: fadeInOut 2s ease-in-out;
+}
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/*# sourceMappingURL=Trust.scss.css.map */

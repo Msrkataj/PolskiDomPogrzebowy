@@ -1,0 +1,73 @@
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.stat-card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 5px;
+  text-align: center;
+}
+@media (min-width: 768px) {
+  .stat-card {
+    padding: 20px;
+  }
+}
+
+.stat-card h2 {
+  font-size: 1.4em;
+  margin-bottom: 10px;
+  margin: 10px;
+}
+@media (min-width: 768px) {
+  .stat-card h2 {
+    font-size: 1.6em;
+  }
+}
+
+.stat-card p {
+  font-weight: bold;
+  font-size: 2em;
+  color: #007bff;
+}
+@media (min-width: 768px) {
+  .stat-card p {
+    font-size: 2.5em;
+  }
+}
+
+/* Responsive design */
+@media (min-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+.progress-bar-container {
+  position: relative;
+  background-color: #f3f3f3;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 20px;
+  text-align: center;
+  line-height: 20px;
+  color: white;
+  border-radius: 5px;
+}
+
+/*# sourceMappingURL=panel.scss.css.map */

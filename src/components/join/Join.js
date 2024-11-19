@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { db } from '../../../firebase';
 import { collection, addDoc } from 'firebase/firestore';
+import Link from "next/link";
 
 const Join = () => {
     const [formsData, setFormsData] = useState({
@@ -55,23 +56,44 @@ const Join = () => {
                     w odpowiednim kierunku.
                 </p>
             </section>
-
-            <section  className="benefits-section parallax-bg" id="benefits">
+            <section className="benefits-section parallax-bg" id="benefits">
                 <h2 id="korzysci" className="benefits-section__title">Korzyści ze współpracy z nami</h2>
                 <div className="benefits-section__grid">
                     {[
-                        { title: "Wsparcie marketingowe", description: "Otrzymaj dostęp do naszych zasobów marketingowych, w tym materiałów kampanijnych i możliwości współbrendingu, aby zwiększyć widoczność swojej marki." },
-                        { title: "Rozszerzony zasięg klientów", description: "Skorzystaj z naszej szerokiej sieci klientów i profesjonalistów branżowych, aby dotrzeć do szerszej publiczności i zwiększyć swoją obecność na rynku." },
-                        { title: "Stałe szkolenia", description: "Pozostań na bieżąco dzięki naszym stałym programom szkoleniowym, zaprojektowanym tak, abyś mógł konkurować i być na bieżąco." },
-                        { title: "Wzrost dochodów", description: "Zwiększ swoje dochody dzięki naszym lukratywnym umowom partnerskim, zapewniającym stabilny strumień przychodów." },
-                        { title: "Innowacje i technologie", description: "Zyskaj dostęp do najnowszych technologii i innowacyjnych rozwiązań, które napędzają rozwój." },
-                        { title: "Dedykowane wsparcie", description: "Nasz zespół wsparcia jest zawsze gotowy, aby pomóc Ci w przypadku jakichkolwiek wyzwań, zapewniając płynną współpracę." },
+                        {
+                            title: "Wsparcie marketingowe",
+                            description: "Otrzymaj dostęp do naszych zasobów marketingowych, w tym materiałów kampanijnych i możliwości współbrendingu, aby zwiększyć widoczność swojej marki."
+                        },
+                        {
+                            title: "Rozszerzony zasięg klientów",
+                            description: "Skorzystaj z naszej szerokiej sieci klientów i profesjonalistów branżowych, aby dotrzeć do szerszej publiczności i zwiększyć swoją obecność na rynku."
+                        },
+                        {
+                            title: "Stałe szkolenia",
+                            description: "Pozostań na bieżąco dzięki naszym stałym programom szkoleniowym, zaprojektowanym tak, abyś mógł konkurować i być na bieżąco."
+                        },
+                        {
+                            title: "Wzrost dochodów",
+                            description: "Zwiększ swoje dochody dzięki naszym lukratywnym umowom partnerskim, zapewniającym stabilny strumień przychodów."
+                        },
+                        {
+                            title: "Innowacje i technologie",
+                            description: "Zyskaj dostęp do najnowszych technologii i innowacyjnych rozwiązań, które napędzają rozwój."
+                        },
+                        {
+                            title: "Dedykowane wsparcie",
+                            description: "Nasz zespół wsparcia jest zawsze gotowy, aby pomóc Ci w przypadku jakichkolwiek wyzwań, zapewniając płynną współpracę."
+                        },
                     ].map((benefit, index) => (
                         <div key={index} className="benefit-item">
                             <h3 className="benefit-item__title">{benefit.title}</h3>
                             <p className="benefit-item__description">{benefit.description}</p>
                         </div>
                     ))}
+                </div>
+                <div className="join-container-form">
+                    <Link href="/dolacz-formularz" ><br/>
+                        Wyślij wniosek</Link>
                 </div>
             </section>
         </div>

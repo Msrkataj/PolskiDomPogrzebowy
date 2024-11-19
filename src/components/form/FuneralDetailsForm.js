@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import { db } from '../../../firebase';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { useRouter } from 'next/router';
@@ -6,7 +6,7 @@ import StepNavigation from '@/components/StepNavigation';
 
 const FuneralDetailsForm = () => {
     const router = useRouter();
-    const [currentStep, setCurrentStep] = useState('funeraldetails');
+    const [currentStep, setCurrentStep] = useState('formularz-trzeci');
     const [errors, setErrors] = useState({});
     const [formData, setFormData] = useState({
         formType: '',
@@ -18,6 +18,7 @@ const FuneralDetailsForm = () => {
         gravePersonName: '', // Imię i nazwisko osoby do dochówku (gdy burialOption === 'Tak')
         graveDeathDate: '' // Data śmierci osoby (gdy burialOption === 'Tak')
     });
+    const errorContainerRef = useRef(null);
 
 
 
@@ -42,13 +43,52 @@ const FuneralDetailsForm = () => {
             [name]: value,
         }));
     };
-
+    useEffect(() => {
+        if (errors.length > 0 && errorContainerRef.current) {
+            errorContainerRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [errors]);
     const handleSaveAndNavigate = async (step) => {
-        if (formData.burialOption === 'Tak' && !formData.cemeteryPreference) {
-            alert('Proszę podać preferowany cmentarz.');
+        const newErrors = {};
+
+
+        // Walidacja pola 'formType' (radio button)
+        if (!formData.formType) {
+            newErrors.formType = 'Proszę wybrać formę pogrzebu.';
+        }
+
+        // Walidacja pola 'religiousCeremony' (radio button)
+        if (!formData.religiousCeremony) {
+            newErrors.religiousCeremony = 'Proszę wybrać rodzaj ceremonii.';
+        }
+
+        // Walidacja pola 'burialOption' (radio button)
+        if (!formData.burialOption) {
+            newErrors.burialOption = 'Proszę wybrać opcję dochówku.';
+        } else if (formData.burialOption === 'Tak') {
+            // Walidacja dla opcji "Tak" w burialOption
+            if (!formData.graveCemetery && (!formData.gravePersonName || !formData.graveDeathDate)) {
+                newErrors.graveDetails = 'Proszę podać cmentarz i numer kwatery, lub imię, nazwisko i datę śmierci osoby.';
+            }
+        } else if (formData.burialOption === 'Nie') {
+            // Walidacja dla opcji "Nie" w burialOption
+            if (!formData.cemeteryPreference) {
+                newErrors.cemeteryPreference = 'Proszę podać preferowany cmentarz do pochowku.';
+            }
+        }
+
+        // Walidacja pola 'clothingOption' (radio button)
+        if (!formData.clothingOption) {
+            newErrors.clothingOption = 'Proszę wybrać opcję ubioru dla zmarłego.';
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
             return;
         }
 
+        // Resetowanie błędów jeśli wszystkie pola są wypełnione poprawnie
+        setErrors({});
         await saveData();
         setCurrentStep(step);
         await router.push(`/${step}`);
@@ -78,26 +118,34 @@ const FuneralDetailsForm = () => {
 
         const newErrors = {};
 
+        // Walidacja pola 'formType' (radio button)
         if (!formData.formType) {
             newErrors.formType = 'Proszę wybrać formę pogrzebu.';
         }
 
+        // Walidacja pola 'religiousCeremony' (radio button)
         if (!formData.religiousCeremony) {
             newErrors.religiousCeremony = 'Proszę wybrać rodzaj ceremonii.';
         }
 
+        // Walidacja pola 'burialOption' (radio button)
         if (!formData.burialOption) {
-            newErrors.burialOption = 'Proszę wybrać, czy dochowujemy do grobu.';
-        }
-
-        if (formData.burialOption === 'Tak') {
+            newErrors.burialOption = 'Proszę wybrać opcję dochówku.';
+        } else if (formData.burialOption === 'Tak') {
+            // Walidacja dla opcji "Tak" w burialOption
             if (!formData.graveCemetery && (!formData.gravePersonName || !formData.graveDeathDate)) {
-                newErrors.graveCemetery = 'Proszę podać cmentarz i numer kwatery lub imię, nazwisko i datę śmierci osoby.';
+                newErrors.graveDetails = 'Proszę podać cmentarz i numer kwatery, lub imię, nazwisko i datę śmierci osoby.';
+            }
+        } else if (formData.burialOption === 'Nie') {
+            // Walidacja dla opcji "Nie" w burialOption
+            if (!formData.cemeteryPreference) {
+                newErrors.cemeteryPreference = 'Proszę podać preferowany cmentarz do pochowku.';
             }
         }
 
-        if (formData.burialOption === 'Nie' && !formData.cemeteryPreference) {
-            newErrors.cemeteryPreference = 'Proszę podać preferowany cmentarz do pochowku.';
+        // Walidacja pola 'clothingOption' (radio button)
+        if (!formData.clothingOption) {
+            newErrors.clothingOption = 'Proszę wybrać opcję ubioru dla zmarłego.';
         }
 
         if (Object.keys(newErrors).length > 0) {
@@ -105,20 +153,18 @@ const FuneralDetailsForm = () => {
             return;
         }
 
-        // Resetowanie błędów jeśli wszystkie pola są wypełnione poprawnie
+        // Resetowanie błędów i zapisywanie danych, jeśli wszystko jest poprawne
         setErrors({});
         await saveData();
-        await router.push('/assortment');
+        await router.push('/assortyment');
     };
-console.log(currentStep)
-    console.log(errors)
-    console.log(formData)
+
 
     return (
         <div className="form-container">
             <div className="navigation-buttons">
-                <button className="nav-button" onClick={() => handleSaveAndNavigate('details')}>← Cofnij</button>
-                <button className="nav-button" onClick={() => handleSaveAndNavigate('assortment')}>Dalej →</button>
+                <button className="nav-button" onClick={() => handleSaveAndNavigate('formularz-drugi')}>← Cofnij</button>
+                <button className="nav-button" onClick={() => handleSaveAndNavigate('assortyment')}>Dalej →</button>
             </div>
             <StepNavigation currentStep={currentStep} setCurrentStep={setCurrentStep} handleSaveAndNavigate={handleSaveAndNavigate} />
             <form onSubmit={handleSubmit} className="funeral-details-form">
@@ -297,7 +343,7 @@ console.log(currentStep)
                 </div>
                 <h3>W celu ustalenia daty pogrzebu
                     trzeba się skontaktować bezpośrednio z biurem domu pogrzebowego.</h3>
-                <div className="submit-container">
+                <div className="submit-container" ref={errorContainerRef}>
                     {Object.values(errors).map((error, index) => (
                         <p key={index} className="error-message">{error}</p>
                     ))}

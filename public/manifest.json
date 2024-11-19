@@ -1,0 +1,16 @@
+{
+  "name": "Polski Dom Pogrzebowy",
+  "short_name": "PDP",
+  "description": "Wyszukiwarka domów pogrzebowych i formalności online.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#777777",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+}

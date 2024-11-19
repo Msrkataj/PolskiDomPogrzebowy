@@ -1,7 +1,10 @@
 .funeralHomesContainer {
   padding: 20px;
 }
-
+.table-wrapper {
+  overflow-x: auto; /* Pozwala na przewijanie poziome tylko tabeli */
+  max-width: 100%;  /* Ustaw maksymalną szerokość kontenera */
+}
 .funeralHomesTable {
   width: 100%;
   border-collapse: collapse;
@@ -41,6 +44,11 @@
 }
 
 @media (max-width: 768px) {
+  .funeralHomesTable {
+    display: block; /* Upewnia się, że tabela będzie przewijalna */
+    white-space: nowrap; /* Zapobiega łamaniu wierszy w tabeli */
+  }
+
   .funeralHomesTable th, .funeralHomesTable td {
     padding: 10px;
     font-size: 14px;
@@ -191,7 +199,7 @@
   .actionDropdown {
     position: absolute;
     top: 0;
-    left: -150%;
+    left: -300%;
     transform: translateX(-50%);
     background-color: #fff;
     border: 1px solid #ddd;
@@ -205,7 +213,7 @@
   .cogButtonWrapper:hover .actionDropdown {
     display: block; /* Upewnij się, że rozwijane menu jest wyświetlane */
   }
-  .actionDropdown button {
+  .action-dropdown__button {
     padding: 8px;
     cursor: pointer;
   }
@@ -244,9 +252,8 @@
   border: none;
   border-radius: 3px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
   font-size: 1em;
+  margin: 10px 0;
 }
 .viewDetailsButton:hover {
   background-color: #0056b3;
@@ -488,17 +495,16 @@
   .modal-content__cancel-button:hover {
     background-color: #c82333;
   }
-
-  .success-message {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #28a745;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
-    z-index: 1001;
-  }
 }
 
+.success-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #28a745;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  z-index: 1001;
+}

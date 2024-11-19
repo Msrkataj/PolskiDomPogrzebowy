@@ -15,14 +15,14 @@ const StepNavigation = ({ currentStep, setCurrentStep, handleSaveAndNavigate }) 
         <>
             <div className="primary-step primary-step-header">Teraz jesteś na etapie:</div>
             <div className="steps">
-                <span className={`step ${currentStep === 'form' ? 'current' : ''}`}
-                      onClick={() => navigateToStep('form')}>Pierwszych informacji</span>
-                <span className={`step ${currentStep === 'details' ? 'current' : ''}`}
-                      onClick={() => navigateToStep('details')}>Informacji o osobie zmarłej</span>
-                <span className={`step ${currentStep === 'funeraldetails' ? 'current' : ''}`}
-                      onClick={() => navigateToStep('funeraldetails')}>Organizacji pogrzebu</span>
-                <span className={`step ${currentStep === 'assortment' ? 'current' : ''}`}
-                      onClick={() => navigateToStep('assortment')}>Asortymentu</span>
+                <span className={`step ${currentStep === 'formularz-pierwszy' ? 'current' : ''}`}
+                      onClick={() => navigateToStep('formularz-pierwszy')}>Pierwszych informacji</span>
+                <span className={`step ${currentStep === 'formularz-drugi' ? 'current' : ''}`}
+                      onClick={() => navigateToStep('formularz-drugi')}>Informacji o osobie zmarłej</span>
+                <span className={`step ${currentStep === 'formularz-trzeci' ? 'current' : ''}`}
+                      onClick={() => navigateToStep('formularz-trzeci')}>Organizacji pogrzebu</span>
+                <span className={`step ${currentStep === 'assortyment' ? 'current' : ''}`}
+                      onClick={() => navigateToStep('assortyment')}>Asortymentu</span>
             </div>
         </>
     );

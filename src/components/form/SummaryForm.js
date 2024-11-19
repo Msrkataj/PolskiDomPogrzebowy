@@ -6,12 +6,10 @@ import Link from 'next/link';
 import bcrypt from 'bcryptjs';
 import {useRouter} from "next/router";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faDownload, faQuestionCircle} from '@fortawesome/free-solid-svg-icons';
+import {faCheckCircle, faQuestionCircle} from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
-import 'jspdf-autotable';
-import { PDFDocument, rgb } from 'pdf-lib';
-import fontkit from '@pdf-lib/fontkit';
-import { saveAs } from 'file-saver';
+import {PDFDownloadLink} from '@react-pdf/renderer';
+import SummaryPDF from '@/components/documents/SummaryPDF';
 import PelnomocnictwoForm from "@/components/documents/pelnomocnictwo";
 import WniosekKremacjaForm from "@/components/documents/wniosek-kremacja";
 import ZusUpowaznienie from "@/components/documents/zus-upowaznienie";
@@ -20,6 +18,7 @@ import ZleceniePelnomocnictwoForm from "@/components/documents/akt-zgonu";
 import SzpitalKoszalinPDF from "@/components/documents/szpital-odbior-ciala";
 import UpowaznienieKrus from "@/components/documents/upowaznienie-krus";
 import UpowaznienieOdbiorDokumentowForm from "@/components/documents/upowaznienie-odbior-dokumentow";
+
 const Summary = () => {
     const [formData, setFormData] = useState(null);
     const [email, setEmail] = useState('');
@@ -27,8 +26,6 @@ const Summary = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [uploadCategory, setUploadCategory] = useState('');
     const router = useRouter();
     const storage = getStorage();
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -70,10 +67,17 @@ const Summary = () => {
         setIsModalOpen(false);
         setSelectedDocument('');
     };
+    const validatePhone = (phone) => {
+        // Usuwamy wszystkie białe znaki i myślniki
+        const cleanedPhone = phone.replace(/\s|-/g, '');
+        // Sprawdzamy, czy numer składa się z 9 cyfr lub z 10 cyfr, jeśli zaczyna się od +
+        const re = /^(\+?\d{2})?\d{9}$/;
+        return re.test(cleanedPhone);
+    };
+
 
     const handleRemoveItem = async (index) => {
         if (!formData || !formData.selectedItems) return;
-
         const updatedItems = formData.selectedItems.filter((_, i) => i !== index);
 
         try {
@@ -105,6 +109,10 @@ const Summary = () => {
         if (!handlePasswordMatch()) {
             return;
         }
+        if (!validatePhone(phone)) {
+            alert('Podano nieprawidłowy numer telefonu.');
+            return;
+        }
 
         if (!validateEmail(email)) {
             alert('Podano nieprawidłowy adres e-mail.');
@@ -115,7 +123,6 @@ const Summary = () => {
             alert('Hasło musi zawierać co najmniej 8 znaków, w tym dużą literę, małą literę, cyfrę i znak specjalny.');
             return;
         }
-
         try {
             const hashedPassword = bcrypt.hashSync(password, 10);
             const id = localStorage.getItem('formId');
@@ -133,8 +140,7 @@ const Summary = () => {
                         name: "client"
                     }
                 ]
-            }, { merge: true });
-
+            }, {merge: true});
             alert('Dane zostały zapisane.');
             await router.push("/success");
         } catch (error) {
@@ -142,12 +148,10 @@ const Summary = () => {
             alert('Wystąpił błąd podczas zapisu danych.');
         }
     };
-
     const validateEmail = (email) => {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return re.test(String(email).toLowerCase());
     };
-
     const validatePassword = (password) => {
         return password.length >= 8 &&
             /[A-Z]/.test(password) &&
@@ -155,7 +159,6 @@ const Summary = () => {
             /[0-9]/.test(password) &&
             /[^A-Za-z0-9]/.test(password);
     };
-
     const handleDownload = async (fileName) => {
         const fileRef = storageRef(storage, `documents/${fileName}`);
         try {
@@ -170,127 +173,73 @@ const Summary = () => {
             console.error("Error downloading file:", error);
         }
     };
-
-    const handleFileUpload = (e) => {
+    const handleFileUpload = async (e, fileFieldName) => {
         const file = e.target.files[0];
-        setSelectedFile(file);
-        const category = e.target.name;
-        setUploadCategory(category);
-    };
-
-    const generatePDF = async (items) => {
-        if (!Array.isArray(items)) {
-            console.error("Items is not an array:", items);
-            return;
-        }
-
-        const pdfDoc = await PDFDocument.create();
-        pdfDoc.registerFontkit(fontkit);
-
-        const fontBytes = await fetch('/fonts/NotoSans-Regular.ttf').then(res => res.arrayBuffer());
-        const customFont = await pdfDoc.embedFont(fontBytes);
-
-        const page = pdfDoc.addPage();
-        const { width, height } = page.getSize();
-        const fontSize = 12;
-
-        // Tytuł
-        page.drawText('Podsumowanie Wybranego Zestawu', {
-            x: 50,
-            y: height - 50,
-            size: 20,
-            font: customFont,
-            color: rgb(0, 0, 0),
-        });
-
-        // Nagłówki tabeli
-        page.drawText('Nazwa', {
-            x: 50,
-            y: height - 80,
-            size: fontSize,
-            font: customFont,
-            color: rgb(0, 0, 0),
-        });
-
-        page.drawText('Cena', {
-            x: 400,
-            y: height - 80,
-            size: fontSize,
-            font: customFont,
-            color: rgb(0, 0, 0),
-        });
-
-        // Generowanie tabeli z produktami
-        let yPosition = height - 100;
-        for (const item of items) {
-            const wrappedText = wrapText(item.name, 350, fontSize, customFont); // Zawijanie tekstu do szerokości 350px
-
-            wrappedText.forEach((line, lineIndex) => {
-                page.drawText(line, {
-                    x: 50,
-                    y: yPosition - (lineIndex * fontSize),
-                    size: fontSize,
-                    font: customFont,
-                    color: rgb(0, 0, 0),
-                });
-            });
-
-            // Rysowanie ceny obok nazwy produktu
-            page.drawText(`${item.price} PLN`, {
-                x: 400,
-                y: yPosition,
-                size: fontSize,
-                font: customFont,
-                color: rgb(0, 0, 0),
-            });
-
-            yPosition -= (wrappedText.length * fontSize) + 10; // Przesuwanie w dół, w zależności od liczby linii
-        }
-
-        const pdfBytes = await pdfDoc.save();
-        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-        saveAs(blob, 'Podsumowanie_Zestawu.pdf');
-    };
-
-    const wrapText = (text, maxWidth, fontSize, font) => {
-        const words = text.split(' ');
-        let line = '';
-        const lines = [];
-
-        for (let n = 0; n < words.length; n++) {
-            const testLine = line + words[n] + ' ';
-            const testWidth = font.widthOfTextAtSize(testLine, fontSize);
-
-            if (testWidth > maxWidth && n > 0) {
-                lines.push(line.trim());
-                line = words[n] + ' ';
-            } else {
-                line = testLine;
-            }
-        }
-        lines.push(line.trim());
-        return lines;
-    };
-
-
-    const uploadFile = async () => {
-        if (!selectedFile) return;
-
+        if (!file) return;
         const formId = localStorage.getItem('formId');
-        const filePath = `uploaded-documents/${formId}/${uploadCategory}/${selectedFile.name}`;
+        const fileName = `${fileFieldName}_${Date.now()}_${file.name}`;
+        const filePath = `uploaded-documents/${formId}/${fileFieldName}/${fileName}`;
+        const storage = getStorage();
         const fileRef = storageRef(storage, filePath);
-
         try {
-            await uploadBytes(fileRef, selectedFile);
+            await uploadBytes(fileRef, file);
             const formRef = doc(db, 'forms', formId);
             await updateDoc(formRef, {
-                [`${uploadCategory}Document`]: filePath
+                [fileFieldName]: filePath
             });
-            alert("Plik przesłany pomyślnie!");
+            // Aktualizuj stan formData
+            setFormData(prevData => ({
+                ...prevData,
+                [fileFieldName]: filePath
+            }));
+            alert("Plik został przesłany pomyślnie!");
         } catch (error) {
             console.error("Błąd podczas przesyłania pliku:", error);
+            alert("Błąd podczas przesyłania pliku");
         }
     };
+    const documents = [
+        {
+            name: 'Pelnomocnictwo ZP.doc',
+            info: 'Pełnomocnictwo umożliwia prawne działanie w imieniu zmarłej osoby.',
+            fieldName: 'pelnomocnictwoDocument',
+        },
+        {
+            name: 'Wniosek do kremacji.doc',
+            info: 'Wniosek potrzebny do uzyskania zgody na kremację.',
+            fieldName: 'kremacjaDocument',
+        },
+        {
+            name: 'ZUS-UPOWAŻNIENIE.doc',
+            info: 'Dokument upoważniający do uzyskania informacji od ZUS.',
+            fieldName: 'zusUpowaznienieDocument',
+        },
+        {
+            name: 'Zaświadczenie E-R.docx',
+            info: 'Zaświadczenie dotyczące składek emerytalno-rentowych.',
+            fieldName: 'zaswiadczenieERDocument',
+        },
+        {
+            name: 'akt zgonu USC.doc',
+            info: 'Dokument rejestrujący zgon w Urzędzie Stanu Cywilnego.',
+            fieldName: 'zleceniePelnomocnictwoDocument',
+        },
+        {
+            name: 'szpital Koszalin odbiór ciała.doc',
+            info: 'Dokument pozwalający na odbiór ciała ze szpitala.',
+            fieldName: 'szpitalKoszalinDocument',
+        },
+        {
+            name: 'upowaźnienie KRUS.doc',
+            info: 'Dokument dotyczący uprawnień do świadczeń KRUS.',
+            fieldName: 'upowaznienieKrusDocument',
+        },
+        {
+            name: 'upowaźnienie odbiór dokumentów.doc',
+            info: 'Upoważnienie do odbioru dokumentów w imieniu zmarłego.',
+            fieldName: 'upowaznienieOdbiorDokumentowDocument',
+        }
+    ];
 
 
     if (!formData) {
@@ -309,33 +258,40 @@ const Summary = () => {
                     {
                         title: "Informacje o Osobie zmarłej",
                         data: [
-                            { label: "Imię", value: formData.name },
-                            { label: "Nazwisko", value: formData.surname },
-                            { label: "PESEL", value: formData.pesel },
-                            { label: "Data urodzin", value: formData.birthDate },
-                            { label: "Data śmierci", value: formData.deathDate },
-                            { label: "Kiedy będą załatwiane dokumenty?", value: formData.documents },
-                            { label: "Czy Osoba pracowała?", value: formData.worked },
-                            { label: "Zmarła Osoba była ubezpieczona w", value: formData.insurance },
-                            { label: "Numer świadczenia", value: formData.certificateNumber }
+                            {label: "Imię", value: formData.name},
+                            {label: "Nazwisko", value: formData.surname},
+                            {label: "PESEL", value: formData.pesel},
+                            {label: "Data urodzin", value: formData.birthDate},
+                            {label: "Data śmierci", value: formData.deathDate},
+                            {label: "Kiedy będą załatwiane dokumenty?", value: formData.documents},
+                            // { label: "Czy Osoba pracowała?", value: formData.worked },
+                            {label: "Zmarła Osoba była ubezpieczona w", value: formData.insurance},
+                            {label: "Numer świadczenia", value: formData.certificateNumber}
                         ]
                     },
                     {
                         title: "Informacje o pełnomocniku",
                         data: [
-                            { label: "Imię i Nazwisko", value: formData.authorizedPerson?.name },
-                            { label: "PESEL", value: formData.authorizedPerson?.pesel },
-                            { label: "Numer dowodu", value: formData.authorizedPerson?.idNumber },
-                            { label: "Kto sporządza akt zgonu?", value: formData.who }
+                            {label: "Imię i Nazwisko", value: formData.authorizedPerson?.name},
+                            {label: "PESEL", value: formData.authorizedPerson?.pesel},
+                            {label: "Numer dowodu", value: formData.authorizedPerson?.idNumber},
+                            {
+                                label: "Kto sporządza akt zgonu?",
+                                value: formData.who === 'funeral' ? 'Dom pogrzebowy' : 'Rodzina'
+                            }
                         ]
                     },
                     {
                         title: "Informacje o pogrzebie",
                         data: [
-                            { label: "Forma pogrzebu", value: formData.formType },
-                            { label: "Forma", value: formData.religiousCeremony },
-                            { label: "Czy dochowujemy do grobu?", value: formData.burialOption },
-                            { label: "Ubiór zmarłego", value: formData.clothingOption }
+                            {label: "Forma pogrzebu", value: formData.formType},
+                            {label: "Forma", value: formData.religiousCeremony},
+                            {label: "Czy dochowujemy do grobu?", value: formData.burialOption},
+                            {label: "Cmentarz i numer kwatery", value: formData.graveCemetery},
+                            {label: "Imię i nazwisko na dochówku", value: formData.gravePersonName},
+                            {label: "Data śmierci osoby na nagrobku", value: formData.graveDeathDate},
+                            {label: "Ewentualne dodatkowe szczegóły dochówku", value: formData.graveDetails},
+                            {label: "Ubiór zmarłego", value: formData.clothingOption},
                         ]
                     }
                 ].map((section, index) => (
@@ -349,7 +305,7 @@ const Summary = () => {
             </div>
 
             <div className="summary-edit">
-                <Link href="/form" className="change-button">Wróć i edytuj</Link>
+                <Link href="/assortyment" className="change-button">Wróć i edytuj</Link>
             </div>
 
             <h2>Wybrany zestaw:</h2>
@@ -375,7 +331,7 @@ const Summary = () => {
                                         className="thumbnail-image"
                                         width={100}  // Ustawienia szerokości obrazu
                                         height={100}  // Ustawienia wysokości obrazu
-                                        style={{ objectFit: 'cover' }}  // Styl dopasowania obrazu
+                                        style={{objectFit: 'cover'}}  // Styl dopasowania obrazu
                                     />
                                 ) : (
                                     <Image
@@ -384,7 +340,7 @@ const Summary = () => {
                                         className="thumbnail-image"
                                         width={100}  // Ustawienia szerokości obrazu
                                         height={100}  // Ustawienia wysokości obrazu
-                                        style={{ objectFit: 'cover' }}  // Styl dopasowania obrazu
+                                        style={{objectFit: 'cover'}}  // Styl dopasowania obrazu
                                     />
                                 )
                             )}
@@ -397,114 +353,106 @@ const Summary = () => {
                 ))}
                 </tbody>
             </table>
-            <p className="total-price"><strong>Suma:</strong> {formData.selectedItems?.reduce((sum, item) => sum + parseFloat(item.price), 0)} PLN</p>
+            <p className="total-price">
+                <strong>Suma:</strong> {formData.selectedItems?.reduce((sum, item) => sum + parseFloat(item.price), 0)} PLN
+            </p>
+            <PDFDownloadLink
+                document={<SummaryPDF items={formData.selectedItems}/>}
+                fileName="Podsumowanie_Zestawu.pdf"
+                className="download-pdf-button"
+            >
+                {({loading}) => (loading ? 'Generowanie PDF...' : 'Pobierz PDF z podsumowaniem')}
+            </PDFDownloadLink>
+            <div className="documents-section">
+                <h2>Druki do wypełnienia</h2>
+                <p>Wypełnij teraz online lub później w panelu klienta, albo pobierz plik PDF, wypełnij ręcznie i załaduj
+                    tutaj lub później w swoim panelu klienta.</p>
 
-            <button onClick={() => generatePDF(formData.selectedItems)} className="download-pdf-button">Pobierz PDF z podsumowaniem</button>
-
-                <div className="documents-section">
-                    <h2>Druki do wypełnienia</h2>
-                    <p>Wypełnij teraz online lub później w panelu klienta, albo pobierz plik PDF, wypełnij ręcznie i załaduj tutaj lub później w swoim panelu klienta.</p>
-
-                    <div className="document-actions">
-                        {[
-                            {
-                                name: 'Pelnomocnictwo ZP.doc',
-                                info: 'Pełnomocnictwo umożliwia prawne działanie w imieniu zmarłej osoby.'
-                            },
-                            {
-                                name: 'Wniosek do kremacji.doc',
-                                info: 'Wniosek potrzebny do uzyskania zgody na kremację.'
-                            },
-                            {
-                                name: 'ZUS-UPOWAŻNIENIE.doc',
-                                info: 'Dokument upoważniający do uzyskania informacji od ZUS.'
-                            },
-                            {
-                                name: 'Zaświadczenie E-R.docx',
-                                info: 'Zaświadczenie dotyczące składek emerytalno-rentowych.'
-                            },
-                            {
-                                name: 'akt zgonu USC.doc',
-                                info: 'Dokument rejestrujący zgon w Urzędzie Stanu Cywilnego.'
-                            },
-                            {
-                                name: 'szpital Koszalin odbiór ciała.doc',
-                                info: 'Dokument pozwalający na odbiór ciała ze szpitala.'
-                            },
-                            {
-                                name: 'upowaźnienie KRUS.doc',
-                                info: 'Dokument dotyczący uprawnień do świadczeń KRUS.'
-                            },
-                            {
-                                name: 'upowaźnienie odbiór dokumentów.doc',
-                                info: 'Upoważnienie do odbioru dokumentów w imieniu zmarłego.'
-                            }
-                        ].map((file, index) => (
-                            <div key={index} className="form-item">
-                                <div className="form-item__title">
-                                    {file.name}
-                                    <span className="tooltip" data-tooltip={file.info}>
-                                <FontAwesomeIcon icon={faQuestionCircle} className="fa-xl" />
-                            </span>
-                                </div>
-                                <div className="form-item__description">
-                                    Możesz wypełnić ten dokument teraz online lub pobrać i wypełnić go ręcznie.
-                                </div>
-                                <div className="form-item__buttons">
-                                    <button
-                                        className="fill-online"
-                                        onClick={() => handleOpenModal(file.name)}
-                                    >
-                                        Wypełnij online
-                                    </button>
-                                    <span>ALBO</span>
-                                    <button className="download-pdf" onClick={() => handleDownload(file.name)}>Pobierz PDF</button>
-                                    <div className="form-item__upload">
-                                        <label htmlFor={`upload-${index}`}>Prześlij plik:</label>
-                                        <input type="file" id={`upload-${index}`} name={file.name} onChange={handleFileUpload} />
-                                    </div>
+                <div className="document-actions">
+                    {documents.map((file, index) => (
+                        <div key={index} className="form-item">
+                            <div className="form-item__title">
+                                {file.name}
+                                <span className="tooltip" data-tooltip={file.info}>
+                                    <FontAwesomeIcon icon={faQuestionCircle} className="fa-xl"/>
+                                </span>
+                                {formData[file.fieldName] && (
+                                    <span className="tooltip" data-tooltip="Dokument przeslany">
+                                        <FontAwesomeIcon icon={faCheckCircle} className="fa-xl"
+                                                         style={{color: 'green', marginLeft: '5px'}}/>
+                                    </span>
+                                )}
+                            </div>
+                            <div className="form-item__description">
+                                Możesz wypełnić ten dokument teraz online lub pobrać i wypełnić go ręcznie.
+                            </div>
+                            <div className="form-item__buttons">
+                                <button
+                                    className="fill-online"
+                                    onClick={() => handleOpenModal(file.name)}
+                                >
+                                    Wypełnij online
+                                </button>
+                                <span>ALBO</span>
+                                <button className="download-pdf" onClick={() => handleDownload(file.name)}>Pobierz PDF
+                                </button>
+                                <div className="form-item__upload">
+                                    <label htmlFor={`upload-${index}`}>Prześlij plik:</label>
+                                    <input type="file" id={`upload-${index}`}
+                                           onChange={(e) => handleFileUpload(e, file.fieldName)}/>
                                 </div>
                             </div>
-                        ))}
-                    </div>
-                        {selectedDocument === 'Pelnomocnictwo ZP.doc' && <PelnomocnictwoForm isOpen={isModalOpen} onClose={handleCloseModal} />}
-                    {selectedDocument === 'Wniosek do kremacji.doc' && <WniosekKremacjaForm isOpen={isModalOpen} onClose={handleCloseModal} />}
-                    {selectedDocument === 'ZUS-UPOWAŻNIENIE.doc' && <ZusUpowaznienie isOpen={isModalOpen} onClose={handleCloseModal} />}
-                    {selectedDocument === 'Zaświadczenie E-R.docx' && <ZaswiadczenieEr isOpen={isModalOpen} onClose={handleCloseModal} />}
-                    {selectedDocument === 'akt zgonu USC.doc' && <ZleceniePelnomocnictwoForm isOpen={isModalOpen} onClose={handleCloseModal} />}
-                    {selectedDocument === 'szpital Koszalin odbiór ciała.doc' && <SzpitalKoszalinPDF isOpen={isModalOpen} onClose={handleCloseModal} />}
-                    {selectedDocument === 'upowaźnienie KRUS.doc' && <UpowaznienieKrus isOpen={isModalOpen} onClose={handleCloseModal} />}
-                    {selectedDocument === 'upowaźnienie odbiór dokumentów.doc' && <UpowaznienieOdbiorDokumentowForm isOpen={isModalOpen} onClose={handleCloseModal} />}
+                        </div>
+                    ))}
                 </div>
 
-                <form onSubmit={handleSubmit} className="contact-form">
-                    <h2>Podaj swoje dane:</h2>
-                    <div className="form-group">
-                        <label htmlFor="email">Twój e-mail:</label>
-                        <input type="email" id="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="E-mail" required />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="phone">Telefon kontaktowy:</label>
-                        <input type="tel" id="phone" name="phone" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Telefon" required />
-                    </div>
-                    <h3>Załóż konto, aby zapisać swoje dane i ułatwić dalszą organizację pogrzebu.</h3>
-                    <div className="form-group">
-                        <label htmlFor="password">Hasło:</label>
-                        <input type="password" id="password" name="password" value={password}
-                               onChange={(e) => setPassword(e.target.value)} placeholder="Hasło" required/>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="confirmPassword">Powtórz hasło:</label>
-                        <input type="password" id="confirmPassword" name="confirmPassword" value={confirmPassword}
-                               onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Powtórz hasło"
-                               required/>
-                    </div>
-                    {error && <p className="error-message">{error}</p>}
-                    <button type="submit" className="submit-button">Wyślij</button>
-                </form>
+                {selectedDocument === 'Pelnomocnictwo ZP.doc' &&
+                    <PelnomocnictwoForm isOpen={isModalOpen} onClose={handleCloseModal}/>}
+                {selectedDocument === 'Wniosek do kremacji.doc' &&
+                    <WniosekKremacjaForm isOpen={isModalOpen} onClose={handleCloseModal}/>}
+                {selectedDocument === 'ZUS-UPOWAŻNIENIE.doc' &&
+                    <ZusUpowaznienie isOpen={isModalOpen} onClose={handleCloseModal}/>}
+                {selectedDocument === 'Zaświadczenie E-R.docx' &&
+                    <ZaswiadczenieEr isOpen={isModalOpen} onClose={handleCloseModal}/>}
+                {selectedDocument === 'akt zgonu USC.doc' &&
+                    <ZleceniePelnomocnictwoForm isOpen={isModalOpen} onClose={handleCloseModal}/>}
+                {selectedDocument === 'szpital Koszalin odbiór ciała.doc' &&
+                    <SzpitalKoszalinPDF isOpen={isModalOpen} onClose={handleCloseModal}/>}
+                {selectedDocument === 'upowaźnienie KRUS.doc' &&
+                    <UpowaznienieKrus isOpen={isModalOpen} onClose={handleCloseModal}/>}
+                {selectedDocument === 'upowaźnienie odbiór dokumentów.doc' &&
+                    <UpowaznienieOdbiorDokumentowForm isOpen={isModalOpen} onClose={handleCloseModal}/>}
+            </div>
+
+            <form onSubmit={handleSubmit} className="contact-form">
+                <h2>Podaj swoje dane:</h2>
+                <div className="form-group">
+                    <label htmlFor="email">Twój e-mail:</label>
+                    <input type="email" id="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                           placeholder="E-mail" required/>
+                </div>
+                <div className="form-group">
+                    <label htmlFor="phone">Telefon kontaktowy:</label>
+                    <input type="tel" id="phone" name="phone" value={phone} onChange={(e) => setPhone(e.target.value)}
+                           placeholder="Telefon" required/>
+                </div>
+                <h3>Załóż konto, aby zapisać swoje dane i ułatwić dalszą organizację pogrzebu.</h3>
+                <div className="form-group">
+                    <label htmlFor="password">Hasło:</label>
+                    <input type="password" id="password" name="password" value={password}
+                           onChange={(e) => setPassword(e.target.value)} placeholder="Hasło" required/>
+                </div>
+                <div className="form-group">
+                    <label htmlFor="confirmPassword">Powtórz hasło:</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" value={confirmPassword}
+                           onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Powtórz hasło"
+                           required/>
+                </div>
+                {error && <p className="error-message">{error}</p>}
+                <button type="submit" className="submit-button">Wyślij</button>
+            </form>
         </div>
 
     );
 };
-
 export default Summary;

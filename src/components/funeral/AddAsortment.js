@@ -1,11 +1,25 @@
+// Assortment.js (komponent do dodawania produktów)
 import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { getStorage, ref as storageRef, getDownloadURL, uploadBytes, deleteObject } from "firebase/storage";
 
 const Assortment = ({ products, setProducts, productCounter, setProductCounter }) => {
     const [expandedProductId, setExpandedProductId] = useState(null);
 
     const addProduct = () => {
-        setProducts([...products, { id: uuidv4(), name: '', category: 'coffins', price: '', availability: 'Dostępna od ręki', producent: '', text: '', build: '', type: '', files: [] }]);
+        setProducts([...products, {
+            id: uuidv4(),
+            name: '',
+            category: 'coffins',
+            price: '',
+            availability: 'Dostępna od ręki',
+            producent: '',
+            text: '',
+            build: '',
+            type: '',
+            files: [],
+            imageUrls: []
+        }]);
         setProductCounter(productCounter + 1);
     };
 
@@ -14,12 +28,110 @@ const Assortment = ({ products, setProducts, productCounter, setProductCounter }
         setProductCounter(productCounter - 1);
     };
 
-    const handleProductChange = (id, field, value) => {
-        setProducts(products.map(product => product.id === id ? { ...product, [field]: field === 'type' ? getEnglishType(value) : value } : product));
+    const handleProductChange = async (id, field, value) => {
+        const productIndex = products.findIndex(product => product.id === id);
+        if (productIndex === -1) return;
+
+        const oldProduct = { ...products[productIndex] };
+
+        const updatedProduct = {
+            ...oldProduct,
+            [field]: field === 'type' ? getEnglishType(value) : value
+        };
+
+        const shouldMoveFiles = (field === 'category' || field === 'type' || field === 'name') && oldProduct.files && oldProduct.files.length > 0;
+
+        const updatedProducts = [...products];
+        updatedProducts[productIndex] = updatedProduct;
+        setProducts(updatedProducts);
+
+        if (shouldMoveFiles) {
+            await moveProductFiles(oldProduct, updatedProduct);
+        }
     };
 
-    const handleFileChange = (id, files) => {
-        setProducts(products.map(product => product.id === id ? { ...product, files } : product));
+    const handleFileChange = async (id, files) => {
+        const storage = getStorage();
+        const uploadedFiles = [];
+
+        const product = products.find(product => product.id === id);
+
+        for (let file of files) {
+            const fileName = uuidv4() + "_" + file.name;
+            const storagePath = product.type
+                ? `assortment/${product.category}/${product.type}/${product.name}/${fileName}`
+                : `assortment/${product.category}/${product.name}/${fileName}`;
+            const fileRef = storageRef(storage, storagePath);
+
+            const metadata = {
+                contentType: file.type
+            };
+
+            await uploadBytes(fileRef, file, metadata);
+            const url = await getDownloadURL(fileRef);
+
+            uploadedFiles.push({
+                name: fileName,
+                storagePath: storagePath,
+                url: url
+            });
+        }
+
+        setProducts(prevProducts => prevProducts.map(prod => prod.id === id ? {
+            ...prod,
+            files: [...(prod.files || []), ...uploadedFiles],
+            imageUrls: [...(prod.imageUrls || []), ...uploadedFiles.map(file => file.url)]
+        } : prod));
+    };
+
+    const moveProductFiles = async (oldProduct, newProduct) => {
+        const storage = getStorage();
+
+        const updatedFiles = [];
+        const updatedImageUrls = [];
+
+        for (let file of oldProduct.files) {
+            const fileName = file.name;
+            const oldStoragePath = file.storagePath;
+            const newStoragePath = newProduct.type
+                ? `assortment/${newProduct.category}/${newProduct.type}/${newProduct.name}/${fileName}`
+                : `assortment/${newProduct.category}/${newProduct.name}/${fileName}`;
+
+            const oldRef = storageRef(storage, oldStoragePath);
+            const newRef = storageRef(storage, newStoragePath);
+
+            try {
+                const url = await getDownloadURL(oldRef);
+                const response = await fetch(url);
+                const blob = await response.blob();
+
+                await uploadBytes(newRef, blob);
+
+                const newUrl = await getDownloadURL(newRef);
+
+                await deleteObject(oldRef);
+
+                updatedFiles.push({ ...file, storagePath: newStoragePath, url: newUrl });
+                updatedImageUrls.push(newUrl);
+
+            } catch (error) {
+                console.error('Błąd podczas przenoszenia pliku:', error);
+            }
+        }
+
+        setProducts(prevProducts => {
+            return prevProducts.map(product => {
+                if (product.id === newProduct.id) {
+                    return {
+                        ...product,
+                        files: updatedFiles,
+                        imageUrls: updatedImageUrls
+                    };
+                } else {
+                    return product;
+                }
+            });
+        });
     };
 
     const getEnglishType = (type) => {
@@ -27,11 +139,11 @@ const Assortment = ({ products, setProducts, productCounter, setProductCounter }
             case 'Drewniana':
                 return 'wooden';
             case 'Kamienna':
-                return 'stone';
+                return 'stolen';
             case 'Ceramiczna':
-                return 'Ceramiczna'
+                return 'ceramic';
             case 'Szklana':
-                return 'Szklana'
+                return 'glass';
             default:
                 return type ? type.toLowerCase() : '';
         }
@@ -107,15 +219,25 @@ const Assortment = ({ products, setProducts, productCounter, setProductCounter }
                                                 value={product.type}
                                                 onChange={(e) => handleProductChange(product.id, 'type', e.target.value)}
                                             >
-                                                <option value="wooden">Drewniana</option>
-                                                <option value="stone">Kamienna</option>
-                                                <option value="metal">Ceramiczna</option>
-                                                <option value="stone">Szklana</option>
+                                                <option value="Drewniana">Drewniana</option>
+                                                <option value="Kamienna">Kamienna</option>
                                             </select>
+                                            <label>Z czego wykonane:</label>
+                                            <input
+                                                type="text"
+                                                value={product.build}
+                                                onChange={(e) => handleProductChange(product.id, 'build', e.target.value)}
+                                            />
                                         </>
                                     ) : (
                                         <>
-                                        <label>Z czego wykonane:</label>
+                                            <label>Typ:</label>
+                                            <input
+                                                type="text"
+                                                value={product.type}
+                                                onChange={(e) => handleProductChange(product.id, 'type', e.target.value)}
+                                            />
+                                            <label>Z czego wykonane:</label>
                                             <input
                                                 type="text"
                                                 value={product.build}
@@ -123,17 +245,33 @@ const Assortment = ({ products, setProducts, productCounter, setProductCounter }
                                             />
                                         </>
                                     )}
+                                    <label>Załaduj zdjęcia:</label>
+                                    <input
+                                        type="file"
+                                        multiple
+                                        onChange={(e) => handleFileChange(product.id, Array.from(e.target.files))}
+                                    />
+                                    {product.imageUrls && product.imageUrls.length > 0 && (
+                                        <div className="imagePreview">
+                                            {product.imageUrls.map((url, idx) => (
+                                                <img key={idx} src={url} alt={`Zdjęcie ${idx + 1}`} style={{ width: '100px', marginRight: '10px' }} />
+                                            ))}
+                                        </div>
+                                    )}
                                 </>
                             )}
-                            <label>Załaduj zdjęcia:</label>
-                            <input
-                                type="file"
-                                multiple
-                                onChange={(e) => handleFileChange(product.id, Array.from(e.target.files))}
-                            />
+                            {product.category === 'music' && (
+                                <>
+                                    <label>Opis:</label>
+                                    <textarea
+                                        value={product.text}
+                                        onChange={(e) => handleProductChange(product.id, 'text', e.target.value)}
+                                    />
+                                </>
+                            )}
                             {index > 0 && (
-                                <button type="button" onClick={() => removeProduct(product.id)}>
-                                    Usuń produkt
+                                <button className="button-removeProduct" type="button" onClick={() => removeProduct(product.id)}>
+                                    Usuń ten produkt ^
                                 </button>
                             )}
                         </>

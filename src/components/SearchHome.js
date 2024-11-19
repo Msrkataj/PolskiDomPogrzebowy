@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import Image from 'next/image';
 import phoneIcon from '../../public/assets/icons/phone.png';
 import consultantIcon from '../../public/assets/icons/consultant.png';
-import { useRouter } from 'next/router';
+import {useRouter} from 'next/router';
 import Autosuggest from 'react-autosuggest';
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import heartIcon from "../../public/assets/icons/heart.png";
 
 const cities = [
     'Warszawa', 'Kraków', 'Łódź', 'Wrocław', 'Poznań', 'Gdańsk', 'Szczecin', 'Bydgoszcz', 'Lublin', 'Białystok',
@@ -38,11 +39,14 @@ const SearchComponent = ({handleOpenChat}) => {
     const [location, setLocation] = useState('');
     const [suggestions, setSuggestions] = useState([]);
     const router = useRouter();
+    const [placeholder, setPlaceholder] = useState('WPISZ MIEJSCOWOŚĆ ORGANIZACJI POGRZEBU');
 
     const handleSearch = () => {
         if (location.trim()) {
-            localStorage.setItem('location', location);
-            router.push(`/search?location=${location}`);
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('location', location);
+            }
+            router.push(`/szukaj?location=${location}`);
         }
     };
 
@@ -51,7 +55,26 @@ const SearchComponent = ({handleOpenChat}) => {
             handleSearch();
         }
     };
+    useEffect(() => {
+        const updatePlaceholder = () => {
+            if (window.innerWidth < 1300 && window.innerWidth > 1024 || window.innerWidth < 700) {
+                setPlaceholder('WPISZ MIEJSCOWOŚĆ');
+            }
+                // if (window.innerWidth < 600 ) {
+                //     setPlaceholder('WPISZ MIEJSCOWOŚĆ');
+            // }
+            else {
+                setPlaceholder('WPISZ MIEJSCOWOŚĆ ORGANIZACJI POGRZEBU');
+            }
+        };
 
+        // Ustaw placeholder przy załadowaniu i po zmianie rozmiaru
+        updatePlaceholder();
+        window.addEventListener('resize', updatePlaceholder);
+
+        // Usunięcie listenera przy odmontowaniu komponentu
+        return () => window.removeEventListener('resize', updatePlaceholder);
+    }, []);
     const getSuggestions = (value) => {
         const inputValue = value.trim().toLowerCase();
         const inputLength = inputValue.length;
@@ -68,11 +91,11 @@ const SearchComponent = ({handleOpenChat}) => {
         </div>
     );
 
-    const onChange = (event, { newValue }) => {
+    const onChange = (event, {newValue}) => {
         setLocation(newValue);
     };
 
-    const onSuggestionsFetchRequested = ({ value }) => {
+    const onSuggestionsFetchRequested = ({value}) => {
         setSuggestions(getSuggestions(value));
     };
 
@@ -81,74 +104,142 @@ const SearchComponent = ({handleOpenChat}) => {
     };
 
     const inputProps = {
-        placeholder: 'Wpisz miejscowość',
+        placeholder, // Użycie dynamicznego placeholdera
         value: location,
         onChange,
-        onKeyDown: handleKeyDown
+        onKeyDown: handleKeyDown,
     };
+
 
     return (
         <>
             <div className="search-component">
-                <div className="video-background">
-                    <video autoPlay loop muted>
-                        <source src="/assets/background-movie.mp4" type="video/mp4" />
-                    </video>
-                </div>
-                <h1 className="intro-text">
-                    Wiemy jak ważne jest wsparcie w tym trudnym momencie, pomożemy zorganizować wszystkie formalności,
-                    całą ceremonię bez wychodzenia z domu.
-                </h1>
-                <div className="search-box">
-                    <p>Wyszukaj dom pogrzebowy w Twojej miejscowości</p>
-                    <div className="autosuggest-container">
-                        <Autosuggest
-                            suggestions={suggestions}
-                            onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-                            onSuggestionsClearRequested={onSuggestionsClearRequested}
-                            getSuggestionValue={getSuggestionValue}
-                            renderSuggestion={renderSuggestion}
-                            inputProps={inputProps}
-                        />
+                {/* Replace video-background and intro-text with the image */}
+                <div className="main">
+                    <div className="main-banner">
+                        <h1>Z NAMI ZORGANIZUJESZ ZDALNIE POGRZEB, Z DOMAMI POGRZEBOWYMI W TWOIM MIEŚCIE</h1>
                     </div>
-                    <button onClick={handleSearch}>Znajdź dom</button>
-                </div>
-                <div className="contact-options">
-                    <div className="option">
-                        <p>Zadzwoń, pomożemy w każdym etapie ceremonii pogrzebowej</p>
-                        <div className="option-select">
-                            <a href="tel:+48600000000">
-                                <Image
-                                    src={phoneIcon}
-                                    alt="Phone"
-                                    width={32}
-                                    height={32}
-                                    sizes="(max-width: 768px) 100vw, 32px"
-                                />
-                                <p>+48 600 000 000</p>
-                            </a>
+                    <div className="main-stage">
+                        <div className="main-stage-mobile">
+                            <div className="main-stage-section">
+                                <h2>FORMALNOSCI</h2>
+                                <Image src={"/assets/home/formalnosci.webp"} alt="formalnosci" width={230} height={200}
+                                       loading="lazy"/>
+                            </div>
+                            <div className="main-stage-next">
+                                <Image className="number" src={"/assets/home/jeden.webp"} alt="jeden" width={60}
+                                       height={60} loading="lazy"/>
+                                <Image src={"/assets/home/strzalka.webp"} alt="jeden" width={100} height={40}
+                                       loading="lazy"/>
+                            </div>
+                            <div className="main-stage-section">
+                                <h2>ORGANIZACJA</h2>
+                                <Image src={"/assets/home/organizacja.webp"} alt="organizacja" width={230} height={200}
+                                       loading="lazy"/>
+                            </div>
+                        </div>
+                        <div className="main-stage-mobile">
+                            <div className="main-stage-next">
+                                <Image className="number" src={"/assets/home/dwa.webp"} alt="dwa" width={60} height={60}
+                                       loading="lazy"/>
+                                <Image className="disable" src={"/assets/home/strzalka.webp"} alt="dwa" width={100} height={40}
+                                       loading="lazy"/>
+                            </div>
+                            <div className="main-stage-section">
+                                <h2>WYBÓR ASORTYMENTU</h2>
+                                <Image src={"/assets/home/asortyment.webp"} alt="asortyment" width={230} height={200}
+                                       loading="lazy"/>
+                            </div>
+                            <div className="main-stage-next">
+                                <Image className="number" src={"/assets/home/trzy.webp"} alt="trzy" width={60}
+                                       height={60}
+                                       loading="lazy"/>
+                                <Image src={"/assets/home/strzalka.webp"} alt="trzy" width={100} height={40}
+                                       loading="lazy"/>
+                            </div>
+                            <div className="main-stage-section">
+                                <h2>PRZEJRZYSTE CENY</h2>
+                                <Image src={"/assets/home/ceny.webp"} alt="ceny" width={230} height={200}
+                                       loading="lazy"/>
+                            </div>
+                        </div>
+
+                        <div className="main-stage-next">
+                            <Image className="number" src={"/assets/home/czwarta.webp"} alt="czwarta" width={60}
+                                   height={60} loading="lazy"/>
+                            <Image className="disable" src={"/assets/home/strzalka.webp"} alt="czwarta" width={100}
+                                   height={40}
+                                   loading="lazy"/>
+                        </div>
+                        <div className="main-stage-section">
+                            <h2 className="tittle-realiz" >REALIZACJA</h2>
+                            <Image src={"/assets/home/realizacja.webp"} alt="realizacja" width={230} height={200}
+                                   loading="lazy"/>
                         </div>
                     </div>
-                    <div className="option">
-                        <div className="option-background"></div>
-                        <p>Skontaktuj się z Twoim doradcą</p>
-                        <div className="option-select" onClick={handleOpenChat}>
-                            <div>
-                                <Image
-                                    src={consultantIcon}
-                                    alt="Consultant"
-                                    width={32}
-                                    height={32}
-                                    sizes="(max-width: 768px) 100vw, 32px"
-                                />
-                                <p>Doradca</p>
+                    <div className="floating-sign">ZACZNIJ TUTAJ</div>
+                    <div className="main-title">
+                        <div className="main-title-text main-title-left">
+                            <h3>FORMALNOŚCI ORGANIZACJA POGRZEBU<br/> I WYBÓR ASORTYMENTU ZDALNIE -<br/>
+                                BEZ WYCHODZENIA Z DOMU</h3>
+                        </div>
+                        <div className="main-title-text main-title-right">
+                            <h3>WIESZ ZA CO PŁACISZ - PRZEJRZYSTE CENY <br/>I BUDŻETY DOSTAOSOWANE POD KLIENTA</h3>
+                        </div>
+                    </div>
+                    <div className="input-overlay">
+                        <div className="autosuggest-container">
+                            <Autosuggest
+                                suggestions={suggestions}
+                                onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+                                onSuggestionsClearRequested={onSuggestionsClearRequested}
+                                getSuggestionValue={getSuggestionValue}
+                                renderSuggestion={renderSuggestion}
+                                inputProps={inputProps}
+                            />
+                        </div>
+                        <button onClick={handleSearch}>Znajdź dom</button>
+                    </div>
+                </div>
+                <div className="contact-options flex-center">
+                    <div className="option-main">
+                        <div className="option">
+                            <p>Zadzwoń, pomożemy w każdym etapie ceremonii pogrzebowej</p>
+                            <div className="option-select">
+                                <a href="tel:+48600000000">
+                                    <Image
+                                        src={phoneIcon}
+                                        alt="Phone"
+                                        width={32}
+                                        height={32}
+                                        sizes="(max-width: 768px) 100vw, 32px"
+                                    />
+                                    <p>+48 600 000 000</p>
+                                </a>
+                            </div>
+                        </div>
+                        <div className="option">
+                            <div className="option-background"></div>
+                            <p>Skontaktuj się z Twoim doradcą</p>
+                            <div className="option-select flex-mobile" onClick={handleOpenChat}>
+                                <div>
+                                    <Image
+                                        src={consultantIcon}
+                                        alt="Consultant"
+                                        width={32}
+                                        height={32}
+                                        sizes="(max-width: 768px) 100vw, 32px"
+                                    />
+                                    <p>Doradca</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div className="home-title">
-                <h2>Oszczędź czas i załatw wszystko z domu, właśnie tutaj
+                <h2>
+                    Oszczędź czas i załatw wszystko z domu, właśnie tutaj
                     <span className="arrow-icon arrow-icon-top"></span>
                 </h2>
             </div>
@@ -156,4 +247,4 @@ const SearchComponent = ({handleOpenChat}) => {
     );
 };
 
-export default dynamic (() => Promise.resolve(SearchComponent), {ssr: false})
+export default dynamic(() => Promise.resolve(SearchComponent), {ssr: false})

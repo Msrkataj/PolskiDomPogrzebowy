@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {db} from '../../../firebase';
 import {doc, setDoc, getDoc, updateDoc} from 'firebase/firestore';
 import {useRouter} from 'next/router';
@@ -25,20 +25,22 @@ const UnifiedForm = () => {
             pesel: '',
             idNumber: ''
         },
-        who: ''
+        who: '' // default to empty or an appropriate value
     });
     const [showSaveForm, setShowSaveForm] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
     const [errors, setErrors] = useState([]);
+    const [errorEmail, setErrorEmail] = useState([]);
     const [showInfoBubble, setShowInfoBubble] = useState(true);
     const [showInfoLogin, setShowInfoLogin] = useState(true);
-    const [currentStep, setCurrentStep] = useState('details');
+    const [currentStep, setCurrentStep] = useState('formularz-drugi');
     const [selectedFile, setSelectedFile] = useState(null);
     const [isInfoBubbleVisible, setIsInfoBubbleVisible] = useState(false);
     const [isInfoLoginVisible, setIsInfoLoginVisible] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const errorContainerRef = useRef(null);
 
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
@@ -86,7 +88,7 @@ const UnifiedForm = () => {
     };
 
     const handleChange = (e) => {
-        const {name, value, type, checked} = e.target;
+        const { name, value, type, checked } = e.target;
         if (name.startsWith('authorizedPerson.')) {
             const key = name.split('.')[1];
             setFormData(prevState => ({
@@ -102,7 +104,15 @@ const UnifiedForm = () => {
                 [name]: type === 'checkbox' ? checked : value
             }));
         }
+
+        // Usuwanie błędu dla aktualizowanego pola
+        setErrors(prevErrors => {
+            const newErrors = { ...prevErrors };
+            delete newErrors[name];
+            return newErrors;
+        });
     };
+
     const handleFileUpload = async (e) => {
         const file = e.target.files[0];
         setSelectedFile(file);
@@ -136,70 +146,155 @@ const UnifiedForm = () => {
             console.error("Błąd podczas przesyłania pliku:", error);
         }
     };
+    useEffect(() => {
+        if (errors.length > 0 && errorContainerRef.current) {
+            errorContainerRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [errors]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         const newErrors = [];
+        const today = new Date();
+        const birthDate = new Date(formData.birthDate);
+        const deathDate = formData.deathDate ? new Date(formData.deathDate) : null;
 
-        // Przykładowa walidacja
-        if (!formData.name) {
-            newErrors.push('Imię jest wymagane.');
-        }
-        if (!formData.surname) {
-            newErrors.push('Nazwisko jest wymagane.');
-        }
-        if (!formData.deathDate) {
-            newErrors.push('Data śmierci jest wymagana.');
-        }
-        if (!formData.birthDate) {
-            newErrors.push('Data urodzin jest wymagana.');
-        }
-        if (!formData.pesel) {
-            newErrors.push('PESEL jest wymagany.');
+        // Walidacja daty urodzin
+        if (deathDate && birthDate >= deathDate) {
+            newErrors.push('Data urodzin musi być wcześniejsza niż data śmierci.');
+        } else if (!deathDate && birthDate >= today) {
+            newErrors.push('Data urodzin musi być wcześniejsza niż dzisiejsza data.');
         }
 
+        // Walidacja wymaganych pól
+        if (!formData.name) newErrors.push('Imię jest wymagane.');
+        if (!formData.surname) newErrors.push('Nazwisko jest wymagane.');
+        if (!formData.deathDate) newErrors.push('Data śmierci jest wymagana.');
+        if (!formData.birthDate) newErrors.push('Data urodzin jest wymagana.');
+
+        // Walidacja PESEL
+        if (!/^\d{11}$/.test(formData.pesel)) {
+            newErrors.push('PESEL musi mieć dokładnie 11 cyfr.');
+        }
+
+        // Walidacja numeru dowodu osobistego, sprawdza czy authorizedPerson jest zainicjowany
+        if (formData.authorizedPerson && !/^[A-Z]{3}\d{6}$/.test(formData.authorizedPerson.idNumber)) {
+            newErrors.push('Numer dowodu musi składać się z 3 liter i 6 cyfr.');
+        }
+
+
+        // Walidacja wyboru radio button "pensionCertificate"
+        if (formData.pensionCertificate === null) {
+            newErrors.push('Proszę określić, czy osoba podlegała składkom emerytalno-rentowym.');
+        }
+
+        // Walidacja wyboru radio button "insurance"
+        if (!formData.insurance) {
+            newErrors.push('Proszę wybrać ubezpieczenie.');
+        }
+
+        // Walidacja "who" checkbox dla rodziny lub domu pogrzebowego
+        if (!formData.who) {
+            newErrors.push('Proszę określić, kto sporządza akt zgonu.');
+        }
+
+        // Walidacja "certificateNumber" jeśli nie zaznaczono "noCertificate"
+        if (!formData.noCertificate && !formData.certificateNumber) {
+            newErrors.push('Numer świadczenia jest wymagany, jeśli nie zaznaczono brak świadczeń.');
+        }
 
         if (newErrors.length > 0) {
             setErrors(newErrors);
             return;
         }
 
-        await uploadFile();
-        await saveData();
-        router.push('/funeraldetails');
+        try {
+            await uploadFile();
+            await saveData();
+            router.push('/formularz-trzeci');
+        } catch (error) {
+            console.error('Błąd zapisu formularza: ', error);
+        }
     };
 
-    const handleSaveAndNavigate = async (step) => {
-        const newErrors = [];
 
-        // Przykładowa walidacja
-        if (!formData.name) {
-            newErrors.push('Imię jest wymagane.');
+    const handleSaveAndNavigate = async (step) => {
+        if (step === 'formularz-pierwszy') {
+            // Pomijamy walidację podczas cofania się do pierwszego formularza
+            await saveData();
+            setCurrentStep(step);
+            router.push(`/${step}`);
+            return;
         }
-        if (!formData.surname) {
-            newErrors.push('Nazwisko jest wymagane.');
+
+        const newErrors = [];
+        const today = new Date();
+        const birthDate = new Date(formData.birthDate);
+        const deathDate = formData.deathDate ? new Date(formData.deathDate) : null;
+
+        // Walidacja daty urodzin
+        if (deathDate && birthDate >= deathDate) {
+            newErrors.push('Data urodzin musi być wcześniejsza niż data śmierci.');
+        } else if (!deathDate && birthDate >= today) {
+            newErrors.push('Data urodzin musi być wcześniejsza niż dzisiejsza data.');
         }
-        if (!formData.deathDate) {
-            newErrors.push('Data śmierci jest wymagana.');
+
+        // Walidacja wymaganych pól
+        if (!formData.name) newErrors.push('Imię jest wymagane.');
+        if (!formData.surname) newErrors.push('Nazwisko jest wymagane.');
+        if (!formData.deathDate) newErrors.push('Data śmierci jest wymagana.');
+        if (!formData.birthDate) newErrors.push('Data urodzin jest wymagana.');
+
+        // Walidacja PESEL
+        if (!/^\d{11}$/.test(formData.pesel)) {
+            newErrors.push('PESEL musi mieć dokładnie 11 cyfr.');
         }
-        if (!formData.birthDate) {
-            newErrors.push('Data urodzin jest wymagana.');
+
+        // Walidacja numeru dowodu osobistego, sprawdza czy authorizedPerson jest zainicjowany
+        if (formData.authorizedPerson && !/^[A-Z]{3}\d{6}$/.test(formData.authorizedPerson.idNumber)) {
+            newErrors.push('Numer dowodu musi składać się z 3 liter i 6 cyfr.');
         }
-        if (!formData.pesel) {
-            newErrors.push('PESEL jest wymagany.');
+
+        // Walidacja emaila (jeśli jest wprowadzony)
+        if (email && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
+            newErrors.push('Proszę podać prawidłowy adres e-mail.');
+        }
+
+        // Walidacja wyboru radio button "pensionCertificate"
+        if (formData.pensionCertificate === null) {
+            newErrors.push('Proszę określić, czy osoba podlegała składkom emerytalno-rentowym.');
+        }
+
+        // Walidacja wyboru radio button "insurance"
+        if (!formData.insurance) {
+            newErrors.push('Proszę wybrać ubezpieczenie.');
+        }
+
+        // Walidacja "who" checkbox dla rodziny lub domu pogrzebowego
+        if (!formData.who) {
+            newErrors.push('Proszę określić, kto sporządza akt zgonu.');
+        }
+
+        // Walidacja "certificateNumber" jeśli nie zaznaczono "noCertificate"
+        if (!formData.noCertificate && !formData.certificateNumber) {
+            newErrors.push('Numer świadczenia jest wymagany, jeśli nie zaznaczono brak świadczeń.');
         }
 
         if (newErrors.length > 0) {
             setErrors(newErrors);
             return;
         }
-
         await saveData();
         setCurrentStep(step);
         router.push(`/${step}`);
     };
 
+    const handleSaveAndBack = async (step) => {
+
+        await saveData();
+        setCurrentStep(step);
+        router.push(`/${step}`);
+    };
 
     const saveData = async () => {
         let id = localStorage.getItem('formId');
@@ -222,10 +317,32 @@ const UnifiedForm = () => {
 
 
     const handleSaveCredentials = async () => {
+        const newErrors = [];
+
+        // Walidacja formatu e-maila
+        if (!email) {
+            newErrors.push('E-mail jest wymagany.');
+        } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
+            newErrors.push('Proszę podać prawidłowy adres e-mail.');
+        }
+
+        // Walidacja hasła (np. minimum 8 znaków)
+        if (!password) {
+            newErrors.push('Hasło jest wymagane.');
+        } else if (password.length < 8) {
+            newErrors.push('Hasło musi mieć przynajmniej 8 znaków.');
+        }
+
+        if (newErrors.length > 0) {
+            setErrorEmail(newErrors);
+            return;
+        }
+
+        // Jeśli nie ma błędów, zapisujemy dane
         const id = localStorage.getItem('formId');
         if (id) {
             try {
-                await setDoc(doc(db, 'forms', id), {email, password}, {merge: true});
+                await setDoc(doc(db, 'forms', id), { email, password }, { merge: true });
                 alert('Dane zostały zapisane.');
                 setShowSaveForm(false);
             } catch (error) {
@@ -237,13 +354,14 @@ const UnifiedForm = () => {
     };
 
 
+
     const closeSaveForm = () => setShowSaveForm(false);
 
     return (
         <div className="form-container">
             <div className="navigation-buttons">
-                <button className="nav-button" onClick={() => router.back()}>← Cofnij</button>
-                <button className="nav-button" onClick={() => handleSaveAndNavigate('funeraldetails')}>Dalej →</button>
+                <button className="nav-button" onClick={() => handleSaveAndBack('formularz-pierwszy')}>← Cofnij</button>
+                <button className="nav-button" onClick={() => handleSaveAndNavigate('formularz-trzeci')}>Dalej →</button>
             </div>
             <StepNavigation currentStep={currentStep} setCurrentStep={setCurrentStep} handleSaveAndNavigate={handleSaveAndNavigate}/>
             <div className="form-container-main">
@@ -489,7 +607,7 @@ const UnifiedForm = () => {
                         </div>
                     </div>
                     {errors.length > 0 && (
-                        <div className="error-container">
+                        <div className="error-container" ref={errorContainerRef}>
                             {errors.map((error, index) => (
                                 <p key={index} className="error-message">{error}</p>
                             ))}
@@ -517,6 +635,13 @@ const UnifiedForm = () => {
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="Hasło"
                             />
+                            {errorEmail.length > 0 && (
+                                <div className="error-container" ref={errorContainerRef}>
+                                    {errorEmail.map((error, index) => (
+                                        <p key={index} className="error-message">{error}</p>
+                                    ))}
+                                </div>
+                            )}
                             <button onClick={handleSaveCredentials}>Zapisz</button>
                             <button onClick={closeSaveForm}>Zamknij</button>
                         </div>

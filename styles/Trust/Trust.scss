@@ -1,9 +1,8 @@
 .review-section {
   margin: 0 auto;
   padding: 10px 5px;
-  //background: linear-gradient(135deg, #f7f7f7, #e6e6e6);
   border-radius: 20px;
-  //box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  flex-direction: column;
   @media (min-width: 768px) {
     padding: 40px 20px;
   }
@@ -28,7 +27,7 @@
     bottom: -10px;
     width: 50px;
     height: 4px;
-    background-color: $color-gold;
+    background-color: #BBAD0E;
     transform: translateX(-50%);
     border-radius: 2px;
   }
@@ -44,12 +43,6 @@
 
 .awssld__content {
   background-color: transparent !important;
-  //background-image: url("../../public/assets/images/Wzór2.png");
-}
-
-.awssld__bullets {
-  //border-bottom: 0.5px solid grey;
-  //padding-bottom: 10px;
 }
 
 .in-slider {
@@ -57,13 +50,13 @@
 }
 
 .awssld {
+  height: 400px !important;
   @media (max-width: 768px) {
     //padding-top: 10px;
     border-top: 0.5px solid grey;
     border-bottom: 0.5px solid grey;
 
   }
-  height: 400px !important;
   @media (max-width: 305px) {
     height: 700px !important;
   }
@@ -78,9 +71,6 @@
 }
 
 .aws-sld {
-  .awssld__wrapper {
-
-  }
 
   &__content {
     p {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '../../../firebase';
-import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc, query, where } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 import bcrypt from 'bcryptjs';
@@ -17,6 +17,7 @@ const FuneralHomeApplicationsTable = () => {
     const [modalType, setModalType] = useState(''); // 'approve' or 'delete'
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
     const [showCreateForm, setShowCreateForm] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [newApplication, setNewApplication] = useState({
         funeralHomeName: '',
         city: '',
@@ -35,15 +36,54 @@ const FuneralHomeApplicationsTable = () => {
 
         fetchApplications();
     }, []);
+    const generatePassword = () => {
+        const length = 12;
+        const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+~`|}{[]:;?><,./-=";
+        let password = "";
+        for (let i = 0, n = charset.length; i < length; ++i) {
+            password += charset.charAt(Math.floor(Math.random() * n));
+        }
+        return password;
+    };
 
     const toggleActionDropdown = (applicationId) => {
         setActiveActionDropdown(activeActionDropdown === applicationId ? null : applicationId);
     };
 
-    const handleApprove = (application) => {
+    const handleApprove = async (application) => {
+        setErrorMessage(''); // Reset error message
+
+        if (!validateEmail(application.email)) {
+            setErrorMessage('Nieprawidłowy format adresu e-mail.');
+            return;
+        }
+
+        // Sprawdzanie, czy e-mail już istnieje w domyPogrzebowe i czy isApproved = true
+        const emailQuery = query(collection(db, 'application'), where('email', '==', application.email));
+        const querySnapshot = await getDocs(emailQuery);
+
+        if (!querySnapshot.empty) {
+            // Istnieje użytkownik z tym adresem e-mail
+            const existingDocument = querySnapshot.docs[0].data(); // Zakładam, że e-mail jest unikalny
+
+            if (existingDocument.isApproved) {
+                // Jeżeli isApproved jest na true, wyświetlamy komunikat i przerywamy
+                setErrorMessage('Wniosek z tym adresem e-mail został już zaakceptowany.');
+                return;
+            }
+        }
+
+        // Jeżeli nie istnieje użytkownik z isApproved = true, przechodzimy do akceptacji
         setSelectedApplication(application);
         setModalType('approve');
         setShowModal(true);
+    };
+
+
+
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
     };
 
     const handleDelete = (application) => {
@@ -58,9 +98,11 @@ const FuneralHomeApplicationsTable = () => {
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(password, salt);
 
+            // Dodaj nowy dokument do 'domyPogrzebowe' z polem isApproved = true
             await addDoc(collection(db, 'domyPogrzebowe'), {
                 ...selectedApplication,
                 password: hashedPassword,
+                isApproved: true,  // Nowe pole informujące o akceptacji
                 createdAt: dayjs().format('DD.MM.YYYY HH:mm'),
             });
 
@@ -68,13 +110,35 @@ const FuneralHomeApplicationsTable = () => {
             await updateDoc(applicationRef, {
                 accountCreated: true,
                 generatedPassword: password,
+                isApproved: true,  // Aktualizacja pola w 'application'
             });
 
-            setShowSuccessMessage(true);
+            // Wyślij e-mail z informacjami do użytkownika
+            try {
+                const response = await fetch('/api/send-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: selectedApplication.email,
+                        password: password,
+                    }),
+                });
+
+                if (response.ok) {
+                    setShowSuccessMessage(true);
+                } else {
+                    console.error('Błąd podczas wysyłania e-maila');
+                }
+            } catch (error) {
+                console.error('Błąd podczas wywoływania API:', error);
+            }
+
             setTimeout(() => {
                 setShowSuccessMessage(false);
                 window.location.reload();
-            }, 2000);
+            }, 3000); // Pokazuj wiadomość przez 3 sekundy
 
             setShowModal(false);
             setSelectedApplication(null);
@@ -182,6 +246,12 @@ const FuneralHomeApplicationsTable = () => {
                 </div>
             )}
 
+            {errorMessage && <div className="error-message">{errorMessage}</div>}
+            {showSuccessMessage && (
+                <div className="success-message">
+                    Wiadomość e-mail została wysłana!
+                </div>
+            )}
             <div className="table-wrapper">
                 <table className="applications-table">
                     <thead>
@@ -268,11 +338,7 @@ const FuneralHomeApplicationsTable = () => {
                     </div>
                 )}
 
-                {showSuccessMessage && (
-                    <div className="success-message">
-                        Wiadomość e-mail została wysłana!
-                    </div>
-                )}
+
             </div>
         </div>
     );

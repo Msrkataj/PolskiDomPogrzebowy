@@ -1,0 +1,339 @@
+@charset "UTF-8";
+.container .filter-bar {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+.container .filter-bar select {
+  appearance: none;
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  margin-right: 10px;
+  width: 100%;
+  max-width: 200px;
+  transition: all 0.3s ease;
+}
+.container .filter-bar select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+.container .filter-bar select:hover {
+  background-color: #e2e2e2;
+}
+.container .filter-bar select option {
+  padding: 10px;
+  background-color: #fff;
+  color: #333;
+}
+@media (max-width: 768px) {
+  .container .filter-bar select {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
+.container .assortment-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  table-layout: auto; /* Domyślna szerokość kolumn */
+}
+.container .assortment-table thead {
+  background-color: #f8f8f8;
+}
+.container .assortment-table thead th {
+  padding: 12px;
+  font-size: 14px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  white-space: nowrap; /* Zapobiega zawijaniu tekstu */
+}
+.container .assortment-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+.container .assortment-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+.container .assortment-table tbody tr td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  font-size: 14px;
+  text-align: left;
+}
+.container .assortment-table tbody tr td .product-thumbnail {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+}
+.container .assortment-table tbody tr td button {
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.2em;
+  margin: 10px 0;
+}
+.container .assortment-table tbody tr td button:hover {
+  background-color: #0056b3;
+}
+.container .pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+.container .pagination button {
+  padding: 8px 16px;
+  margin: 0 4px;
+  border: 1px solid #ddd;
+  background-color: #007bff;
+  cursor: pointer;
+  font-size: 14px;
+}
+.container .pagination button:hover {
+  background-color: #e2e2e2;
+}
+.container .pagination button.active {
+  background-color: #007bff;
+  color: #fff;
+}
+.container .add-button {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  text-align: center;
+}
+.container .add-button:hover {
+  background-color: #218838;
+}
+
+@media (max-width: 768px) {
+  .assortment-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .add-button {
+    width: 100%;
+    font-size: 14px;
+  }
+}
+.modal-edit, .modal-add {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.modal-content-funeral-text {
+  height: 200px;
+}
+
+.modal-content-funeral, .modal-content-add {
+  background: #f9f9f9;
+  padding: 30px;
+  border-radius: 15px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+  max-height: 80vh;
+  border: 1px solid #e0e0e0;
+}
+
+.modal-content-funeral h2, .modal-content-add h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 10px;
+}
+
+.modal-content-funeral p, .modal-content-add p {
+  margin: 10px 0;
+  font-size: 16px;
+  color: #555;
+}
+
+.modal-content-funeral input[type=text], .modal-content-funeral input[type=number],
+.modal-content-funeral select, .modal-content-add input[type=text], .modal-content-add input[type=number],
+.modal-content-add select {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.2s ease-in-out;
+  font-family: Avenir;
+}
+
+.modal-content-funeral textarea {
+  width: 100%; /* Szerokość pola */
+  padding: 50px 0 100px 10px; /* Padding, taki sam jak w inputach */
+  font-size: 16px;
+  border: 1px solid #ccc; /* Border, taki sam jak w inputach */
+  border-radius: 8px; /* Border-radius, taki sam jak w inputach */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Box-shadow, taki sam jak w inputach */
+  resize: vertical; /* Możliwość zmiany wysokości */
+  transition: border-color 0.2s ease-in-out; /* Płynne przejście przy focus */
+  font-family: Avenir; /* Dopasowanie czcionki */
+}
+
+.modal-content-funeral textarea:focus {
+  border-color: #007bff; /* Kolor borderu przy focus */
+  outline: none; /* Usunięcie domyślnego obrysu */
+}
+
+.modal-content-funeral input[type=text]:focus, .modal-content-funeral input[type=number]:focus,
+.modal-content-funeral select:focus, .modal-content-add input[type=text]:focus, .modal-content-add input[type=number]:focus,
+.modal-content-add select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.modal-content-funeral button, .modal-content-add button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.modal-content-funeral button:hover, .modal-content-add button:hover {
+  background-color: #0056b3;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: flex-end;
+}
+.modal-actions button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.modal-actions button:hover {
+  background-color: #0056b3;
+}
+.modal-actions button:last-child {
+  background-color: #6c757d;
+}
+.modal-actions button:last-child:hover {
+  background-color: #5a6268;
+}
+
+.modal-content-funeral ul, .modal-content-add ul {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+  display: flex;
+  gap: 10px;
+}
+
+.modal-content-funeral ul li, .modal-content-add ul li {
+  position: relative;
+  display: inline-block;
+}
+
+.modal-content-funeral ul li img, .modal-content-add ul li img {
+  width: 100px;
+  height: 100px;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content-funeral ul li button, .modal-content-add ul li button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  padding: 2px 6px;
+  background-color: #dc3545;
+  border: none;
+  color: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.modal-content-funeral ul li button:hover, .modal-content-add ul li button:hover {
+  background-color: #c82333;
+}
+
+body.no-scroll {
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .modal-content-funeral, .modal-content-add {
+    max-width: 90%;
+    padding: 20px;
+  }
+  .modal-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .modal-actions button {
+    width: 100%;
+    font-size: 18px;
+  }
+  .modal-content-funeral h2, .modal-content-add h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.pagination button {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .assortment-item {
+    flex: 1 1 100%;
+  }
+}
+
+/*# sourceMappingURL=FuneralHomeAssortment.scss.css.map */

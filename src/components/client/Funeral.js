@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import Image from 'next/image';
-import { db, storage } from '../../../firebase';
-import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
-import { ref, getDownloadURL } from 'firebase/storage';
+import {db, storage} from '../../../firebase';
+import {doc, getDoc, collection, query, where, getDocs} from 'firebase/firestore';
+import {ref, getDownloadURL} from 'firebase/storage';
 import GoogleMapReact from 'google-map-react';
 import Link from "next/link";
 import useAuthMiddleware from "../../../middleware";
 import {useRouter} from "next/router";
+import AuthGuardFuneral from "@/components/panel/AuthGuardFuneral";
+import AuthGuardClient from "@/components/panel/AuthGuardClient";
 
 const FuneralHomeDetails = () => {
     const [funeralHomeDetails, setFuneralHomeDetails] = useState(null);
@@ -31,7 +33,7 @@ const FuneralHomeDetails = () => {
             const currentTime = Date.now();
             const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
-            console.log('Middleware check:', { userRole, loginTime, currentTime });
+            console.log('Middleware check:', {userRole, loginTime, currentTime});
 
             if (!userRole || isNaN(loginTime) || currentTime - loginTime > ONE_DAY_MS) {
                 console.log('User not authenticated or session expired');
@@ -58,7 +60,7 @@ const FuneralHomeDetails = () => {
                     if (formDoc.exists()) {
                         const formData = formDoc.data();
                         const funeralHomeName = formData.funeralHomeName;
-
+                        console.log(funeralHomeName)
                         // Pobierz szczegóły domu pogrzebowego na podstawie nazwy
                         const q = query(collection(db, 'domyPogrzebowe'), where('name', '==', funeralHomeName));
                         const querySnapshot = await getDocs(q);
@@ -112,15 +114,38 @@ const FuneralHomeDetails = () => {
             <h1>Twój wybrany dom pogrzebowy</h1>
             <div className="home-details">
                 <div className="home-details-name">
-                    <Image src={funeralHomeDetails.logoUrl} alt={`${funeralHomeDetails.name} logo`} width={50} height={50} />
+                    <Image src={funeralHomeDetails.logoUrl} alt={`${funeralHomeDetails.name} logo`} width={50}
+                           height={50}/>
                     <div className="home-details-name-title">
                         <h3>{funeralHomeDetails.name}</h3>
                         <p>Ocena: {funeralHomeDetails.rating}</p>
                     </div>
                 </div>
                 <div className="home-details-contact">
-                    <p><strong>Adres:</strong> {funeralHomeDetails.address}</p>
-                    <p><strong>Godziny otwarcia:</strong> {funeralHomeDetails.hours}</p>
+                    <p><strong>Adres:</strong></p>
+                    <div>
+                        <label>Miasto:</label>
+                        <span>{funeralHomeDetails.city}</span>
+                    </div>
+                    <div>
+                        <label>Ulica:</label>
+                        <span>{funeralHomeDetails.street}</span>
+                    </div>
+                    <div>
+                        <label>Kod pocztowy:</label>
+                        <span>{funeralHomeDetails.postalCode}</span>
+                    </div>
+                    <p><strong>Godziny otwarcia:</strong> {
+                        funeralHomeDetails.openingHours && funeralHomeDetails.openingHours.length > 0 ? (
+                            funeralHomeDetails.openingHours.map((hour, index) => (
+                                <span key={index}>
+                {`${hour.dayFrom} - ${hour.dayTo} od ${hour.from} do ${hour.to}`}
+            </span>
+                            ))
+                        ) : (
+                            <span>Brak dostępnych godzin otwarcia</span>
+                        )
+                    }</p>
                     <p><strong>Email:</strong> {funeralHomeDetails.email}</p>
                     <p><strong>Telefon:</strong> {funeralHomeDetails.phone}</p>
                 </div>
@@ -179,5 +204,10 @@ const FuneralHomeDetails = () => {
         </div>
     );
 };
+const DashboardWithAuth = () => (
+    <AuthGuardClient>
+        <FuneralHomeDetails/>
+    </AuthGuardClient>
+);
 
-export default FuneralHomeDetails;
+export default DashboardWithAuth;

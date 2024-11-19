@@ -1,0 +1,27 @@
+@import url("https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap");
+@font-face {
+  font-family: "Avenir";
+  src: url("/fonts/AvenirNextCyr-Regular.ttf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Avenir";
+  src: url("/fonts/Avenir-Book.ttf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Avenir";
+  src: url("/fonts/Avenir-Black.ttf") format("opentype");
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Bookman Old Style";
+  src: url("/fonts/BOOKOS.TTF") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+/*# sourceMappingURL=_fonts.scss.css.map */
