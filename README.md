@@ -11,6 +11,7 @@ The system simplifies the funeral arrangement process, offering complete online 
 - Funeral home panel to manage requests, bookings, and communication.  
 - Admin panel with full control over users, funeral homes, and documentation.  
 - Email/SMS notifications and online payments integration.
+<img width="732" height="580" alt="Zrzut ekranu 2025-09-22 153539" src="https://github.com/user-attachments/assets/3eda0bdb-4c03-4565-9b85-5393e66bd8bc" />
 <img width="735" height="492" alt="Zrzut ekranu 2025-09-22 153551" src="https://github.com/user-attachments/assets/bed91e5e-bb7e-4864-a867-bf95eb748e1f" />
 <img width="738" height="413" alt="Zrzut ekranu 2025-09-22 153631" src="https://github.com/user-attachments/assets/08993bc8-61e4-43f5-8e2b-8336acdf5c50" />
 <img width="730" height="584" alt="Zrzut ekranu 2025-09-22 153620" src="https://github.com/user-attachments/assets/5ad91d73-f17c-4da7-9558-2f3abcf033b7" />
